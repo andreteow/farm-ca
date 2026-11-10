@@ -22,16 +22,39 @@ if (existsSync('assets/chars')) cpSync('assets/chars', 'dist/assets/chars', { re
 writeFileSync('dist/assets/audio.mp3', Buffer.concat(chunks));
 // the fragment used for the shareable preview page
 writeFileSync('dist/harvest-standoff.html', page);
-// a complete stand-alone page, ready for any web host
+// A complete stand-alone page for the public website. Unlike the preview fragment it loads NOTHING from other
+// companies' servers: the 3D library and the fonts are copied next to the page.
+mkdirSync('dist/vendor', { recursive: true });
+cpSync('node_modules/three/build/three.min.js', 'dist/vendor/three.min.js');
+cpSync('assets/fonts', 'dist/assets/fonts', { recursive: true });
+const fontCss = `<style>
+@font-face { font-family: "Lilita One"; font-weight: 400; font-display: swap; src: url(assets/fonts/lilita-one.woff2) format("woff2"); }
+@font-face { font-family: "Nunito"; font-weight: 200 1000; font-display: swap; src: url(assets/fonts/nunito.woff2) format("woff2"); }
+</style>`;
+const cut = page.indexOf('</style>') + '</style>'.length;
+const headPart = page.slice(0, cut)
+  .replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/, fontCss)
+  .replace(/<meta name="claude:viewport-fit-sides"[^>]*>\n?/, '');
+const bodyPart = page.slice(cut).replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/three\.js\/[^/]+\/three\.min\.js/, 'vendor/three.min.js');
+const about = 'A free, kid-friendly farm game: animals against farmhands, five a side. Sneak in the Stink-Pumpkin or cork it in time. Nobody gets hurt, just very messy.';
 writeFileSync('dist/index.html', `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="${about}">
+<meta name="theme-color" content="#8fd0fb">
+<meta property="og:title" content="Harvest Standoff">
+<meta property="og:description" content="${about}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/ui/share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/ui/favicon.png">
 <style>html,body{margin:0}[hidden]{display:none!important}</style>
+${headPart}
 </head>
 <body>
-${page}
+${bodyPart}
 </body>
 </html>
 `);

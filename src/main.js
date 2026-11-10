@@ -12,8 +12,8 @@ import { createAudio } from './audio.js';
 import { createHud } from './hud.js';
 import { createViewModel } from './viewmodel.js';
 import { buildPumpkin, buildCharacter, buildGadget, animateCharacter, modelOptions } from './characters.js';
-import { raycast } from './collide.js';
-import { clamp, dirX, dirZ, shuffle, pick, rand } from './util.js';
+import { raycast, rayBox, raySphere } from './collide.js';
+import { clamp, dirX, dirY, dirZ, yawTo, shuffle, pick, rand } from './util.js';
 
 const T = window.THREE;
 const $ = (id) => document.getElementById(id);
@@ -399,7 +399,10 @@ function boot() {
   // ---------- input ----------
   const keys = {};
   let mdx = 0, mdy = 0, mouseDown = false, fireEdge = false, locked = false, everLocked = false, noLock = false;
-  let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72;
+  let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72, shoulder = false, selfHidden = false;
+  try { shoulder = localStorage.getItem('hs-view') === 'shoulder'; } catch (e) { /* default view */ }
+  const shoulderNow = () => shoulder && game.player && game.player.alive && !game.player.scoped;
+  const hitBox = { x1: 0, y1: 0, z1: 0, x2: 0, y2: 0, z2: 0 };
   try { const s = parseFloat(localStorage.getItem('hs-sens')); if (s > 0) sens = s; const v = parseFloat(localStorage.getItem('hs-vol')); if (v >= 0) { $('vol').value = v; } } catch (e) { /* no saved settings */ }
   $('sens').value = sens;
 
@@ -467,6 +470,11 @@ function boot() {
     if (e.code === 'KeyR') p.startReload();
     if (e.code === 'KeyF') fireEdge = true;
     if (e.code === 'KeyZ') toggleZoom();
+    if (e.code === 'KeyV') {
+      shoulder = !shoulder; audio.ui();
+      try { localStorage.setItem('hs-view', shoulder ? 'shoulder' : 'eyes'); } catch (err) { /* not saved */ }
+      hud.tip(shoulder ? 'Over-the-shoulder view. Press V to look through your own eyes again.' : 'Through-the-eyes view. Press V for over the shoulder.', 3.5);
+    }
   });
   window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
@@ -506,11 +514,46 @@ function boot() {
     }
     if (p.alive) {
       eyeY += ((p.busy ? MOVE.eyeCrouch : p.eyeY()) - eyeY) * Math.min(1, dt * 14);
-      camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
-      camera.rotation.set(p.pitch + p.recoil, p.yaw, 0);
       game.viewYaw = p.yaw; game.viewActor = p;
+      const pitch = p.pitch + p.recoil;
+      if (!shoulderNow()) {
+        camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
+        camera.rotation.set(pitch, p.yaw, 0);
+        p.aim = null; selfHidden = true;
+        return;
+      }
+      // ---- over the shoulder: the camera sits behind and to the right, pulled in when a wall is in the way ----
+      const fx = dirX(p.yaw, pitch), fy = dirY(pitch), fz = dirZ(p.yaw, pitch), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
+      const ex = p.pos.x, ey = p.pos.y + eyeY, ez = p.pos.z;
+      let side = 0.58;
+      const sideHit = raycast(ex, ey, ez, rx, 0, rz, side + 0.3, W.boxes);
+      if (sideHit) side = Math.max(0, sideHit.t - 0.3);
+      const px = ex + rx * side, py = ey + 0.3, pz = ez + rz * side;
+      let back = 3.1;
+      const backHit = raycast(px, py, pz, -fx, -fy, -fz, back + 0.25, W.boxes);
+      if (backHit) back = Math.max(0.25, backHit.t - 0.25);
+      camera.position.set(px - fx * back, py - fy * back, pz - fz * back);
+      camera.rotation.set(pitch, p.yaw, 0);
+      selfHidden = back < 0.95; // too close to see past yourself: hide the body
+      // what is under the crosshair? launch at that
+      let reach = 150;
+      const sx = px + fx * 0.4, sy = py + fy * 0.4, sz = pz + fz * 0.4;
+      const wall = raycast(sx, sy, sz, fx, fy, fz, reach, W.boxes);
+      if (wall) reach = wall.t;
+      for (const v of game.actors) {
+        if (!v.alive || v.team === p.team) continue;
+        let t = raySphere(sx, sy, sz, fx, fy, fz, v.pos.x, v.pos.y + (v.crouched ? 1.08 : 1.36), v.pos.z, 0.36);
+        if (t >= 0 && t < reach) reach = t;
+        hitBox.x1 = v.pos.x - 0.38; hitBox.x2 = v.pos.x + 0.38; hitBox.z1 = v.pos.z - 0.38; hitBox.z2 = v.pos.z + 0.38; hitBox.y1 = v.pos.y; hitBox.y2 = v.pos.y + (v.crouched ? 0.86 : 1.12);
+        t = rayBox(sx, sy, sz, fx, fy, fz, hitBox);
+        if (t >= 0 && t < reach) reach = t;
+      }
+      const tx = sx + fx * reach - ex, ty = sy + fy * reach - ey, tz = sz + fz * reach - ez;
+      if (!p.aim) p.aim = { yaw: 0, pitch: 0 };
+      if (Math.hypot(tx, tz) > 1.2) { p.aim.yaw = yawTo(tx, tz); p.aim.pitch = Math.atan2(ty, Math.hypot(tx, tz)); } else { p.aim.yaw = p.yaw; p.aim.pitch = pitch; }
       return;
     }
+    p.aim = null;
     // splatted out: watch yourself flop, then follow a teammate from behind
     let target = p;
     if (p.outT > 1.5) {
@@ -573,7 +616,7 @@ function boot() {
           if (game.score.herd >= ROUND.winTarget || game.score.hands >= ROUND.winTarget) finishMatch(); else startRound();
         }
       }
-      for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive);
+      for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive && selfHidden);
       if (game.player && game.player.alive) vm.update(dt, game.player);
       audio.ambient(dt);
     }
@@ -589,7 +632,7 @@ function boot() {
     renderer.clear();
     renderer.render(scene, camera);
     const p = game.player;
-    if (playing() && p && p.alive && !p.scoped) { renderer.clearDepth(); renderer.render(vm.scene, vm.cam); }
+    if (playing() && p && p.alive && !p.scoped && !shoulderNow()) { renderer.clearDepth(); renderer.render(vm.scene, vm.cam); }
   }
 
   function resize() {
@@ -645,6 +688,7 @@ function boot() {
   // handy for automated checks: run the game forward without waiting for real time
   game.simulate = (seconds, step = 1 / 60) => { for (let t = 0; t < seconds; t += step) update(step); };
   game.begin = (team, diff) => { pickTeam = team; pickDiff = diff; begin(); };
+  game.setShoulder = (on) => { shoulder = on; };
   game.input = { keys, look: (dx, dy) => { mdx += dx; mdy += dy; }, fire: (down) => { mouseDown = down; fireEdge = down; }, noLock: () => { noLock = true; } };
   game.botOf = botOf;
   // old hand-built version (left) next to the sculpted model (right), for comparing

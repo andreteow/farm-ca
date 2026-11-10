@@ -57,10 +57,16 @@ python tools/chars/characters.py all art/characters
 for n in chicken pig cow sheep goat farmer0 farmer1 farmer2 farmer3 farmer4; do node tools/chars/bake.mjs art/characters/${n}_raw.json $n; done
 ```
 
+## Going live
+
+The public site is built by Vercel from this repository (`vercel.json`): every push to `main` runs `node build.mjs`
+and publishes the `dist` folder. The public page loads nothing from other companies' servers; the 3D library and the
+fonts are copied next to the game.
+
 ## Status
 
-Milestone 4: Blender-sculpted characters, on top of the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
+Milestone 5: over-the-shoulder view (V key) and public deployment, on top of Blender-sculpted characters, the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
 corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated
 textures and menu art, and recorded voice lines, music and sound effects.
 
-Not built yet: the over-the-shoulder view, the other three modes, more maps, online play.
+Not built yet: the other three modes, more maps, online play.

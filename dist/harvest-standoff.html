@@ -246,6 +246,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <li><kbd>Shift</kbd> tiptoe</li>
         <li><kbd>C</kbd> crouch</li>
         <li><kbd>Right-click</kbd> zoom</li>
+        <li><kbd>V</kbd> change view</li>
       </ul>
       <p class="note" id="touch-note" hidden>This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
     </div>
@@ -2981,8 +2982,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       a.cooldown = 1 / g.rate;
       const spread = a.spread();
       const r = spread * Math.sqrt(Math.random()), th = Math.random() * TAU;
-      const pitch = a.pitch + a.recoil + r * Math.sin(th);
-      const yaw = a.yaw + r * Math.cos(th) / Math.max(0.3, Math.cos(pitch));
+      const pitch = (a.aim ? a.aim.pitch : a.pitch + a.recoil) + r * Math.sin(th);
+      const yaw = (a.aim ? a.aim.yaw : a.yaw) + r * Math.cos(th) / Math.max(0.3, Math.cos(pitch));
       const dx = dirX(yaw, pitch), dy = dirY(pitch), dz = dirZ(yaw, pitch);
       const ox = a.pos.x, oy = a.pos.y + a.eyeY(), oz = a.pos.z;
       const rx = Math.cos(a.yaw), rz = -Math.sin(a.yaw);
@@ -4514,7 +4515,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
     const keys = {};
     let mdx = 0, mdy = 0, mouseDown = false, fireEdge = false, locked = false, everLocked = false, noLock = false;
-    let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72;
+    let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72, shoulder = false, selfHidden = false;
+    try {
+      shoulder = localStorage.getItem("hs-view") === "shoulder";
+    } catch (e) {
+    }
+    const shoulderNow = () => shoulder && game.player && game.player.alive && !game.player.scoped;
+    const hitBox = { x1: 0, y1: 0, z1: 0, x2: 0, y2: 0, z2: 0 };
     try {
       const s = parseFloat(localStorage.getItem("hs-sens"));
       if (s > 0) sens = s;
@@ -4632,6 +4639,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       if (e.code === "KeyR") p.startReload();
       if (e.code === "KeyF") fireEdge = true;
       if (e.code === "KeyZ") toggleZoom();
+      if (e.code === "KeyV") {
+        shoulder = !shoulder;
+        audio.ui();
+        try {
+          localStorage.setItem("hs-view", shoulder ? "shoulder" : "eyes");
+        } catch (err) {
+        }
+        hud.tip(shoulder ? "Over-the-shoulder view. Press V to look through your own eyes again." : "Through-the-eyes view. Press V for over the shoulder.", 3.5);
+      }
     });
     window.addEventListener("keyup", (e) => {
       keys[e.code] = false;
@@ -4687,12 +4703,57 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       if (p.alive) {
         eyeY += ((p.busy ? MOVE.eyeCrouch : p.eyeY()) - eyeY) * Math.min(1, dt * 14);
-        camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
-        camera.rotation.set(p.pitch + p.recoil, p.yaw, 0);
         game.viewYaw = p.yaw;
         game.viewActor = p;
+        const pitch = p.pitch + p.recoil;
+        if (!shoulderNow()) {
+          camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
+          camera.rotation.set(pitch, p.yaw, 0);
+          p.aim = null;
+          selfHidden = true;
+          return;
+        }
+        const fx2 = dirX(p.yaw, pitch), fy = dirY(pitch), fz2 = dirZ(p.yaw, pitch), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
+        const ex = p.pos.x, ey = p.pos.y + eyeY, ez = p.pos.z;
+        let side = 0.58;
+        const sideHit = raycast(ex, ey, ez, rx, 0, rz, side + 0.3, W.boxes);
+        if (sideHit) side = Math.max(0, sideHit.t - 0.3);
+        const px = ex + rx * side, py = ey + 0.3, pz = ez + rz * side;
+        let back = 3.1;
+        const backHit = raycast(px, py, pz, -fx2, -fy, -fz2, back + 0.25, W.boxes);
+        if (backHit) back = Math.max(0.25, backHit.t - 0.25);
+        camera.position.set(px - fx2 * back, py - fy * back, pz - fz2 * back);
+        camera.rotation.set(pitch, p.yaw, 0);
+        selfHidden = back < 0.95;
+        let reach = 150;
+        const sx = px + fx2 * 0.4, sy = py + fy * 0.4, sz = pz + fz2 * 0.4;
+        const wall = raycast(sx, sy, sz, fx2, fy, fz2, reach, W.boxes);
+        if (wall) reach = wall.t;
+        for (const v of game.actors) {
+          if (!v.alive || v.team === p.team) continue;
+          let t = raySphere(sx, sy, sz, fx2, fy, fz2, v.pos.x, v.pos.y + (v.crouched ? 1.08 : 1.36), v.pos.z, 0.36);
+          if (t >= 0 && t < reach) reach = t;
+          hitBox.x1 = v.pos.x - 0.38;
+          hitBox.x2 = v.pos.x + 0.38;
+          hitBox.z1 = v.pos.z - 0.38;
+          hitBox.z2 = v.pos.z + 0.38;
+          hitBox.y1 = v.pos.y;
+          hitBox.y2 = v.pos.y + (v.crouched ? 0.86 : 1.12);
+          t = rayBox(sx, sy, sz, fx2, fy, fz2, hitBox);
+          if (t >= 0 && t < reach) reach = t;
+        }
+        const tx = sx + fx2 * reach - ex, ty = sy + fy * reach - ey, tz = sz + fz2 * reach - ez;
+        if (!p.aim) p.aim = { yaw: 0, pitch: 0 };
+        if (Math.hypot(tx, tz) > 1.2) {
+          p.aim.yaw = yawTo(tx, tz);
+          p.aim.pitch = Math.atan2(ty, Math.hypot(tx, tz));
+        } else {
+          p.aim.yaw = p.yaw;
+          p.aim.pitch = pitch;
+        }
         return;
       }
+      p.aim = null;
       let target = p;
       if (p.outT > 1.5) {
         const mates = alive(p.team);
@@ -4764,7 +4825,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
             else startRound();
           }
         }
-        for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive);
+        for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive && selfHidden);
         if (game.player && game.player.alive) vm.update(dt, game.player);
         audio.ambient(dt);
       }
@@ -4779,7 +4840,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       renderer.clear();
       renderer.render(scene, camera);
       const p = game.player;
-      if (playing() && p && p.alive && !p.scoped) {
+      if (playing() && p && p.alive && !p.scoped && !shoulderNow()) {
         renderer.clearDepth();
         renderer.render(vm.scene, vm.cam);
       }
@@ -4864,6 +4925,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       pickTeam = team;
       pickDiff = diff;
       begin();
+    };
+    game.setShoulder = (on) => {
+      shoulder = on;
     };
     game.input = { keys, look: (dx, dy) => {
       mdx += dx;

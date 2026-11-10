@@ -18,8 +18,9 @@ export function createCombat(game) {
     a.ammo--; a.cooldown = 1 / g.rate;
     const spread = a.spread();
     const r = spread * Math.sqrt(Math.random()), th = Math.random() * TAU;
-    const pitch = a.pitch + a.recoil + r * Math.sin(th);
-    const yaw = a.yaw + (r * Math.cos(th)) / Math.max(0.3, Math.cos(pitch));
+    // over-the-shoulder view aims at whatever is under the crosshair, not straight ahead of the character
+    const pitch = (a.aim ? a.aim.pitch : a.pitch + a.recoil) + r * Math.sin(th);
+    const yaw = (a.aim ? a.aim.yaw : a.yaw) + (r * Math.cos(th)) / Math.max(0.3, Math.cos(pitch));
     const dx = dirX(yaw, pitch), dy = dirY(pitch), dz = dirZ(yaw, pitch);
     const ox = a.pos.x, oy = a.pos.y + a.eyeY(), oz = a.pos.z;
     // the shot is drawn leaving the launcher (lower right), but flies from the eyes so aiming is honest
