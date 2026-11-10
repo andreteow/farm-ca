@@ -11,7 +11,7 @@ import { createFx } from './fx.js';
 import { createAudio } from './audio.js';
 import { createHud } from './hud.js';
 import { createViewModel } from './viewmodel.js';
-import { buildPumpkin } from './characters.js';
+import { buildPumpkin, buildCharacter, buildGadget, animateCharacter, modelOptions } from './characters.js';
 import { raycast } from './collide.js';
 import { clamp, dirX, dirZ, shuffle, pick, rand } from './util.js';
 
@@ -496,6 +496,7 @@ function boot() {
     const p = game.player;
     const wantFov = p && p.alive && p.scoped ? 22 : 72;
     if (Math.abs(fov - wantFov) > 0.05) { fov += (wantFov - fov) * Math.min(1, dt * 16); camera.fov = fov; camera.updateProjectionMatrix(); }
+    if (game.camFixed) { camera.position.set(...game.camFixed.pos); camera.lookAt(...game.camFixed.look); return; }
     if (game.state === 'menu' || !p) {
       const a = game.time * 0.07;
       camera.position.set(Math.sin(a) * 50, 24, -4 + Math.cos(a) * 50);
@@ -646,6 +647,36 @@ function boot() {
   game.begin = (team, diff) => { pickTeam = team; pickDiff = diff; begin(); };
   game.input = { keys, look: (dx, dy) => { mdx += dx; mdy += dy; }, fire: (down) => { mouseDown = down; fireEdge = down; }, noLock: () => { noLock = true; } };
   game.botOf = botOf;
+  // old hand-built version (left) next to the sculpted model (right), for comparing
+  game.compare = (kind, look) => {
+    const pair = [false, true].map((on, i) => {
+      modelOptions.enabled = on;
+      const c = buildCharacter(kind, look);
+      c.mount.add(buildGadget('tomato'));
+      c.root.position.set(i ? 0.75 : -0.75, 0, 20); c.root.rotation.y = Math.PI;
+      scene.add(c.root);
+      return c;
+    });
+    modelOptions.enabled = true;
+    game.camFixed = { pos: [0, 1.2, 22.75], look: [0, 0.92, 20] };
+    game.comparePose = (speed, pitch, crouch, turn = 0, alive = true) => pair.forEach((c) => { c.root.rotation.y = Math.PI + turn; for (let k = 0; k < 10; k++) animateCharacter(c, 0.05, speed, pitch, crouch, alive); });
+    game.comparePose(0, 0, false);
+  };
+  // stands all ten characters in a row so their looks can be checked
+  game.lineup = (pose = {}) => {
+    const kinds = [...ROSTER.herd, ...ROSTER.hands], made = [];
+    kinds.forEach((info, i) => {
+      const c = buildCharacter(info.kind, info.look), gd = buildGadget(['squirter', 'egg', 'tomato', 'pea'][i % 4]);
+      c.mount.add(gd);
+      c.root.position.set((i - 4.5) * 1.15, 0, 20); c.root.rotation.y = Math.PI + (pose.turn || 0);
+      animateCharacter(c, 0.016, pose.speed || 0, pose.pitch || 0, !!pose.crouch, true);
+      if (pose.speed) for (let k = 0; k < 8; k++) animateCharacter(c, 0.05, pose.speed, 0, false, true);
+      scene.add(c.root); made.push(c);
+    });
+    game.camFixed = { pos: pose.cam || [0, 1.25, 26.6], look: [0, 0.95, 20] };
+    game.lineupPose = (speed = 0, pitch = 0, crouch = false, turn = 0) => made.forEach((c) => { c.root.rotation.y = Math.PI + turn; for (let k = 0; k < 10; k++) animateCharacter(c, 0.05, speed, pitch, crouch, true); });
+    return made.length;
+  };
   window.__hs = game;
 }
 

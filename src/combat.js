@@ -69,11 +69,11 @@ export function createCombat(game) {
         if (!v.alive || v.team === s.owner.team) continue;
         const ddx = v.pos.x - s.x, ddz = v.pos.z - s.z;
         if (ddx * ddx + ddz * ddz > (step + 2) * (step + 2)) continue;
-        const hy = v.pos.y + (v.crouched ? 1.12 : 1.44);
-        let t = raySphere(s.x, s.y, s.z, dx, dy, dz, v.pos.x, hy, v.pos.z, 0.31);
+        const hy = v.pos.y + (v.crouched ? 1.08 : 1.36);
+        let t = raySphere(s.x, s.y, s.z, dx, dy, dz, v.pos.x, hy, v.pos.z, 0.36);
         if (t >= 0 && t < best) { best = t; hitWho = v; hitHead = true; }
         body.x1 = v.pos.x - 0.38; body.x2 = v.pos.x + 0.38; body.z1 = v.pos.z - 0.38; body.z2 = v.pos.z + 0.38;
-        body.y1 = v.pos.y; body.y2 = v.pos.y + (v.crouched ? 0.92 : 1.22);
+        body.y1 = v.pos.y; body.y2 = v.pos.y + (v.crouched ? 0.86 : 1.12);
         t = rayBox(s.x, s.y, s.z, dx, dy, dz, body);
         if (t >= 0 && t < best) { best = t; hitWho = v; hitHead = false; }
       }

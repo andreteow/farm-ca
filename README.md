@@ -37,15 +37,30 @@ node tests/play.cjs herd easy 6
 node tests/objective.cjs
 ```
 
+## Characters
+
+All ten characters are sculpted in Blender by script, with no manual modelling:
+
+- `tools/chars/blender_lib.py` and `tools/chars/characters.py` lay out rounded shapes in a T-pose, melt them into one
+  smooth skin, paint soft colour areas and add crisp extras (eyes, hooves, hats...).
+- `tools/chars/bake.mjs` finds each model's hips and shoulders, paints the "which bone moves me" weights and writes
+  `assets/chars/<name>.json`, which `src/characters.js` loads and animates with six bones.
+- If a model fails to load, the game falls back to a simpler hand-built version of that character.
+
+To rebuild them you need Blender's Python module (`pip install bpy`):
+
+```bash
+python tools/chars/characters.py all art/characters
+```
+
+```bash
+for n in chicken pig cow sheep goat farmer0 farmer1 farmer2 farmer3 farmer4; do node tools/chars/bake.mjs art/characters/${n}_raw.json $n; done
+```
+
 ## Status
 
-Milestone 3: three throwables (Flour Bomb, Rooster Crow, Mud Balloon) on top of milestone 2 (shop and corn-coin economy,
-four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated textures and menu art,
-recorded voice lines, music and sound effects).
-
-Generated 3D character models are prepared but not in use: `tools/chars/bake.mjs` turns a T-pose `.glb` into a small
-game-ready character, and `src/characters.js` loads and animates anything listed in `MODELS`. The picture-to-3D service
-was failing when this was written, so the characters are still the hand-built ones. `art/characters/` holds the first
-reference picture.
+Milestone 4: Blender-sculpted characters, on top of the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
+corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated
+textures and menu art, and recorded voice lines, music and sound effects.
 
 Not built yet: the over-the-shoulder view, the other three modes, more maps, online play.

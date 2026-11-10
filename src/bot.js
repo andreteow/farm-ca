@@ -50,7 +50,7 @@ export class Bot {
     if (d > 48) return false;
     if (d > 5 && Math.abs(angDiff(yawTo(dx, dz), a.yaw)) > 1.1) return false;
     const ey = a.pos.y + a.eyeY(), boxes = this.g.world.boxes;
-    const hy = e.pos.y + (e.crouched ? 1.1 : 1.44), cy = e.pos.y + (e.crouched ? 0.55 : 0.85);
+    const hy = e.pos.y + (e.crouched ? 1.08 : 1.36), cy = e.pos.y + (e.crouched ? 0.5 : 0.75);
     if (!losClear(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, boxes) && !losClear(a.pos.x, ey, a.pos.z, e.pos.x, cy, e.pos.z, boxes)) return false;
     if (lengthInside(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, this.g.world.cornZones) > 3.5) return false;
     if (this.g.throwables.sightBlocked(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z)) return false; // flour cloud in the way
@@ -199,7 +199,7 @@ export class Bot {
       const dx0 = t.pos.x - a.pos.x, dz0 = t.pos.z - a.pos.z, dist = Math.hypot(dx0, dz0);
       const lead = dist / gd.speed;
       const dx = dx0 + t.vel.x * lead, dz = dz0 + t.vel.z * lead;
-      const ty = t.pos.y + (t.crouched ? 0.72 : 1.0), ey = a.pos.y + a.eyeY();
+      const ty = t.pos.y + (t.crouched ? 0.7 : 0.95), ey = a.pos.y + a.eyeY();
       wantYaw = yawTo(dx, dz) + this.errYaw;
       wantPitch = Math.atan2(ty - ey, Math.hypot(dx, dz)) + this.errPitch;
       // footwork: mostly stand still to launch accurately, with short side-steps

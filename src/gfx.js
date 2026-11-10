@@ -22,7 +22,7 @@ export const sphereLoGeo = () => cached('sl', () => new T.SphereGeometry(1, 12, 
 export const capsuleGeo = (r, len) => cached(`c${r}|${len}`, () => new T.CapsuleGeometry(r, len, 6, 14));
 export const cylGeo = (rt, rb, h, seg = 18) => cached(`y${rt}|${rb}|${h}|${seg}`, () => new T.CylinderGeometry(rt, rb, h, seg));
 export const coneGeo = (r, h, seg = 14) => cached(`k${r}|${h}|${seg}`, () => new T.ConeGeometry(r, h, seg));
-export const torusGeo = (r, t) => cached(`t${r}|${t}`, () => new T.TorusGeometry(r, t, 8, 18));
+export const torusGeo = (r, t, arc = Math.PI * 2) => cached(`t${r}|${t}|${arc}`, () => new T.TorusGeometry(r, t, 8, 20, arc));
 
 // A box with softened edges, so nothing in the world looks like a hard-cornered cube.
 export function rboxGeo(w, h, d, r = 0.08) {

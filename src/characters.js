@@ -4,12 +4,30 @@ import { add, group, sphereGeo, capsuleGeo, cylGeo, coneGeo, torusGeo, rboxGeo, 
 const T = window.THREE;
 const HALF = Math.PI / 2;
 
-function eyes(head, y, z, spread, size = 0.07) {
+// where the front surface of a round head is, so faces sit ON the head instead of floating
+const front = (hr, x, y, k = 1) => -Math.sqrt(Math.max(1e-4, hr * hr - x * x - y * y)) * k;
+
+// big friendly eyes: white, coloured iris, pupil, sparkle and a soft brow
+function eyes(head, hr, y, spread, size = 0.075, iris = 0x6b3f1d, brow = 0x3a2616) {
+  const z = front(hr, spread, y, 0.93);
   for (const s of [-1, 1]) {
-    add(head, sphereGeo(), 0xffffff, s * spread, y, z, { s: size, cast: false });
-    add(head, sphereGeo(), 0x23252b, s * spread * 0.97, y, z - size * 0.5, { s: size * 0.66, cast: false });
-    add(head, sphereGeo(), 0xffffff, s * spread * 0.97 + 0.014, y + 0.02, z - size * 1.08, { s: size * 0.2, cast: false });
+    add(head, sphereGeo(), 0xffffff, s * spread, y, z, { s: [size, size * 1.14, size * 0.8], cast: false });
+    add(head, sphereGeo(), iris, s * spread * 0.97, y - size * 0.04, z - size * 0.44, { s: [size * 0.66, size * 0.72, size * 0.5], cast: false });
+    add(head, sphereGeo(), 0x1c1c22, s * spread * 0.96, y - size * 0.04, z - size * 0.66, { s: [size * 0.38, size * 0.42, size * 0.3], cast: false });
+    add(head, sphereGeo(), 0xffffff, s * spread * 0.96 + size * 0.22, y + size * 0.26, z - size * 0.86, { s: size * 0.17, cast: false });
+    if (brow !== null) add(head, sphereGeo(), brow, s * spread * 1.02, y + size * 1.42, z + size * 0.1, { s: [size * 0.8, size * 0.15, size * 0.3], r: [0, 0, -s * 0.22], cast: false });
   }
+}
+function cheeks(head, hr, y, spread, color, size = 0.062) {
+  for (const s of [-1, 1]) add(head, sphereGeo(), color, s * spread, y, front(hr, spread, y, 0.97), { s: [size, size * 0.8, size * 0.4], cast: false });
+}
+function smile(head, y, z, w = 0.075, color = 0x7a3b2e) {
+  add(head, torusGeo(w, 0.012, Math.PI), color, 0, y, z, { r: [0, 0, Math.PI], cast: false });
+}
+function scarf(c, color, y = 0.21, r = 0.235) {
+  add(c.torso, torusGeo(r, 0.04), color, 0, y, 0.01, { r: [HALF, 0, 0] });
+  add(c.torso, coneGeo(0.15, 0.24, 3), color, 0, y - 0.12, -r - 0.02, { s: [1, 1, 0.28], r: [Math.PI - 0.22, 0, 0] });
+  add(c.torso, sphereGeo(), color, 0.19, y + 0.005, -0.15, { s: 0.05 });
 }
 
 // Big head, round body, short legs: everybody is about 1.75 m tall so both teams are equally easy to hit.
@@ -17,114 +35,163 @@ function skeleton(o) {
   const root = new T.Group(); // turns left/right
   const pose = group(root); // tips over when splatted out
   const upper = group(pose); // everything above the legs (drops when crouching)
-  const legs = [], arms = [];
+  const legs = [], arms = [], lr = o.legR || 0.1, legY = 0.36;
   for (const s of [-1, 1]) {
-    const leg = group(pose, s * 0.17, 0.44, 0);
-    add(leg, capsuleGeo(0.1, 0.2), o.leg, 0, -0.2, 0);
-    add(leg, sphereGeo(), o.foot, 0, -0.39, -0.05, { s: [0.13, 0.08, 0.19] });
+    const leg = group(pose, s * 0.17, legY, 0);
+    add(leg, capsuleGeo(lr, 0.12), o.leg, 0, -0.14, 0);
+    add(leg, sphereGeo(), o.foot, 0, -0.3, -0.045, { s: o.footS || [0.135, 0.09, 0.19] });
     legs.push(leg);
   }
-  const torso = group(upper, 0, 0.86, 0);
-  torso.scale.setScalar(1.14);
+  const torso = group(upper, 0, 0.76, 0);
+  torso.scale.setScalar(1.12);
   add(torso, sphereGeo(), o.body, 0, 0, 0, { s: [o.bw, o.bh, o.bd] });
-  const head = group(upper, 0, 1.42, 0);
-  head.scale.setScalar(1.26);
+  add(torso, sphereGeo(), o.body, 0, 0.2, 0, { s: [o.bw * 0.78, o.bh * 0.62, o.bd * 0.8] });
+  if (o.belly) add(torso, sphereGeo(), o.belly, 0, -0.05, -o.bd * 0.3, { s: [o.bw * 0.72, o.bh * 0.76, o.bd * 0.76] });
+  const head = group(upper, 0, 1.34, 0);
+  head.scale.setScalar(1.45);
   add(head, sphereGeo(), o.head, 0, 0, 0, { s: o.hr });
   for (const s of [-1, 1]) {
-    const arm = group(upper, s * (o.bw * 1.14 + 0.03), 1.06, 0);
-    add(arm, capsuleGeo(0.085, 0.2), o.arm, 0, -0.17, 0);
-    add(arm, sphereGeo(), o.hand, 0, -0.37, 0, { s: 0.105 });
+    const arm = group(upper, s * (o.bw * 1.12 - 0.02), 1.0, 0);
+    add(arm, capsuleGeo(0.085, 0.17), o.arm, 0, -0.15, 0);
+    add(arm, sphereGeo(), o.hand, 0, -0.34, 0, { s: 0.11 });
     arms.push(arm);
   }
-  const mount = group(arms[1], 0, -0.4, 0);
+  const mount = group(arms[1], 0, -0.37, 0);
   mount.rotation.x = -HALF;
-  const marker = add(root, coneGeo(0.13, 0.26, 10), new T.MeshBasicMaterial({ color: 0x6dff7a }), 0, 2.3, 0, { r: [Math.PI, 0, 0], cast: false });
+  const marker = add(root, coneGeo(0.13, 0.26, 10), new T.MeshBasicMaterial({ color: 0x6dff7a }), 0, 2.38, 0, { r: [Math.PI, 0, 0], cast: false });
   marker.visible = false;
-  return { root, pose, upper, legs, arms, torso, head, mount, marker, splats: [], phase: Math.random() * 6, flop: 0 };
+  return { root, pose, upper, legs, arms, torso, head, mount, marker, legY, splats: [], phase: Math.random() * 6, flop: 0 };
 }
 
 const BUILD = {
   chicken() {
-    const c = skeleton({ body: 0xffffff, head: 0xffffff, leg: 0xf5a623, foot: 0xf5a623, arm: 0xffffff, hand: 0xfff3d6, bw: 0.3, bh: 0.4, bd: 0.3, hr: 0.23 });
-    eyes(c.head, 0.04, -0.19, 0.1);
-    add(c.head, coneGeo(0.075, 0.2, 10), 0xffa62b, 0, -0.03, -0.27, { r: [-HALF, 0, 0] });
-    for (const [z, s] of [[-0.09, 0.07], [0.01, 0.085], [0.11, 0.07]]) add(c.head, sphereGeo(), 0xe5412d, 0, 0.23, z, { s });
-    add(c.head, sphereGeo(), 0xe5412d, 0, -0.15, -0.2, { s: [0.045, 0.07, 0.045] });
-    add(c.torso, coneGeo(0.15, 0.36, 8), 0xffffff, 0, 0.12, 0.3, { r: [0.9, 0, 0] });
+    const hr = 0.24;
+    const c = skeleton({ body: 0xffffff, head: 0xffffff, leg: 0xf5a623, foot: 0xf5a623, arm: 0xffffff, hand: 0xfff0cf, bw: 0.33, bh: 0.4, bd: 0.32, hr, belly: 0xfff6e2, legR: 0.055, footS: [0.15, 0.05, 0.2] });
+    eyes(c.head, hr, 0.05, 0.1, 0.07, 0x3a2616, null);
+    add(c.head, coneGeo(0.085, 0.2, 12), 0xffb02e, 0, -0.02, -0.29, { r: [-HALF, 0, 0], s: [1, 1, 0.7] });
+    add(c.head, coneGeo(0.06, 0.13, 12), 0xf08a24, 0, -0.065, -0.25, { r: [-HALF, 0, 0], s: [1, 1, 0.5] });
+    for (const [z, y, s] of [[-0.11, 0.24, 0.075], [-0.01, 0.275, 0.095], [0.1, 0.25, 0.08]]) add(c.head, sphereGeo(), 0xe5412d, 0, y, z, { s: [s * 0.6, s, s] });
+    for (const s of [-1, 1]) add(c.head, sphereGeo(), 0xe5412d, s * 0.035, -0.17, -0.19, { s: [0.035, 0.07, 0.04] });
+    cheeks(c.head, hr, -0.03, 0.16, 0xffc9cf, 0.05);
+    for (const [x, rz] of [[0, 0], [-0.1, 0.5], [0.1, -0.5]]) add(c.torso, coneGeo(0.11, 0.42, 8), 0xffffff, x, 0.14, 0.31, { r: [0.95, 0, rz], s: [1, 1, 0.4] });
+    for (const a of c.arms) add(a, sphereGeo(), 0xffffff, 0, -0.2, 0.03, { s: [0.06, 0.2, 0.15] });
     return c;
   },
   pig() {
-    const c = skeleton({ body: 0xf7a8b8, head: 0xf7a8b8, leg: 0xf7a8b8, foot: 0xd8798f, arm: 0xf7a8b8, hand: 0xd8798f, bw: 0.34, bh: 0.4, bd: 0.32, hr: 0.26 });
-    eyes(c.head, 0.07, -0.21, 0.11);
-    add(c.head, cylGeo(0.11, 0.12, 0.1, 14), 0xee8fa3, 0, -0.04, -0.26, { r: [HALF, 0, 0] });
+    const hr = 0.26;
+    const c = skeleton({ body: 0xf6a5b5, head: 0xf6a5b5, leg: 0xf6a5b5, foot: 0x9c4a5c, arm: 0xf6a5b5, hand: 0x9c4a5c, bw: 0.36, bh: 0.4, bd: 0.34, hr, belly: 0xfcd6dc });
+    eyes(c.head, hr, 0.075, 0.108, 0.075, 0x6b3f1d, 0xb86a7c);
+    const sz = front(hr, 0, -0.045) - 0.025;
+    add(c.head, cylGeo(0.105, 0.118, 0.1, 18), 0xf08ea3, 0, -0.045, sz, { r: [HALF, 0, 0], s: [1.12, 1, 0.9] });
     for (const s of [-1, 1]) {
-      add(c.head, sphereGeo(), 0xb85c74, s * 0.04, -0.04, -0.315, { s: 0.022, cast: false });
-      add(c.head, coneGeo(0.1, 0.18, 8), 0xee8fa3, s * 0.17, 0.22, -0.02, { r: [-0.5, 0, -s * 0.5] });
+      add(c.head, sphereGeo(), 0xb85c74, s * 0.042, -0.04, sz - 0.05, { s: [0.022, 0.03, 0.015], cast: false });
+      add(c.head, coneGeo(0.12, 0.22, 10), 0xf6a5b5, s * 0.19, 0.2, -0.03, { s: [1, 1, 0.42], r: [-0.75, 0, -s * 0.95] });
+      add(c.head, coneGeo(0.075, 0.15, 10), 0xf58aa0, s * 0.195, 0.19, -0.045, { s: [1, 1, 0.3], r: [-0.75, 0, -s * 0.95], cast: false });
     }
-    add(c.torso, torusGeo(0.06, 0.022), 0xee8fa3, 0, -0.05, 0.33, { r: [0, HALF, 0] });
-    add(c.torso, sphereGeo(), 0xfcc5d0, 0, -0.04, -0.1, { s: [0.26, 0.3, 0.25] });
+    cheeks(c.head, hr, -0.04, 0.175, 0xf58aa0);
+    smile(c.head, -0.13, front(hr, 0, -0.13) - 0.004, 0.07, 0xb85c74);
+    add(c.torso, torusGeo(0.06, 0.022), 0xf08ea3, 0, -0.06, 0.34, { r: [0, HALF, 0] });
+    scarf(c, 0xe2443a);
     return c;
   },
   cow() {
-    const c = skeleton({ body: 0xffffff, head: 0xffffff, leg: 0xffffff, foot: 0x3b3b40, arm: 0xffffff, hand: 0x3b3b40, bw: 0.34, bh: 0.42, bd: 0.31, hr: 0.25 });
-    eyes(c.head, 0.07, -0.2, 0.11);
-    add(c.head, sphereGeo(), 0xf7b7c2, 0, -0.09, -0.19, { s: [0.17, 0.12, 0.13] });
-    add(c.head, sphereGeo(), 0x33343a, 0.13, 0.1, -0.13, { s: [0.11, 0.12, 0.1] });
+    const hr = 0.26;
+    const c = skeleton({ body: 0xffffff, head: 0xffffff, leg: 0xffffff, foot: 0x2f3036, arm: 0xffffff, hand: 0x2f3036, bw: 0.36, bh: 0.42, bd: 0.33, hr, belly: 0xfff1ea });
+    eyes(c.head, hr, 0.085, 0.108, 0.072, 0x4a3320, 0x2f3036);
+    add(c.head, sphereGeo(), 0x2f3036, 0.15, 0.12, front(hr, 0.15, 0.12, 0.82), { s: [0.115, 0.13, 0.07] });
+    const mz = front(hr, 0, -0.1, 0.82);
+    add(c.head, sphereGeo(), 0xf7b7c2, 0, -0.1, mz, { s: [0.19, 0.125, 0.14] });
     for (const s of [-1, 1]) {
-      add(c.head, coneGeo(0.045, 0.16, 8), 0xf3e6c4, s * 0.13, 0.26, 0, { r: [0, 0, -s * 0.4] });
-      add(c.head, sphereGeo(), 0xffffff, s * 0.27, 0.1, 0, { s: [0.1, 0.055, 0.07] });
+      add(c.head, sphereGeo(), 0xc7798a, s * 0.07, -0.075, mz - 0.125, { s: [0.024, 0.03, 0.015], cast: false });
+      add(c.head, coneGeo(0.05, 0.17, 10), 0xf3e6c4, s * 0.14, 0.27, 0.0, { r: [0, 0, -s * 0.45] });
+      add(c.head, sphereGeo(), 0xffffff, s * 0.29, 0.11, 0.0, { s: [0.12, 0.06, 0.08], r: [0, 0, s * 0.25] });
+      add(c.head, sphereGeo(), 0xf7b7c2, s * 0.295, 0.105, -0.025, { s: [0.08, 0.035, 0.05], r: [0, 0, s * 0.25], cast: false });
     }
-    for (const [x, y, z, s] of [[0.2, 0.12, -0.16, 0.16], [-0.22, -0.1, 0.1, 0.18], [0.08, -0.16, 0.24, 0.14], [-0.14, 0.2, -0.18, 0.1]]) add(c.torso, sphereGeo(), 0x33343a, x, y, z, { s: [s, s, s * 0.75] });
+    smile(c.head, -0.125, mz - 0.128, 0.075, 0xc7798a);
+    add(c.head, sphereGeo(), 0xffffff, 0, 0.26, -0.04, { s: [0.07, 0.05, 0.07] });
+    for (const [x, y, z, s] of [[0.24, 0.1, -0.16, 0.17], [-0.26, -0.12, 0.08, 0.19], [0.1, -0.2, 0.25, 0.15], [-0.17, 0.2, -0.16, 0.11], [0.2, -0.05, 0.22, 0.12]]) add(c.torso, sphereGeo(), 0x2f3036, x, y, z, { s: [s, s, s * 0.7] });
+    add(c.torso, torusGeo(0.235, 0.03), 0x8f5a2e, 0, 0.21, 0.01, { r: [HALF, 0, 0] });
+    add(c.torso, cylGeo(0.055, 0.085, 0.11, 12), 0xffd24a, 0, 0.1, -0.27);
+    add(c.torso, sphereGeo(), 0xc9973a, 0, 0.035, -0.27, { s: 0.03 });
+    add(c.torso, cylGeo(0.018, 0.018, 0.3, 6), 0xffffff, 0, -0.12, 0.38, { r: [0.9, 0, 0] });
+    add(c.torso, sphereGeo(), 0x2f3036, 0, -0.24, 0.5, { s: 0.05 });
     return c;
   },
   sheep() {
-    const c = skeleton({ body: 0xfdf6e3, head: 0x4f443c, leg: 0x4f443c, foot: 0x2e2824, arm: 0x4f443c, hand: 0x2e2824, bw: 0.33, bh: 0.4, bd: 0.32, hr: 0.21 });
-    eyes(c.head, 0.03, -0.17, 0.09);
-    for (const [x, y, z, s] of [[0.2, 0.18, 0.1, 0.2], [-0.2, 0.2, 0.08, 0.2], [0.22, -0.12, -0.05, 0.2], [-0.22, -0.14, -0.02, 0.2], [0, 0.1, 0.24, 0.22], [0, -0.16, 0.2, 0.2], [0, 0.26, -0.08, 0.2], [0.1, -0.05, -0.24, 0.17], [-0.1, 0.05, -0.25, 0.17]]) add(c.torso, sphereGeo(), 0xfdf6e3, x, y, z, { s });
-    for (const [x, z, s] of [[0, -0.02, 0.15], [0.1, 0.06, 0.11], [-0.1, 0.06, 0.11]]) add(c.head, sphereGeo(), 0xfdf6e3, x, 0.19, z, { s });
-    for (const s of [-1, 1]) add(c.head, sphereGeo(), 0x4f443c, s * 0.23, 0.02, 0.02, { s: [0.1, 0.05, 0.065], r: [0, 0, -s * 0.4] });
+    const hr = 0.225;
+    const c = skeleton({ body: 0xfdf6e3, head: 0x4a4038, leg: 0x4a4038, foot: 0x2a2420, arm: 0x4a4038, hand: 0x2a2420, bw: 0.34, bh: 0.4, bd: 0.33, hr });
+    eyes(c.head, hr, 0.04, 0.095, 0.07, 0x6b3f1d, null);
+    add(c.head, sphereGeo(), 0x655a50, 0, -0.07, front(hr, 0, -0.07, 0.86), { s: [0.11, 0.085, 0.09] });
+    add(c.head, sphereGeo(), 0xe79aa6, 0, -0.05, front(hr, 0, -0.05) - 0.062, { s: [0.035, 0.024, 0.02], cast: false });
+    smile(c.head, -0.085, front(hr, 0, -0.085) - 0.058, 0.045, 0x2a2420);
+    for (const [x, y, z, s] of [[0.22, 0.2, 0.1, 0.21], [-0.22, 0.22, 0.08, 0.21], [0.25, -0.1, -0.05, 0.21], [-0.25, -0.12, -0.02, 0.21], [0, 0.1, 0.26, 0.23], [0, -0.16, 0.22, 0.21], [0, 0.3, -0.06, 0.21], [0.12, -0.02, -0.26, 0.18], [-0.12, 0.06, -0.27, 0.18], [0.14, -0.24, -0.16, 0.17], [-0.14, -0.26, -0.12, 0.17], [0.0, -0.3, 0.05, 0.2]]) add(c.torso, sphereGeo(), 0xfdf6e3, x, y, z, { s });
+    for (const [x, y, z, s] of [[0, 0.2, -0.05, 0.15], [0.11, 0.17, 0.03, 0.12], [-0.11, 0.17, 0.03, 0.12], [0, 0.13, 0.14, 0.14], [0.06, 0.22, 0.06, 0.1], [-0.06, 0.22, 0.06, 0.1]]) add(c.head, sphereGeo(), 0xfdf6e3, x, y, z, { s });
+    for (const s of [-1, 1]) add(c.head, sphereGeo(), 0x4a4038, s * 0.25, 0.0, 0.02, { s: [0.11, 0.05, 0.07], r: [0, 0, -s * 0.5] });
+    scarf(c, 0x4f9f42, 0.25, 0.2);
     return c;
   },
   goat() {
-    const c = skeleton({ body: 0xdcbc8e, head: 0xdcbc8e, leg: 0xdcbc8e, foot: 0x4a3a2c, arm: 0xdcbc8e, hand: 0x4a3a2c, bw: 0.31, bh: 0.41, bd: 0.3, hr: 0.23 });
-    eyes(c.head, 0.06, -0.19, 0.1);
-    add(c.head, sphereGeo(), 0xf3e2c4, 0, -0.07, -0.18, { s: [0.13, 0.11, 0.13] });
-    add(c.head, coneGeo(0.06, 0.2, 8), 0xffffff, 0, -0.26, -0.14, { r: [Math.PI, 0, 0] });
+    const hr = 0.24;
+    const c = skeleton({ body: 0xd9b88a, head: 0xd9b88a, leg: 0xd9b88a, foot: 0x4a3a2c, arm: 0xd9b88a, hand: 0x4a3a2c, bw: 0.34, bh: 0.41, bd: 0.32, hr, belly: 0xf3e2c4 });
+    eyes(c.head, hr, 0.07, 0.102, 0.072, 0xc9973a, 0x8a6a45);
+    const mz = front(hr, 0, -0.08, 0.86);
+    add(c.head, sphereGeo(), 0xf3e2c4, 0, -0.08, mz, { s: [0.14, 0.11, 0.12] });
+    add(c.head, sphereGeo(), 0x6b4a3a, 0, -0.045, mz - 0.11, { s: [0.04, 0.026, 0.02], cast: false });
+    smile(c.head, -0.09, mz - 0.105, 0.05, 0x6b4a3a);
+    add(c.head, coneGeo(0.06, 0.2, 8), 0xffffff, 0, -0.27, -0.15, { r: [Math.PI, 0, 0], s: [1, 1, 0.7] });
     for (const s of [-1, 1]) {
-      add(c.head, coneGeo(0.045, 0.26, 8), 0x8d8478, s * 0.1, 0.27, 0.06, { r: [0.6, 0, -s * 0.15] });
-      add(c.head, sphereGeo(), 0xdcbc8e, s * 0.26, 0.04, 0.02, { s: [0.11, 0.045, 0.06], r: [0, 0, s * 0.5] });
+      add(c.head, coneGeo(0.05, 0.2, 8), 0x8d8478, s * 0.1, 0.27, 0.03, { r: [0.5, 0, -s * 0.18] });
+      add(c.head, coneGeo(0.035, 0.14, 8), 0x8d8478, s * 0.125, 0.36, 0.11, { r: [1.25, 0, -s * 0.2] });
+      add(c.head, sphereGeo(), 0xd9b88a, s * 0.28, 0.06, 0.02, { s: [0.13, 0.045, 0.07], r: [0, 0, s * 0.35] });
+      add(c.head, sphereGeo(), 0xf2c5b0, s * 0.285, 0.055, -0.01, { s: [0.085, 0.025, 0.04], r: [0, 0, s * 0.35], cast: false });
     }
+    cheeks(c.head, hr, -0.02, 0.17, 0xeeb090, 0.05);
+    add(c.torso, sphereGeo(), 0xd9b88a, 0, -0.05, 0.35, { s: [0.05, 0.05, 0.09] });
+    scarf(c, 0x9b6fd0);
     return c;
   },
   farmer(look = 0) {
     const L = [
-      { shirt: 0xd9463e, skin: 0xf2c9a0, hat: 'straw', extra: 'moustache' },
-      { shirt: 0xf2c84b, skin: 0xf7d7b5, hat: 'bandana', extra: 'ponytail' },
-      { shirt: 0x58a55c, skin: 0xc98f62, hat: 'cap', extra: 'beard' },
-      { shirt: 0xff9a3c, skin: 0x9a6b45, hat: 'straw', extra: null },
-      { shirt: 0x9b6fd0, skin: 0xf2c9a0, hat: 'sun', extra: 'bun' },
+      { shirt: 0xd9463e, skin: 0xf2c9a0, hair: 0x6b4426, hat: 'straw', extra: 'moustache' },
+      { shirt: 0xf2c84b, skin: 0xf7d7b5, hair: 0xd9783a, hat: 'bandana', extra: 'ponytail' },
+      { shirt: 0x58a55c, skin: 0xc98f62, hair: 0xd9d9d9, hat: 'cap', extra: 'beard' },
+      { shirt: 0xff9a3c, skin: 0x9a6b45, hair: 0x2e2420, hat: 'straw', extra: 'curls' },
+      { shirt: 0x9b6fd0, skin: 0xf2c9a0, hair: 0xf0f0f0, hat: 'sun', extra: 'bun' },
     ][look % 5];
-    const c = skeleton({ body: 0x3d6fb5, head: L.skin, leg: 0x3d6fb5, foot: 0x6b4426, arm: L.shirt, hand: L.skin, bw: 0.29, bh: 0.41, bd: 0.25, hr: 0.22 });
-    eyes(c.head, 0.03, -0.185, 0.085, 0.052);
-    add(c.head, sphereGeo(), L.skin, 0, -0.03, -0.215, { s: 0.045 });
-    add(c.torso, rboxGeo(0.34, 0.3, 0.08, 0.04), 0x4f84cf, 0, 0.08, -0.215);
-    for (const s of [-1, 1]) add(c.torso, sphereGeo(), 0xffd24a, s * 0.13, 0.19, -0.26, { s: 0.028, cast: false });
-    add(c.torso, sphereGeo(), L.shirt, 0, 0.26, 0, { s: [0.27, 0.2, 0.23] });
-    if (L.hat === 'straw' || L.hat === 'sun') {
-      const wide = L.hat === 'sun' ? 0.5 : 0.42;
-      add(c.head, cylGeo(wide, wide, 0.035, 20), 0xf2cc5c, 0, 0.14, 0);
-      add(c.head, cylGeo(0.19, 0.22, 0.17, 16), 0xf2cc5c, 0, 0.23, 0);
-      add(c.head, cylGeo(0.225, 0.225, 0.05, 16), L.hat === 'sun' ? 0xff6f91 : 0x9b5a3c, 0, 0.17, 0);
-    } else if (L.hat === 'cap') {
-      add(c.head, sphereGeo(), 0x2f6fb0, 0, 0.08, 0.01, { s: [0.235, 0.17, 0.235] });
-      add(c.head, cylGeo(0.16, 0.16, 0.03, 14), 0x2f6fb0, 0, 0.1, -0.22, { s: [1, 1, 0.9] });
-    } else {
-      add(c.head, sphereGeo(), 0xe2443a, 0, 0.09, 0.02, { s: [0.232, 0.15, 0.232] });
+    const hr = 0.235, blush = look === 2 || look === 3 ? 0xc0714f : 0xf2a08c;
+    const c = skeleton({ body: 0x3d6fb5, head: L.skin, leg: 0x3d6fb5, foot: 0x6b4426, arm: L.shirt, hand: L.skin, bw: 0.32, bh: 0.4, bd: 0.28, hr, footS: [0.14, 0.1, 0.2] });
+    eyes(c.head, hr, 0.03, 0.082, 0.047, look === 1 ? 0x3f7a4a : 0x5a3a22, L.hair === 0xf0f0f0 || L.hair === 0xd9d9d9 ? 0x9a9a9a : L.hair);
+    add(c.head, sphereGeo(), L.skin, 0, -0.035, front(hr, 0, -0.035) - 0.02, { s: [0.045, 0.04, 0.045] });
+    cheeks(c.head, hr, -0.05, 0.14, blush, 0.05);
+    for (const s of [-1, 1]) add(c.head, sphereGeo(), L.skin, s * 0.235, 0.0, 0.02, { s: [0.035, 0.06, 0.05] });
+    if (L.extra !== 'moustache' && L.extra !== 'beard') smile(c.head, -0.095, front(hr, 0, -0.095) - 0.004, 0.06);
+    // shirt, bib, straps, buttons, pocket
+    add(c.torso, sphereGeo(), L.shirt, 0, 0.23, 0, { s: [0.275, 0.22, 0.245] });
+    add(c.torso, rboxGeo(0.34, 0.3, 0.09, 0.045), 0x4f84cf, 0, 0.07, -0.235);
+    add(c.torso, rboxGeo(0.16, 0.1, 0.03, 0.02), 0x3d6fb5, 0, 0.07, -0.285);
+    for (const s of [-1, 1]) {
+      add(c.torso, rboxGeo(0.06, 0.32, 0.04, 0.02), 0x4f84cf, s * 0.13, 0.27, -0.2, { r: [0.5, 0, 0] });
+      add(c.torso, sphereGeo(), 0xffd24a, s * 0.13, 0.19, -0.285, { s: 0.03, cast: false });
     }
-    if (L.extra === 'moustache') add(c.head, sphereGeo(), 0x6b4426, 0, -0.085, -0.2, { s: [0.1, 0.03, 0.04] });
-    if (L.extra === 'beard') add(c.head, sphereGeo(), 0xd9d9d9, 0, -0.13, -0.13, { s: [0.15, 0.12, 0.11] });
-    if (L.extra === 'ponytail') add(c.head, sphereGeo(), 0xd9783a, 0, -0.02, 0.24, { s: [0.09, 0.2, 0.09], r: [0.5, 0, 0] });
-    if (L.extra === 'bun') add(c.head, sphereGeo(), 0xf0f0f0, 0, 0.0, 0.22, { s: 0.11 });
+    if (L.hat === 'straw' || L.hat === 'sun') {
+      const wide = L.hat === 'sun' ? 0.47 : 0.4;
+      add(c.head, cylGeo(wide, wide + 0.02, 0.03, 22), 0xf2cc5c, 0, 0.15, 0.0);
+      add(c.head, cylGeo(0.17, 0.215, 0.17, 18), 0xf2cc5c, 0, 0.24, 0.0);
+      add(c.head, sphereGeo(), 0xf2cc5c, 0, 0.32, 0.0, { s: [0.17, 0.05, 0.17] });
+      add(c.head, cylGeo(0.222, 0.222, 0.05, 18), L.hat === 'sun' ? 0xff6f91 : 0xb5452f, 0, 0.18, 0.0);
+    } else if (L.hat === 'cap') {
+      add(c.head, sphereGeo(), 0x2f6fb0, 0, 0.085, 0.01, { s: [0.24, 0.175, 0.24] });
+      add(c.head, cylGeo(0.17, 0.17, 0.03, 16), 0x2f6fb0, 0, 0.1, -0.22, { s: [1, 1, 0.85] });
+      add(c.head, sphereGeo(), 0xffffff, 0, 0.26, 0.01, { s: 0.03 });
+    } else {
+      add(c.head, sphereGeo(), 0xe2443a, 0, 0.09, 0.02, { s: [0.24, 0.16, 0.24] });
+      add(c.head, sphereGeo(), 0xe2443a, 0.2, 0.1, 0.14, { s: [0.06, 0.05, 0.06] });
+    }
+    if (L.extra === 'moustache') { for (const s of [-1, 1]) add(c.head, sphereGeo(), L.hair, s * 0.045, -0.085, front(hr, 0, -0.085) - 0.012, { s: [0.06, 0.028, 0.03], r: [0, 0, -s * 0.3] }); add(c.head, sphereGeo(), L.hair, 0, 0.02, 0.19, { s: [0.2, 0.12, 0.08] }); }
+    if (L.extra === 'beard') { add(c.head, sphereGeo(), L.hair, 0, -0.14, front(hr, 0, -0.14, 0.75), { s: [0.16, 0.12, 0.11] }); for (const s of [-1, 1]) add(c.head, sphereGeo(), L.hair, s * 0.05, -0.08, front(hr, 0, -0.08) - 0.01, { s: [0.06, 0.025, 0.03], r: [0, 0, -s * 0.3] }); }
+    if (L.extra === 'ponytail') { add(c.head, sphereGeo(), L.hair, 0, -0.03, 0.25, { s: [0.09, 0.21, 0.09], r: [0.55, 0, 0] }); for (const s of [-1, 1]) add(c.head, sphereGeo(), L.hair, s * 0.13, 0.12, -0.17, { s: [0.09, 0.06, 0.06] }); }
+    if (L.extra === 'curls') for (const [x, z] of [[-0.19, -0.06], [0.19, -0.06], [-0.21, 0.08], [0.21, 0.08], [0, 0.22], [-0.12, 0.19], [0.12, 0.19]]) add(c.head, sphereGeo(), L.hair, x, 0.04, z, { s: 0.065 });
+    if (L.extra === 'bun') { add(c.head, sphereGeo(), L.hair, 0, 0.0, 0.23, { s: 0.11 }); for (const s of [-1, 1]) add(c.head, sphereGeo(), L.hair, s * 0.2, 0.06, -0.02, { s: [0.06, 0.09, 0.1] }); }
     return c;
   },
 };
@@ -164,9 +231,9 @@ export function animateCharacter(c, dt, speed, pitch, crouched, alive) {
     return;
   }
   c.legs[0].rotation.x = sw; c.legs[1].rotation.x = -sw;
-  const drop = crouched ? 0.32 : 0;
+  const drop = crouched ? 0.28 : 0;
   c.upper.position.y += (-drop + Math.abs(Math.sin(c.phase)) * 0.045 * k - c.upper.position.y) * Math.min(1, dt * 14);
-  for (const leg of c.legs) { leg.position.y = 0.44 - drop * 0.75; leg.scale.y = crouched ? 0.45 : 1; }
+  for (const leg of c.legs) { leg.position.y = c.legY - drop * 0.6; leg.scale.y = crouched ? 0.5 : 1; }
   c.arms[1].rotation.x = HALF + pitch;
   c.arms[0].rotation.x = HALF + pitch - 0.12;
   c.arms[0].rotation.z = -0.5;
@@ -258,7 +325,7 @@ export function buildPumpkin() {
 
 // ---------- generated 3D models (made by tools/chars/bake.mjs) ----------
 // Which characters have one. Anyone not listed keeps the hand-built body.
-export const MODELS = {};
+export const MODELS = { chicken: 'chicken', pig: 'pig', cow: 'cow', sheep: 'sheep', goat: 'goat', farmer0: 'farmer0', farmer1: 'farmer1', farmer2: 'farmer2', farmer3: 'farmer3', farmer4: 'farmer4' };
 export const modelOptions = { enabled: true };
 const modelCache = new Map();
 function unpack(text, Type) {
@@ -274,16 +341,27 @@ function loadModel(name) {
       for (let i = 0; i < n * 3; i++) pos[i] = (p16[i] / 32767) * 2;
       g.setAttribute('position', new T.BufferAttribute(pos, 3));
       g.setAttribute('normal', new T.BufferAttribute(unpack(d.nrm, Int8Array), 3, true));
-      g.setAttribute('uv', new T.BufferAttribute(unpack(d.uv, Uint16Array), 2, true));
+      if (d.uv) g.setAttribute('uv', new T.BufferAttribute(unpack(d.uv, Uint16Array), 2, true));
+      if (d.col) {
+        // colours were chosen as ordinary screen colours; convert them to what the lighting maths expects
+        const c8 = unpack(d.col, Uint8Array), col = new Float32Array(n * 3), tmp = new T.Color();
+        for (let i = 0; i < n; i++) { tmp.setRGB(c8[i * 3] / 255, c8[i * 3 + 1] / 255, c8[i * 3 + 2] / 255, T.SRGBColorSpace); col[i * 3] = tmp.r; col[i * 3 + 1] = tmp.g; col[i * 3 + 2] = tmp.b; }
+        g.setAttribute('color', new T.BufferAttribute(col, 3));
+      }
       g.setIndex(new T.BufferAttribute(unpack(d.idx, d.idxBytes === 2 ? Uint16Array : Uint32Array), 1));
       const bi = unpack(d.bi, Uint8Array), bw = unpack(d.bw, Uint8Array), si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
       for (let i = 0; i < n; i++) { si[i * 4] = bi[i * 2]; si[i * 4 + 1] = bi[i * 2 + 1]; sw[i * 4] = bw[i * 2] / 255; sw[i * 4 + 1] = bw[i * 2 + 1] / 255; }
       g.setAttribute('skinIndex', new T.BufferAttribute(si, 4));
       g.setAttribute('skinWeight', new T.BufferAttribute(sw, 4));
       g.computeBoundingSphere(); g.boundingSphere.radius = 2.2;
-      const tex = new T.TextureLoader().load(`assets/chars/${name}.jpg`);
-      tex.encoding = T.sRGBEncoding; tex.flipY = false; tex.anisotropy = 4;
-      return { geometry: g, material: new T.MeshLambertMaterial({ map: tex }), rig: d.rig };
+      let material;
+      if (d.col) material = new T.MeshLambertMaterial({ vertexColors: true });
+      else {
+        const tex = new T.TextureLoader().load(`assets/chars/${name}.jpg`);
+        tex.encoding = T.sRGBEncoding; tex.flipY = false; tex.anisotropy = 4;
+        material = new T.MeshLambertMaterial({ map: tex });
+      }
+      return { geometry: g, material, rig: d.rig };
     }));
   }
   return modelCache.get(name);
