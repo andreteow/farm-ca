@@ -47,7 +47,8 @@ writeFileSync('dist/index.html', `<!doctype html>
 <meta property="og:title" content="Harvest Standoff">
 <meta property="og:description" content="${about}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="assets/ui/share.jpg">
+<meta property="og:url" content="https://harvest-standoff.vercel.app/">
+<meta property="og:image" content="https://harvest-standoff.vercel.app/assets/ui/share.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/ui/favicon.png">
 <style>html,body{margin:0}[hidden]{display:none!important}</style>
