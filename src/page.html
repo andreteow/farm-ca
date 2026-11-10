@@ -1,0 +1,216 @@
+<title>Harvest Standoff</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: one full-screen farm view; menus are "sticker" panels (thick outline, hard offset shadow) floating over it. */
+:root {
+  color-scheme: light;
+  --sky: #8fd0fb;
+  --cream: #fff6df;
+  --ink: #3a2616;
+  --barn: #d9463e;
+  --hay: #f6cf58;
+  --leaf: #4f9f42;
+  --herd: #f08a24;
+  --hands: #3f8fd9;
+  --clean: #58c4f5;
+  --shade: rgba(58, 38, 22, 0.28);
+  --display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --body: "Nunito", "Trebuchet MS", "Segoe UI", sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--sky); color: var(--ink); font-family: var(--body); font-weight: 600; font-size: 16px; overflow: hidden; }
+#game { position: relative; height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none; }
+#view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--hands); outline-offset: 3px; }
+
+/* ---------- menus ---------- */
+.overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow-y: auto;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(143, 208, 251, 0.25);
+}
+.panel {
+  width: min(760px, 100%); margin: auto; background: var(--cream); border: 4px solid var(--ink); border-radius: 26px;
+  box-shadow: 0 8px 0 var(--ink); padding: 22px 26px 24px; display: flex; flex-direction: column; gap: 16px;
+}
+.panel.small { width: min(440px, 100%); text-align: center; align-items: center; }
+.eyebrow { margin: 0; font-weight: 800; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leaf); }
+h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 0.95; text-wrap: balance; }
+h1 { font-size: clamp(44px, 9vw, 76px); color: var(--barn); text-shadow: 0 4px 0 var(--ink); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; letter-spacing: 0.01em; }
+h1 span { color: var(--hay); }
+h2 { font-size: 40px; color: var(--barn); }
+.tag { margin: 6px 0 0; font-size: 17px; max-width: 46ch; }
+.title { display: flex; flex-direction: column; gap: 6px; }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.side {
+  display: grid; grid-template-columns: 96px 1fr; gap: 4px 14px; align-items: center; text-align: left; min-width: 0;
+  background: #fff; border: 4px solid var(--ink); border-radius: 20px; padding: 12px 14px; box-shadow: 0 5px 0 var(--ink);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.side img { grid-row: span 2; width: 96px; height: 96px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
+.side-name { font-family: var(--display); font-size: 26px; align-self: end; }
+.side-job { font-size: 14px; line-height: 1.3; align-self: start; }
+.side[data-team="herd"] .side-name { color: #c9650c; }
+.side[data-team="hands"] .side-name { color: #2c6fb3; }
+.side[aria-checked="true"] { background: var(--hay); transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.seg { display: flex; border: 4px solid var(--ink); border-radius: 16px; overflow: hidden; background: #fff; }
+.seg button { border: 0; background: transparent; padding: 10px 16px; font-weight: 800; }
+.seg button + button { border-left: 3px solid var(--ink); }
+.seg button[aria-checked="true"] { background: var(--leaf); color: #fff; }
+.go {
+  font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
+  border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
+}
+.go:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.go.alt { background: var(--hands); font-size: 20px; padding: 8px 22px; }
+.keys { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; }
+.keys li { display: flex; align-items: center; gap: 6px; }
+kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #fff; border: 2px solid var(--ink); border-bottom-width: 4px; border-radius: 8px; padding: 2px 7px; }
+.note { margin: 0; font-size: 14px; background: var(--hay); border: 3px solid var(--ink); border-radius: 12px; padding: 8px 12px; }
+.slider { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; }
+.slider input { accent-color: var(--barn); width: 150px; }
+.btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.panel.small p { margin: 0; max-width: 34ch; }
+
+/* ---------- in-game display ---------- */
+#hud { position: absolute; inset: 0; pointer-events: none; font-weight: 800; }
+.pill { background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 4px 0 var(--shade); }
+#top { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; gap: 0; overflow: hidden; }
+.team { display: flex; align-items: center; gap: 10px; padding: 6px 14px; }
+.team .score { font-family: var(--display); font-size: 30px; line-height: 1; min-width: 20px; text-align: center; }
+.team .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.team.herd { color: #b95a08; } .team.hands { color: #2c6fb3; flex-direction: row-reverse; }
+.pips { display: flex; gap: 4px; }
+.pips i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); background: currentColor; }
+.pips i.off { background: transparent; opacity: 0.35; }
+#timer { font-family: var(--display); font-size: 28px; padding: 6px 16px; background: var(--ink); color: var(--cream); min-width: 92px; text-align: center; font-variant-numeric: tabular-nums; }
+#timer.low { color: #ffb0a8; }
+#radar { position: absolute; top: 12px; left: 12px; width: 136px; height: 136px; border-radius: 50%; border: 3px solid var(--ink); background: rgba(255, 246, 223, 0.82); box-shadow: 0 4px 0 var(--shade); }
+#feed { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 14px; }
+#feed div { background: rgba(255, 246, 223, 0.92); border: 2px solid var(--ink); border-radius: 10px; padding: 3px 9px; }
+#feed b.herd { color: #b95a08; } #feed b.hands { color: #2c6fb3; }
+.meter { position: absolute; bottom: 14px; padding: 10px 14px; min-width: 190px; display: grid; gap: 6px; }
+#hpbox { left: 14px; } #ammobox { right: 14px; text-align: right; }
+.meter .cap { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 12px; }
+.meter .num { font-family: var(--display); font-size: 22px; line-height: 0.8; font-variant-numeric: tabular-nums; }
+.bar { height: 12px; border: 2px solid var(--ink); border-radius: 8px; background: #fff; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--clean); transition: width 0.12s; }
+#ammo-fill { background: var(--hay); margin-left: auto; }
+#slots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; font-size: 13px; }
+#slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
+#slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
+#slots kbd { margin-right: 4px; }
+#cross { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+#cross i { position: absolute; background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; }
+#ch-t, #ch-b { width: 4px; height: 11px; left: -2px; } #ch-l, #ch-r { width: 11px; height: 4px; top: -2px; }
+#dot { width: 4px; height: 4px; left: -2px; top: -2px; border-radius: 50%; }
+#hitmark { position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; opacity: 0; transition: opacity 0.25s; font-family: var(--display); font-size: 34px; line-height: 36px; text-align: center; color: #fff; -webkit-text-stroke: 1.5px var(--ink); }
+#hitmark.head { color: var(--hay); }
+#hurt { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; background: radial-gradient(ellipse at center, transparent 52%, rgba(217, 70, 62, 0.6) 100%); }
+#hurt-arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; opacity: 0; transition: opacity 0.6s; }
+#hurt-arrow i { position: absolute; left: -22px; top: -140px; border: 22px solid transparent; border-bottom: 30px solid var(--barn); border-top: 0; filter: drop-shadow(0 0 2px var(--ink)); }
+#banner { position: absolute; left: 50%; top: 13%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
+#banner-title { font-family: var(--display); font-size: clamp(26px, 5vw, 44px); color: var(--barn); line-height: 1; }
+#banner-sub { font-size: 15px; margin-top: 4px; }
+#spectate { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); padding: 8px 16px; font-size: 14px; text-align: center; }
+#tip { position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%); padding: 6px 14px; font-size: 13px; text-align: center; }
+
+@media (max-width: 640px) {
+  .sides { grid-template-columns: 1fr; }
+  .panel { padding: 16px; border-radius: 20px; }
+  .row { justify-content: center; }
+  #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
+  .meter { min-width: 120px; padding: 6px 10px; }
+  .team .label, .pips { display: none; }
+}
+</style>
+
+<div id="game">
+  <canvas id="view" aria-label="The farm"></canvas>
+
+  <div id="hud" hidden>
+    <canvas id="radar" width="272" height="272"></canvas>
+    <div id="top" class="pill">
+      <div class="team herd"><span class="score" id="score-herd">0</span><span class="label">Herd</span><span class="pips" id="pips-herd"></span></div>
+      <div id="timer">1:40</div>
+      <div class="team hands"><span class="score" id="score-hands">0</span><span class="label">Hands</span><span class="pips" id="pips-hands"></span></div>
+    </div>
+    <div id="feed"></div>
+    <div id="hurt"></div>
+    <div id="hurt-arrow"><i></i></div>
+    <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
+    <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
+    <div id="tip" class="pill" hidden></div>
+    <div id="spectate" class="pill" hidden></div>
+    <div id="hpbox" class="pill meter"><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div data-id="squirter"><kbd>1</kbd>Squirter</div><div data-id="egg"><kbd>2</kbd>Egg Popper</div><div data-id="tomato"><kbd>3</kbd>Tomato Tosser</div></div>
+    <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
+  </div>
+
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <header class="title">
+        <p class="eyebrow">Sunnyside Farm · 5 against 5 · feel test</p>
+        <h1>Harvest <span>Standoff</span></h1>
+        <p class="tag">Pick a side, splat the other team, and be the first to win 5 rounds. Nobody gets hurt, just very messy.</p>
+      </header>
+      <div class="sides" role="radiogroup" aria-label="Choose your side">
+        <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
+          <img id="pic-herd" alt="" width="96" height="96">
+          <span class="side-name">The Herd</span>
+          <span class="side-job">The animals. Sneak in from the back pasture and splat every farmhand before time runs out.</span>
+        </button>
+        <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
+          <img id="pic-hands" alt="" width="96" height="96">
+          <span class="side-name">The Hands</span>
+          <span class="side-job">The farmhands. Guard the barn and the veggie garden until the clock hits zero.</span>
+        </button>
+      </div>
+      <div class="row">
+        <div class="seg" role="radiogroup" aria-label="How tough are the computer players">
+          <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
+          <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false">Medium</button>
+          <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+        </div>
+        <button id="play" class="go">Play</button>
+      </div>
+      <ul class="keys">
+        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
+        <li><kbd>Mouse</kbd> look, click to launch</li>
+        <li><kbd>Space</kbd> jump</li>
+        <li><kbd>Shift</kbd> tiptoe quietly</li>
+        <li><kbd>C</kbd> crouch</li>
+        <li><kbd>R</kbd> refill</li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> swap launcher</li>
+        <li><kbd>Esc</kbd> pause</li>
+      </ul>
+      <p class="note">Tip: stand still when you launch. Running makes your shots fly all over the place.</p>
+      <p class="note" id="touch-note" hidden>This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="panel small">
+      <h2>Paused</h2>
+      <p>The farm is frozen. Nothing moves until you come back.</p>
+      <label class="slider" for="sens">Mouse speed <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <div class="btns"><button id="resume" class="go">Keep playing</button><button id="quit" class="go alt">Leave match</button></div>
+    </div>
+  </div>
+
+  <div id="end" class="overlay" hidden>
+    <div class="panel small">
+      <h2 id="end-title">Match over</h2>
+      <p id="end-sub"></p>
+      <div class="btns"><button id="again" class="go">Play again</button><button id="to-menu" class="go alt">Switch sides</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
+<script>
+/*__BUNDLE__*/
+</script>
