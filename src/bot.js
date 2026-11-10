@@ -70,7 +70,7 @@ export class Bot {
       if (this.target !== best) {
         this.target = best; this.seenT = 0; this.errT = 0; this.g.onSpot(a, best);
         // a defender who sees someone coming may lob a mud balloon in their way
-        if (a.throws.mud && !this.usedMud && this.plan.role === 'defend' && bestD > 8 && bestD < 19) { this.usedMud = true; this.toss = { id: 'mud', x: best.pos.x + best.vel.x * 0.8, z: best.pos.z + best.vel.z * 0.8 }; }
+        if (a.throws.mud && !this.usedMud && (this.plan.role === 'defend' || this.g.mode === 'lts') && bestD > 8 && bestD < 19) { this.usedMud = true; this.toss = { id: 'mud', x: best.pos.x + best.vel.x * 0.8, z: best.pos.z + best.vel.z * 0.8 }; }
       }
       this.lastSeen = { x: best.pos.x, z: best.pos.z };
       this.g.report(a.team, best);
@@ -141,7 +141,7 @@ export class Bot {
     if (this.state === 'seek') {
       if (!this.path || this.pi >= this.path.length) {
         const tip = this.g.latestIntel(a.team);
-        const goal = tip || W.points[pick(['A', 'B', 'YARD', 'MID', attack ? 'HANDS' : 'HERD'])];
+        const goal = tip || W.points[pick(['A', 'B', 'YARD', 'MID', this.plan.enemyBase || (attack ? 'HANDS' : 'HERD')])];
         if (!this.goTo(goal.x + rand(-2, 2), goal.z + rand(-2, 2))) this.path = null;
       }
     }

@@ -25,6 +25,9 @@ VOICE = {
  "ann_ten": (ANN, "Ten seconds!"),
  "ann_victory": (ANN, "Victory! What a harvest!"),
  "ann_defeat": (ANN, "Better luck next harvest!"),
+ "ann_lts": (ANN, "Last team standing! Splat them all!"),
+ "ann_reveal": (ANN, "Nowhere left to hide!"),
+ "ann_draw": (ANN, "It's a draw!"),
  # the Herd
  "herd_go_1": (HERD, "Stampede! Go, go, go!"),
  "herd_go_2": (HERD2, "Hooves and feathers, move out!"),

@@ -3,7 +3,7 @@
 import { angDiff, yawTo, clamp, pick } from './util.js';
 import { AUDIO_PACK } from './audio-pack.js';
 
-const VOICE = ['ann_welcome', 'ann_go', 'ann_planted', 'ann_corked', 'ann_stink', 'ann_herd_win', 'ann_hands_win', 'ann_time', 'ann_half', 'ann_match_point', 'ann_ten', 'ann_victory', 'ann_defeat',
+const VOICE = ['ann_welcome', 'ann_go', 'ann_planted', 'ann_corked', 'ann_stink', 'ann_herd_win', 'ann_hands_win', 'ann_time', 'ann_half', 'ann_match_point', 'ann_ten', 'ann_victory', 'ann_defeat', 'ann_lts', 'ann_reveal', 'ann_draw',
   'noise_chicken', 'noise_pig', 'noise_cow', 'noise_sheep', 'noise_goat'];
 for (const t of ['herd', 'hands']) for (const k of ['go_1', 'go_2', 'spot_1', 'spot_2', 'planting', 'guard', 'dropped', 'got_it', 'hurt_1', 'hurt_2', 'out_1', 'out_2', 'nice', 'refill', 'to_a', 'to_b', 'corking', 'flour', 'rooster', 'mud']) VOICE.push(`${t}_${k}`);
 VOICE.push('hands_planted_a', 'hands_planted_b');

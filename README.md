@@ -37,6 +37,18 @@ node tests/play.cjs herd easy 6
 node tests/objective.cjs
 ```
 
+Last Team Standing (the arguments are side, level, rounds, map, mode):
+
+```bash
+node tests/play.cjs herd easy 6 mill lts
+```
+
+```bash
+node tests/lts.cjs
+```
+
+`tests/fair.cjs` plays even-sided rounds between computer players and counts how often each end of the map wins.
+
 ## Characters
 
 All ten characters are sculpted in Blender by script, with no manual modelling:
@@ -65,8 +77,9 @@ fonts are copied next to the game.
 
 ## Status
 
-Milestone 6: a second map (Applewood Mill, with a creek that is slow to wade through), on top of the over-the-shoulder view (V key), public deployment, Blender-sculpted characters, the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
+Milestone 7: a second game mode, Last Team Standing (no pumpkin: splat the whole other team; with 30 seconds left everyone
+still standing shows on the map; a dead-level time-up is a draw), on top of a second map (Applewood Mill, with a creek that is slow to wade through), the over-the-shoulder view (V key), public deployment, Blender-sculpted characters, the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
 corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated
 textures and menu art, and recorded voice lines, music and sound effects.
 
-Not built yet: the other three modes, online play.
+Not built yet: the Rescue and Harvest Capture modes, online play.

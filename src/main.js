@@ -1,6 +1,6 @@
 // Harvest Standoff: ties the farm, the characters, the rules and the screen together.
 import { sphereGeo } from './gfx.js';
-import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, THROWS, OBJ, ECON, DIFFICULTY, ROSTER, MOVE } from './config.js';
+import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, THROWS, OBJ, ECON, DIFFICULTY, ROSTER, MOVE, MODES } from './config.js';
 import { createThrowables } from './throwables.js';
 import { buildWorld, MAPS } from './world.js';
 import { buildNav } from './nav.js';
@@ -46,7 +46,9 @@ function boot() {
     viewYaw: 0, viewH: 600, intel: { herd: new Map(), hands: new Map() },
     pumpkin: { state: 'none', carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null },
   };
-  game.mapId = 'farm';
+  game.mapId = 'farm'; game.mode = 'pumpkin'; game.revealed = false;
+  try { const m = localStorage.getItem('hs-mode'); if (MODES[m]) game.mode = m; } catch (e) { /* default mode */ }
+  const lts = () => game.mode === 'lts';
   try { const m = localStorage.getItem('hs-map'); if (MAPS[m]) game.mapId = m; } catch (e) { /* default map */ }
   game.world = buildWorld(scene, game.mapId);
   game.nav = buildNav(game.world);
@@ -118,9 +120,10 @@ function boot() {
     const g = GADGETS[it.id];
     let state = 'ok';
     if (it.kind === 'gadget' ? a.primary === it.id : it.kind === 'throw' ? a.throws[it.id] > 0 : it.id === 'overalls' ? a.armor >= 100 : a.kit) state = 'own';
-    else if (it.role && it.role !== roleOf(a.team)) state = 'role';
+    else if (it.role && (lts() || it.role !== roleOf(a.team))) state = 'role';
     else if (a.coins < it.price) state = 'poor';
-    return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
+    const blurb = state !== 'role' ? it.blurb : lts() ? 'Not needed in Last Team Standing.' : 'Only useful when your team is defending.';
+    return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb, state };
   });
   game.buy = (a, id) => {
     const it = game.shopItems(a).find((i) => i.id === id);
@@ -138,12 +141,13 @@ function boot() {
       else if (c >= 1200 && (c < 1900 || Math.random() < 0.6)) game.buy(a, 'egg');
     }
     if (a.armor < 60 && a.coins >= 650) game.buy(a, 'overalls');
-    if (roleOf(a.team) === 'defend' && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, 'kit');
+    const everyone = lts(), role = roleOf(a.team);
+    if (!everyone && role === 'defend' && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, 'kit');
     // spare coins go on something to throw
     if (a.primary || a.coins >= 1500) {
-      if (roleOf(a.team) === 'attack' && a.coins >= 300 && Math.random() < 0.55) game.buy(a, 'flour');
+      if ((everyone || role === 'attack') && a.coins >= 300 && Math.random() < (everyone ? 0.4 : 0.55)) game.buy(a, 'flour');
       if (a.coins >= 200 && Math.random() < 0.45) game.buy(a, 'rooster');
-      if (roleOf(a.team) === 'defend' && a.coins >= 300 && Math.random() < 0.45) game.buy(a, 'mud');
+      if ((everyone || role === 'defend') && a.coins >= 300 && Math.random() < (everyone ? 0.3 : 0.45)) game.buy(a, 'mud');
     }
   }
 
@@ -171,7 +175,33 @@ function boot() {
   }
 
   let mainSite = 'A', callT = -1;
+  const PLACE = { A: 'A', B: 'B', MID: 'the middle' };
+  // Last Team Standing: each team picks a part of the map to gather at, then goes hunting
+  function planHunt() {
+    const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
+    for (const team of ['herd', 'hands']) {
+      const south = roleOf(team) === 'attack';
+      const main = pick(['A', 'B', 'MID']), rush = Math.random() < 0.5;
+      if (team === game.playerTeam) mainSite = main;
+      const used = { A: 0, B: 0, MID: 0 }, order = shuffle([0, 1, 2]);
+      let i = 0;
+      for (const b of game.bots) {
+        const a = b.a;
+        if (a.team !== team) continue;
+        botShop(a);
+        const site = Math.random() < 0.7 ? main : pick(['A', 'B', 'MID'].filter((k) => k !== main));
+        const hold = W.holds[site][used[site]++ % W.holds[site].length];
+        // the team starting in the south follows the lanes up; the team in the north is already close
+        const route = south && W.routes[site] ? W.routes[site][order[i++ % 3]] : null;
+        const legs = route ? route.slice(0, -1).map((n) => at(W.points[n].x, W.points[n].z)) : [];
+        legs.push(hold);
+        b.newRound({ role: 'attack', site, legs, hold, enemyBase: south ? 'HANDS' : 'HERD' });
+        b.holdFor = rush ? rand(1, 4) : rand(7, 13);
+      }
+    }
+  }
   function planRound() {
+    if (lts()) { planHunt(); return; }
     const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
     mainSite = pick(['A', 'B']);
     const otherSite = mainSite === 'A' ? 'B' : 'A';
@@ -215,32 +245,39 @@ function boot() {
       const slots = shuffle(W.spawns[roleOf(t)].slice());
       game.actors.filter((a) => a.team === t).forEach((a, i) => { a.reset(slots[i], a.survived); a.wantUse = false; });
     }
-    // somebody on the attacking team starts with the pumpkin
-    Object.assign(P, { state: 'carried', carrier: pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
-    pumpkin.glow.visible = false;
+    // somebody on the attacking team starts with the pumpkin (there is none in Last Team Standing)
+    Object.assign(P, { state: lts() ? 'none' : 'carried', carrier: lts() ? null : pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
+    pumpkin.glow.visible = false; game.revealed = false; revealT = 0;
     planRound();
     spectateIdx = 0; game.viewActor = game.player; game.shopOpen = true; hud.refreshShop();
     hud.spectate(null);
     const attacking = roleOf(game.playerTeam) === 'attack';
-    const job = attacking ? (P.carrier === game.player ? 'You have the Stink-Pumpkin. Plant it at A or B.' : 'Help your team plant the Stink-Pumpkin at A or B.') : 'Stop the pumpkin being planted, or cork it in time.';
+    const job = lts() ? 'Splat everyone on the other team. Last team standing wins.'
+      : attacking ? (P.carrier === game.player ? 'You have the Stink-Pumpkin. Plant it at A or B.' : 'Help your team plant the Stink-Pumpkin at A or B.') : 'Stop the pumpkin being planted, or cork it in time.';
     const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
-    if (half) { hud.banner('Half-time!', `Teams swap jobs. ${job}`, 5); audio.announce('ann_half'); }
+    if (half) { hud.banner('Half-time!', `Teams swap ${lts() ? 'ends' : 'jobs'}. ${job}`, 5); audio.announce('ann_half'); }
     else hud.banner(game.round === 1 ? W.name : `Round ${game.round}`, job, 3.2);
+    if (game.round === 1 && lts()) audio.announce('ann_lts');
     if (point) audio.announce('ann_match_point');
     callT = -1;
   }
 
+  // winner is a team, or null when the round is a draw (nobody scores)
   function endRound(winner, why) {
-    const loser = other(winner);
-    game.score[winner]++;
-    game.streak[winner] = 0; game.streak[loser]++;
-    const consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+    let consolation = ECON.lose[0];
+    if (winner) {
+      const loser = other(winner);
+      game.score[winner]++;
+      game.streak[winner] = 0; game.streak[loser]++;
+      consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+    }
     for (const a of game.actors) { a.earn(a.team === winner ? ECON.win : consolation); a.survived = a.alive; a.busy = false; a.wantUse = false; a.scoped = false; }
     game.state = 'roundEnd'; game.endT = ROUND.endDelay;
     P.actor = null;
     const won = winner === game.playerTeam;
-    hud.banner(won ? 'Round won!' : 'Round lost', why, ROUND.endDelay);
+    hud.banner(!winner ? 'Round drawn' : won ? 'Round won!' : 'Round lost', why, ROUND.endDelay);
     audio.stopMusic(0.3);
+    if (!winner) { audio.bell(); audio.announce('ann_draw'); return; }
     if (won) audio.win(); else audio.lose();
     audio.announce(winner === 'herd' ? 'ann_herd_win' : 'ann_hands_win');
   }
@@ -285,7 +322,7 @@ function boot() {
   };
 
   // ---------- the Stink-Pumpkin ----------
-  let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0;
+  let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0, revealT = 0;
   function stopUse() { if (P.actor) { P.actor.busy = false; P.actor = null; } P.progress = 0; }
   function pickUp(a) {
     P.state = 'carried'; P.carrier = a;
@@ -609,15 +646,37 @@ function boot() {
         if (P.state !== 'planted') game.roundT -= dt;
         if (before > 10 && game.roundT <= 10 && P.state !== 'planted') audio.announce('ann_ten');
         // a teammate calls out where the team is heading
-        if (callT > 0 && game.time > callT) { callT = -1; if (roleOf(game.playerTeam) === 'attack') { audio.radio(game.playerTeam, mainSite === 'A' ? 'to_a' : 'to_b'); hud.note(`Your team is heading to ${mainSite}`); } }
+        if (callT > 0 && game.time > callT) {
+          callT = -1;
+          if (lts() || roleOf(game.playerTeam) === 'attack') { if (mainSite !== 'MID') audio.radio(game.playerTeam, mainSite === 'A' ? 'to_a' : 'to_b'); hud.note(`Your team is heading to ${PLACE[mainSite]}`); }
+        }
+        // Last Team Standing: near the end nobody can hide, so the round always finishes with a chase
+        if (lts() && game.roundT <= ROUND.reveal) {
+          if (!game.revealed) { game.revealed = true; audio.announce('ann_reveal'); hud.banner('Nowhere left to hide!', 'Everyone still standing now shows on the map.', 3); }
+          revealT -= dt;
+          if (revealT <= 0) { revealT = 0.5; for (const a of game.actors) if (a.alive) game.report(other(a.team), a); }
+        }
       }
       updatePlayer(dt);
       for (const b of game.bots) b.update(dt);
       for (const a of game.actors) a.tick(dt);
       game.combat.update(dt);
       game.throwables.update(dt);
-      if (game.state === 'live') updatePumpkin(dt);
-      if (game.state === 'live') {
+      if (game.state === 'live' && !lts()) updatePumpkin(dt);
+      if (game.state === 'live' && lts()) {
+        const herd = alive('herd'), hands = alive('hands'), names = { herd: 'The Herd', hands: 'The Hands' };
+        const clean = (list) => list.reduce((n, a) => n + a.hp, 0);
+        if (!herd.length && !hands.length) endRound(null, 'The last two splatted each other at the same moment.');
+        else if (!hands.length) endRound('herd', `Every farmhand got splatted. ${names.herd} are the last team standing.`);
+        else if (!herd.length) endRound('hands', `Every animal got splatted. ${names.hands} are the last team standing.`);
+        else if (game.roundT <= 0) {
+          audio.announce('ann_time');
+          // time is up: more players left wins, then whoever is cleaner
+          const w = herd.length !== hands.length ? (herd.length > hands.length ? 'herd' : 'hands') : Math.abs(clean(herd) - clean(hands)) < 1 ? null : clean(herd) > clean(hands) ? 'herd' : 'hands';
+          if (!w) endRound(null, 'Time is up, and both teams are exactly as messy as each other.');
+          else endRound(w, herd.length !== hands.length ? `Time is up. ${names[w]} have more players still standing.` : `Time is up. Same numbers, but ${names[w]} are cleaner.`);
+        }
+      } else if (game.state === 'live') {
         const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
         const names = { herd: 'The Herd', hands: 'The Hands' };
         if (nDef === 0 && nAtt > 0) endRound(att, P.state === 'planted' ? 'Nobody is left to cork the pumpkin.' : `Every defender got splatted. ${names[att]} take the round.`);
@@ -661,6 +720,21 @@ function boot() {
 
   // ---------- menu ----------
   let pickTeam = 'herd', pickDiff = 'easy', welcomed = false;
+  function showMode() {
+    const m = MODES[game.mode];
+    document.querySelectorAll('#modes button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.mode === game.mode)));
+    $('job-herd').textContent = m.jobs.herd; $('job-hands').textContent = m.jobs.hands;
+    m.how.forEach(([title, text], i) => { const li = $('how-' + i); li.textContent = ''; const b = document.createElement('b'); b.textContent = title; li.append(b, text); });
+    $('key-use').hidden = game.mode === 'lts';
+  }
+  function setMode(id) {
+    if (!MODES[id]) return;
+    game.mode = id;
+    try { localStorage.setItem('hs-mode', id); } catch (e) { /* not saved */ }
+    showMode();
+  }
+  document.querySelectorAll('#modes button').forEach((b) => b.addEventListener('click', () => { setMode(b.dataset.mode); audio.ui(); }));
+  showMode();
   const choose = (group, attr, value) => document.querySelectorAll(group).forEach((b) => b.setAttribute('aria-checked', String(b.dataset[attr] === value)));
   document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', () => { pickTeam = b.dataset.team; choose('.side', 'team', pickTeam); audio.ui(); }));
   document.querySelectorAll('#levels button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('#levels button', 'diff', pickDiff); audio.ui(); }));
@@ -707,7 +781,7 @@ function boot() {
 
   // handy for automated checks: run the game forward without waiting for real time
   game.simulate = (seconds, step = 1 / 60) => { for (let t = 0; t < seconds; t += step) update(step); };
-  game.begin = (team, diff, map) => { if (map) loadMap(map); pickTeam = team; pickDiff = diff; begin(); };
+  game.begin = (team, diff, map, mode) => { if (map) loadMap(map); if (mode) setMode(mode); pickTeam = team; pickDiff = diff; begin(); };
   game.setShoulder = (on) => { shoulder = on; };
   game.input = { keys, look: (dx, dy) => { mdx += dx; mdy += dy; }, fire: (down) => { mouseDown = down; fireEdge = down; }, noLock: () => { noLock = true; } };
   game.botOf = botOf;

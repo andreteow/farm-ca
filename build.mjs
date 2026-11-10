@@ -36,7 +36,7 @@ const headPart = page.slice(0, cut)
   .replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/, fontCss)
   .replace(/<meta name="claude:viewport-fit-sides"[^>]*>\n?/, '');
 const bodyPart = page.slice(cut).replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/three\.js\/[^/]+\/three\.min\.js/, 'vendor/three.min.js');
-const about = 'A free, kid-friendly farm game: animals against farmhands, five a side. Sneak in the Stink-Pumpkin or cork it in time. Nobody gets hurt, just very messy.';
+const about = 'A free, kid-friendly farm game: animals against farmhands, five a side. Sneak in the Stink-Pumpkin, cork it in time, or be the last team standing. Nobody gets hurt, just very messy.';
 writeFileSync('dist/index.html', `<!doctype html>
 <html lang="en">
 <head>

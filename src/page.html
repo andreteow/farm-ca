@@ -64,6 +64,9 @@ h2 { font-size: 40px; color: var(--barn); }
 .lab { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .seg button { padding: 8px 12px; font-size: 14.5px; }
 .blurb { margin: -8px 0 0; font-size: 13.5px; }
+.pick.mode { grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; }
+.pick.mode .tag { margin: 0 0 0 6px; font-size: 14px; line-height: 1.3; max-width: none; }
+[hidden] { display: none !important; }
 .go {
   font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
   border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
@@ -81,8 +84,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .head { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 2px 18px; align-items: center; }
-.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 130px; max-height: 172px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
-.head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
+.head .art { grid-column: 2; width: 100%; height: 100%; min-height: 120px; max-height: 138px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
 .how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
 .how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 10px; }
 .how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
@@ -126,6 +128,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #status { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 5px 14px; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 #status img { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; }
 #status.hot { background: var(--barn); color: #fff; }
+#status.plain img { display: none; }
 #timer.fuse { background: var(--barn); color: #fff; }
 #prompt { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); padding: 10px 18px; text-align: center; display: grid; gap: 6px; min-width: 240px; }
 #prompt kbd { font-size: 14px; }
@@ -167,6 +170,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
+  .pick.mode { grid-template-columns: 1fr; gap: 4px; } .pick.mode .tag { margin: 0; }
   .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
   #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
@@ -211,24 +215,31 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <h1 class="sr">Harvest Standoff</h1>
         <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
         <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
-        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
       </header>
+      <div class="pick mode">
+        <span class="lab">Game</span>
+        <div class="seg" id="modes" role="radiogroup" aria-label="Choose the game">
+          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true">Stink-Pumpkin</button>
+          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false">Last Team Standing</button>
+        </div>
+        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
+      </div>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
+          <span class="side-job" id="job-herd">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
+          <span class="side-job" id="job-hands">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
       <ul class="how">
-        <li><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
-        <li><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
-        <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+        <li id="how-0"><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
+        <li id="how-1"><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
+        <li id="how-2"><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
       </ul>
       <div class="row">
         <div class="pick">
@@ -252,7 +263,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>
-        <li><kbd>E</kbd> plant or cork</li>
+        <li id="key-use"><kbd>E</kbd> plant or cork</li>
         <li><kbd>B</kbd> shop</li>
         <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
         <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> throw</li>

@@ -22,6 +22,15 @@ export function buildNav(world) {
 
   function nearestFree(x, z) {
     if (!isBlocked(x, z)) return { x, z };
+    // the closest open square as the crow flies, so someone pressed against a wall stays on their own side of it
+    let best = null, bestD = 1e9;
+    for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) {
+      const i = ci(x) + di, j = ci(z) + dj;
+      if (i < 0 || j < 0 || i >= N || j >= N || blocked[j * N + i]) continue;
+      const cx = -half + i + 0.5, cz = -half + j + 0.5, d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
+      if (d < bestD) { bestD = d; best = { x: cx, z: cz }; }
+    }
+    if (best) return best;
     for (let r = 1; r < 8; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
       if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
       const i = ci(x) + di, j = ci(z) + dj;

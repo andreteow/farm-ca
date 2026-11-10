@@ -2,3 +2,4 @@ node_modules/
 shots/
 src/audio-pack.js
 art/characters/*_raw.json
+__pycache__/

@@ -64,6 +64,9 @@ h2 { font-size: 40px; color: var(--barn); }
 .lab { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .seg button { padding: 8px 12px; font-size: 14.5px; }
 .blurb { margin: -8px 0 0; font-size: 13.5px; }
+.pick.mode { grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; }
+.pick.mode .tag { margin: 0 0 0 6px; font-size: 14px; line-height: 1.3; max-width: none; }
+[hidden] { display: none !important; }
 .go {
   font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
   border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
@@ -81,8 +84,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .head { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 2px 18px; align-items: center; }
-.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 130px; max-height: 172px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
-.head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
+.head .art { grid-column: 2; width: 100%; height: 100%; min-height: 120px; max-height: 138px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
 .how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
 .how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 10px; }
 .how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
@@ -126,6 +128,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #status { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 5px 14px; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 #status img { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; }
 #status.hot { background: var(--barn); color: #fff; }
+#status.plain img { display: none; }
 #timer.fuse { background: var(--barn); color: #fff; }
 #prompt { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); padding: 10px 18px; text-align: center; display: grid; gap: 6px; min-width: 240px; }
 #prompt kbd { font-size: 14px; }
@@ -167,6 +170,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
+  .pick.mode { grid-template-columns: 1fr; gap: 4px; } .pick.mode .tag { margin: 0; }
   .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
   #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
@@ -211,24 +215,31 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <h1 class="sr">Harvest Standoff</h1>
         <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
         <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
-        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
       </header>
+      <div class="pick mode">
+        <span class="lab">Game</span>
+        <div class="seg" id="modes" role="radiogroup" aria-label="Choose the game">
+          <button id="mode-pumpkin" data-mode="pumpkin" role="radio" aria-checked="true">Stink-Pumpkin</button>
+          <button id="mode-lts" data-mode="lts" role="radio" aria-checked="false">Last Team Standing</button>
+        </div>
+        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
+      </div>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
+          <span class="side-job" id="job-herd">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
+          <span class="side-job" id="job-hands">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
       <ul class="how">
-        <li><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
-        <li><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
-        <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+        <li id="how-0"><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
+        <li id="how-1"><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
+        <li id="how-2"><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
       </ul>
       <div class="row">
         <div class="pick">
@@ -252,7 +263,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>
-        <li><kbd>E</kbd> plant or cork</li>
+        <li id="key-use"><kbd>E</kbd> plant or cork</li>
         <li><kbd>B</kbd> shop</li>
         <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
         <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> throw</li>
@@ -567,7 +578,35 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     // first team to this many rounds wins the match
     half: 5,
     // teams swap jobs after this many rounds
-    endDelay: 5
+    endDelay: 5,
+    reveal: 30
+    // Last Team Standing: with this many seconds left, everyone still standing shows on the map
+  };
+  var MODES = {
+    pumpkin: {
+      name: "Stink-Pumpkin",
+      jobs: {
+        herd: "The animals. They start by sneaking the Stink-Pumpkin to site A or B.",
+        hands: "The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted."
+      },
+      how: [
+        ["Plant it", "Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round."],
+        ["Cork it", "Defenders win by corking the pumpkin, or by keeping it from being planted in time."],
+        ["Shop smart", "Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins."]
+      ]
+    },
+    lts: {
+      name: "Last Team Standing",
+      jobs: {
+        herd: "The animals. They start at the south end of the map and go looking for farmhands.",
+        hands: "The farmhands. They start at the north end of the map and go looking for animals."
+      },
+      how: [
+        ["Splat them all", "No pumpkin this time. Splat every player on the other team to win the round."],
+        ["Stay standing", "Out means out until the next round. If time runs out, the team with more players left wins."],
+        ["Shop smart", "Win rounds and splat opponents to earn corn coins. Teams swap ends after 5 rounds. First to 6 wins."]
+      ]
+    }
   };
   var OBJ = {
     plantTime: 3,
@@ -2316,6 +2355,17 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     const isBlocked = (x, z) => x <= -half || x >= half || z <= -half || z >= half || blocked[ci(z) * N + ci(x)] === 1;
     function nearestFree(x, z) {
       if (!isBlocked(x, z)) return { x, z };
+      let best = null, bestD = 1e9;
+      for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) {
+        const i = ci(x) + di, j = ci(z) + dj;
+        if (i < 0 || j < 0 || i >= N || j >= N || blocked[j * N + i]) continue;
+        const cx = -half + i + 0.5, cz = -half + j + 0.5, d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
+        if (d < bestD) {
+          bestD = d;
+          best = { x: cx, z: cz };
+        }
+      }
+      if (best) return best;
       for (let r = 1; r < 8; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
         if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
         const i = ci(x) + di, j = ci(z) + dj;
@@ -3126,7 +3176,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           this.seenT = 0;
           this.errT = 0;
           this.g.onSpot(a, best);
-          if (a.throws.mud && !this.usedMud && this.plan.role === "defend" && bestD > 8 && bestD < 19) {
+          if (a.throws.mud && !this.usedMud && (this.plan.role === "defend" || this.g.mode === "lts") && bestD > 8 && bestD < 19) {
             this.usedMud = true;
             this.toss = { id: "mud", x: best.pos.x + best.vel.x * 0.8, z: best.pos.z + best.vel.z * 0.8 };
           }
@@ -3234,7 +3284,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       if (this.state === "seek") {
         if (!this.path || this.pi >= this.path.length) {
           const tip = this.g.latestIntel(a.team);
-          const goal = tip || W.points[pick(["A", "B", "YARD", "MID", attack ? "HANDS" : "HERD"])];
+          const goal = tip || W.points[pick(["A", "B", "YARD", "MID", this.plan.enemyBase || (attack ? "HANDS" : "HERD")])];
           if (!this.goTo(goal.x + rand(-2, 2), goal.z + rand(-2, 2))) this.path = null;
         }
       }
@@ -3619,7 +3669,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   }
 
   // src/audio-pack.js
-  var AUDIO_PACK = { "ann_corked": [0, 17598], "ann_defeat": [17598, 17389], "ann_go": [34987, 13209], "ann_half": [48196, 21986], "ann_hands_win": [70182, 20941], "ann_herd_win": [91123, 15508], "ann_match_point": [106631, 10701], "ann_planted": [117332, 25748], "ann_stink": [143080, 23031], "ann_ten": [166111, 11537], "ann_time": [177648, 7985], "ann_victory": [185633, 25957], "ann_welcome": [211590, 24703], "hands_corking": [236293, 16762], "hands_dropped": [253055, 9239], "hands_flour": [262294, 9239], "hands_go_1": [271533, 13418], "hands_go_2": [284951, 10701], "hands_got_it": [295652, 9657], "hands_guard": [305309, 13836], "hands_hurt_1": [319145, 16762], "hands_hurt_2": [335907, 11955], "hands_mud": [347862, 7358], "hands_nice": [355220, 9448], "hands_out_1": [364668, 23031], "hands_out_2": [387699, 18852], "hands_planted_a": [406551, 15090], "hands_planted_b": [421641, 14254], "hands_planting": [435895, 13836], "hands_refill": [449731, 10701], "hands_rooster": [460432, 13836], "hands_spot_1": [474268, 7985], "hands_spot_2": [482253, 11746], "hands_to_a": [493999, 8612], "hands_to_b": [502611, 9657], "herd_corking": [512268, 16762], "herd_dropped": [529030, 10701], "herd_flour": [539731, 10910], "herd_go_1": [550641, 18225], "herd_go_2": [568866, 17180], "herd_got_it": [586046, 13209], "herd_guard": [599255, 13418], "herd_hurt_1": [612673, 14254], "herd_hurt_2": [626927, 16344], "herd_mud": [643271, 8403], "herd_nice": [651674, 8821], "herd_out_1": [660495, 25121], "herd_out_2": [685616, 17598], "herd_planting": [703214, 15508], "herd_refill": [718722, 6731], "herd_rooster": [725453, 14881], "herd_spot_1": [740334, 9657], "herd_spot_2": [749991, 12582], "herd_to_a": [762573, 8821], "herd_to_b": [771394, 10701], "music_defeat": [782095, 420981], "music_fuse": [1203076, 420981], "music_lose": [1624057, 84890], "music_menu": [1708947, 858741], "music_victory": [2567688, 414764], "music_win": [2982452, 91838], "noise_chicken": [3074290, 9657], "noise_cow": [3083947, 13418], "noise_goat": [3097365, 16971], "noise_pig": [3114336, 18225], "noise_sheep": [3132561, 23031], "sfx_bell": [3155592, 21987], "sfx_click": [3177579, 7254], "sfx_cluck": [3184833, 39228], "sfx_cork_pop": [3224061, 6e3], "sfx_egg": [3230061, 4120], "sfx_flop": [3234181, 10703], "sfx_pea": [3244884, 6941], "sfx_refill": [3251825, 15091], "sfx_rooster": [3266916, 15718], "sfx_splat": [3282634, 9135], "sfx_squeak": [3291769, 12270], "sfx_squirt": [3304039, 6314], "sfx_step1": [3310353, 4120], "sfx_step2": [3314473, 4120], "sfx_step3": [3318593, 4120], "sfx_step4": [3322713, 4433], "sfx_thud": [3327146, 6e3], "sfx_thwap": [3333146, 6941], "sfx_tick": [3340087, 2239], "sfx_tock": [3342326, 2239], "sfx_tomato": [3344565, 5687] };
+  var AUDIO_PACK = { "ann_corked": [0, 17598], "ann_defeat": [17598, 17389], "ann_draw": [34987, 15926], "ann_go": [50913, 13209], "ann_half": [64122, 21986], "ann_hands_win": [86108, 20941], "ann_herd_win": [107049, 15508], "ann_lts": [122557, 35152], "ann_match_point": [157709, 10701], "ann_planted": [168410, 25748], "ann_reveal": [194158, 19688], "ann_stink": [213846, 23031], "ann_ten": [236877, 11537], "ann_time": [248414, 7985], "ann_victory": [256399, 25957], "ann_welcome": [282356, 24703], "hands_corking": [307059, 16762], "hands_dropped": [323821, 9239], "hands_flour": [333060, 9239], "hands_go_1": [342299, 13418], "hands_go_2": [355717, 10701], "hands_got_it": [366418, 9657], "hands_guard": [376075, 13836], "hands_hurt_1": [389911, 16762], "hands_hurt_2": [406673, 11955], "hands_mud": [418628, 7358], "hands_nice": [425986, 9448], "hands_out_1": [435434, 23031], "hands_out_2": [458465, 18852], "hands_planted_a": [477317, 15090], "hands_planted_b": [492407, 14254], "hands_planting": [506661, 13836], "hands_refill": [520497, 10701], "hands_rooster": [531198, 13836], "hands_spot_1": [545034, 7985], "hands_spot_2": [553019, 11746], "hands_to_a": [564765, 8612], "hands_to_b": [573377, 9657], "herd_corking": [583034, 16762], "herd_dropped": [599796, 10701], "herd_flour": [610497, 10910], "herd_go_1": [621407, 18225], "herd_go_2": [639632, 17180], "herd_got_it": [656812, 13209], "herd_guard": [670021, 13418], "herd_hurt_1": [683439, 14254], "herd_hurt_2": [697693, 16344], "herd_mud": [714037, 8403], "herd_nice": [722440, 8821], "herd_out_1": [731261, 25121], "herd_out_2": [756382, 17598], "herd_planting": [773980, 15508], "herd_refill": [789488, 6731], "herd_rooster": [796219, 14881], "herd_spot_1": [811100, 9657], "herd_spot_2": [820757, 12582], "herd_to_a": [833339, 8821], "herd_to_b": [842160, 10701], "music_defeat": [852861, 420981], "music_fuse": [1273842, 420981], "music_lose": [1694823, 84890], "music_menu": [1779713, 858741], "music_victory": [2638454, 414764], "music_win": [3053218, 91838], "noise_chicken": [3145056, 9657], "noise_cow": [3154713, 13418], "noise_goat": [3168131, 16971], "noise_pig": [3185102, 18225], "noise_sheep": [3203327, 23031], "sfx_bell": [3226358, 21987], "sfx_click": [3248345, 7254], "sfx_cluck": [3255599, 39228], "sfx_cork_pop": [3294827, 6e3], "sfx_egg": [3300827, 4120], "sfx_flop": [3304947, 10703], "sfx_pea": [3315650, 6941], "sfx_refill": [3322591, 15091], "sfx_rooster": [3337682, 15718], "sfx_splat": [3353400, 9135], "sfx_squeak": [3362535, 12270], "sfx_squirt": [3374805, 6314], "sfx_step1": [3381119, 4120], "sfx_step2": [3385239, 4120], "sfx_step3": [3389359, 4120], "sfx_step4": [3393479, 4433], "sfx_thud": [3397912, 6e3], "sfx_thwap": [3403912, 6941], "sfx_tick": [3410853, 2239], "sfx_tock": [3413092, 2239], "sfx_tomato": [3415331, 5687] };
 
   // src/audio.js
   var VOICE = [
@@ -3636,6 +3686,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     "ann_ten",
     "ann_victory",
     "ann_defeat",
+    "ann_lts",
+    "ann_reveal",
+    "ann_draw",
     "noise_chicken",
     "noise_pig",
     "noise_cow",
@@ -4176,10 +4229,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           } else if (Math.hypot(p.pos.x - P.x, p.pos.z - P.z) < OBJ.reach) prompt = "Hold [E] to cork the pumpkin";
         }
       }
+      const hunt = game.mode === "lts";
+      if (hunt && game.state === "live" && game.revealed) status = "Everyone is showing on the map";
       show("st", el.status, !!status);
       if (status) {
         set("stt", el["status-text"], status);
         el.status.classList.toggle("hot", hot);
+        el.status.classList.toggle("plain", hunt);
       }
       show("pr", el.prompt, !!prompt);
       if (prompt) {
@@ -4224,7 +4280,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         nm.textContent = it.name;
         const bl = document.createElement("span");
         bl.className = "bl";
-        bl.textContent = it.state === "role" ? "Only useful when your team is defending." : it.blurb;
+        bl.textContent = it.blurb;
         mid.append(nm, document.createElement("br"), bl);
         const pr = document.createElement("span");
         pr.className = "pr";
@@ -4250,13 +4306,21 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       for (const z of game.world.slowZones) c.fillRect(z.x1, z.z1, z.x2 - z.x1, z.z2 - z.z1);
       c.fillStyle = "rgba(58,38,22,0.32)";
       for (const b of game.world.boxes) if (b.y2 >= 2.2 && b.y1 < 1) c.fillRect(b.x1, b.z1, b.x2 - b.x1, b.z2 - b.z1);
+      c.font = "800 4px sans-serif";
+      c.textAlign = "center";
+      c.textBaseline = "middle";
       for (const key of ["A", "B"]) {
         const s = game.world.sites[key];
-        c.strokeStyle = key === "A" ? "#d9463e" : "#3f8fd9";
+        c.strokeStyle = c.fillStyle = key === "A" ? "#d9463e" : "#3f8fd9";
         c.lineWidth = 0.6;
         c.beginPath();
         c.arc(s.x, s.z, s.r, 0, 7);
         c.stroke();
+        c.save();
+        c.translate(s.x, s.z);
+        c.rotate(-yaw);
+        c.fillText(key, 0, 0.3);
+        c.restore();
       }
       const dot = (a, colr, rad) => {
         c.fillStyle = colr;
@@ -4470,6 +4534,14 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       pumpkin: { state: "none", carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null }
     };
     game.mapId = "farm";
+    game.mode = "pumpkin";
+    game.revealed = false;
+    try {
+      const m = localStorage.getItem("hs-mode");
+      if (MODES[m]) game.mode = m;
+    } catch (e) {
+    }
+    const lts = () => game.mode === "lts";
     try {
       const m = localStorage.getItem("hs-map");
       if (MAPS[m]) game.mapId = m;
@@ -4563,9 +4635,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const g = GADGETS[it.id];
       let state = "ok";
       if (it.kind === "gadget" ? a.primary === it.id : it.kind === "throw" ? a.throws[it.id] > 0 : it.id === "overalls" ? a.armor >= 100 : a.kit) state = "own";
-      else if (it.role && it.role !== roleOf(a.team)) state = "role";
+      else if (it.role && (lts() || it.role !== roleOf(a.team))) state = "role";
       else if (a.coins < it.price) state = "poor";
-      return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
+      const blurb = state !== "role" ? it.blurb : lts() ? "Not needed in Last Team Standing." : "Only useful when your team is defending.";
+      return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb, state };
     });
     game.buy = (a, id) => {
       const it = game.shopItems(a).find((i) => i.id === id);
@@ -4592,11 +4665,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         else if (c >= 1200 && (c < 1900 || Math.random() < 0.6)) game.buy(a, "egg");
       }
       if (a.armor < 60 && a.coins >= 650) game.buy(a, "overalls");
-      if (roleOf(a.team) === "defend" && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, "kit");
+      const everyone = lts(), role = roleOf(a.team);
+      if (!everyone && role === "defend" && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, "kit");
       if (a.primary || a.coins >= 1500) {
-        if (roleOf(a.team) === "attack" && a.coins >= 300 && Math.random() < 0.55) game.buy(a, "flour");
+        if ((everyone || role === "attack") && a.coins >= 300 && Math.random() < (everyone ? 0.4 : 0.55)) game.buy(a, "flour");
         if (a.coins >= 200 && Math.random() < 0.45) game.buy(a, "rooster");
-        if (roleOf(a.team) === "defend" && a.coins >= 300 && Math.random() < 0.45) game.buy(a, "mud");
+        if ((everyone || role === "defend") && a.coins >= 300 && Math.random() < (everyone ? 0.3 : 0.45)) game.buy(a, "mud");
       }
     }
     function startMatch(team, diffKey) {
@@ -4635,7 +4709,34 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       startRound();
     }
     let mainSite = "A", callT = -1;
+    const PLACE = { A: "A", B: "B", MID: "the middle" };
+    function planHunt() {
+      const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
+      for (const team of ["herd", "hands"]) {
+        const south = roleOf(team) === "attack";
+        const main = pick(["A", "B", "MID"]), rush = Math.random() < 0.5;
+        if (team === game.playerTeam) mainSite = main;
+        const used = { A: 0, B: 0, MID: 0 }, order = shuffle([0, 1, 2]);
+        let i = 0;
+        for (const b of game.bots) {
+          const a = b.a;
+          if (a.team !== team) continue;
+          botShop(a);
+          const site = Math.random() < 0.7 ? main : pick(["A", "B", "MID"].filter((k) => k !== main));
+          const hold = W.holds[site][used[site]++ % W.holds[site].length];
+          const route = south && W.routes[site] ? W.routes[site][order[i++ % 3]] : null;
+          const legs = route ? route.slice(0, -1).map((n) => at(W.points[n].x, W.points[n].z)) : [];
+          legs.push(hold);
+          b.newRound({ role: "attack", site, legs, hold, enemyBase: south ? "HANDS" : "HERD" });
+          b.holdFor = rush ? rand(1, 4) : rand(7, 13);
+        }
+      }
+    }
     function planRound() {
+      if (lts()) {
+        planHunt();
+        return;
+      }
       const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
       mainSite = pick(["A", "B"]);
       const otherSite = mainSite === "A" ? "B" : "A";
@@ -4692,8 +4793,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           a.wantUse = false;
         });
       }
-      Object.assign(P, { state: "carried", carrier: pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
+      Object.assign(P, { state: lts() ? "none" : "carried", carrier: lts() ? null : pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
       pumpkin.glow.visible = false;
+      game.revealed = false;
+      revealT = 0;
       planRound();
       spectateIdx = 0;
       game.viewActor = game.player;
@@ -4701,21 +4804,25 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       hud.refreshShop();
       hud.spectate(null);
       const attacking = roleOf(game.playerTeam) === "attack";
-      const job = attacking ? P.carrier === game.player ? "You have the Stink-Pumpkin. Plant it at A or B." : "Help your team plant the Stink-Pumpkin at A or B." : "Stop the pumpkin being planted, or cork it in time.";
+      const job = lts() ? "Splat everyone on the other team. Last team standing wins." : attacking ? P.carrier === game.player ? "You have the Stink-Pumpkin. Plant it at A or B." : "Help your team plant the Stink-Pumpkin at A or B." : "Stop the pumpkin being planted, or cork it in time.";
       const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
       if (half) {
-        hud.banner("Half-time!", `Teams swap jobs. ${job}`, 5);
+        hud.banner("Half-time!", `Teams swap ${lts() ? "ends" : "jobs"}. ${job}`, 5);
         audio.announce("ann_half");
       } else hud.banner(game.round === 1 ? W.name : `Round ${game.round}`, job, 3.2);
+      if (game.round === 1 && lts()) audio.announce("ann_lts");
       if (point) audio.announce("ann_match_point");
       callT = -1;
     }
     function endRound(winner, why) {
-      const loser = other(winner);
-      game.score[winner]++;
-      game.streak[winner] = 0;
-      game.streak[loser]++;
-      const consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+      let consolation = ECON.lose[0];
+      if (winner) {
+        const loser = other(winner);
+        game.score[winner]++;
+        game.streak[winner] = 0;
+        game.streak[loser]++;
+        consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+      }
       for (const a of game.actors) {
         a.earn(a.team === winner ? ECON.win : consolation);
         a.survived = a.alive;
@@ -4727,8 +4834,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.endT = ROUND.endDelay;
       P.actor = null;
       const won = winner === game.playerTeam;
-      hud.banner(won ? "Round won!" : "Round lost", why, ROUND.endDelay);
+      hud.banner(!winner ? "Round drawn" : won ? "Round won!" : "Round lost", why, ROUND.endDelay);
       audio.stopMusic(0.3);
+      if (!winner) {
+        audio.bell();
+        audio.announce("ann_draw");
+        return;
+      }
       if (won) audio.win();
       else audio.lose();
       audio.announce(winner === "herd" ? "ann_herd_win" : "ann_hands_win");
@@ -4790,7 +4902,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         }
       } else audio.shout(victim, "hurt_" + (1 + (Math.random() * 2 | 0)), victim.isPlayer ? 0.2 : 0.3);
     };
-    let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0;
+    let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0, revealT = 0;
     function stopUse() {
       if (P.actor) {
         P.actor.busy = false;
@@ -5248,9 +5360,21 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           if (before > 10 && game.roundT <= 10 && P.state !== "planted") audio.announce("ann_ten");
           if (callT > 0 && game.time > callT) {
             callT = -1;
-            if (roleOf(game.playerTeam) === "attack") {
-              audio.radio(game.playerTeam, mainSite === "A" ? "to_a" : "to_b");
-              hud.note(`Your team is heading to ${mainSite}`);
+            if (lts() || roleOf(game.playerTeam) === "attack") {
+              if (mainSite !== "MID") audio.radio(game.playerTeam, mainSite === "A" ? "to_a" : "to_b");
+              hud.note(`Your team is heading to ${PLACE[mainSite]}`);
+            }
+          }
+          if (lts() && game.roundT <= ROUND.reveal) {
+            if (!game.revealed) {
+              game.revealed = true;
+              audio.announce("ann_reveal");
+              hud.banner("Nowhere left to hide!", "Everyone still standing now shows on the map.", 3);
+            }
+            revealT -= dt;
+            if (revealT <= 0) {
+              revealT = 0.5;
+              for (const a of game.actors) if (a.alive) game.report(other(a.team), a);
             }
           }
         }
@@ -5259,8 +5383,20 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         for (const a of game.actors) a.tick(dt);
         game.combat.update(dt);
         game.throwables.update(dt);
-        if (game.state === "live") updatePumpkin(dt);
-        if (game.state === "live") {
+        if (game.state === "live" && !lts()) updatePumpkin(dt);
+        if (game.state === "live" && lts()) {
+          const herd = alive("herd"), hands = alive("hands"), names = { herd: "The Herd", hands: "The Hands" };
+          const clean = (list) => list.reduce((n, a) => n + a.hp, 0);
+          if (!herd.length && !hands.length) endRound(null, "The last two splatted each other at the same moment.");
+          else if (!hands.length) endRound("herd", `Every farmhand got splatted. ${names.herd} are the last team standing.`);
+          else if (!herd.length) endRound("hands", `Every animal got splatted. ${names.hands} are the last team standing.`);
+          else if (game.roundT <= 0) {
+            audio.announce("ann_time");
+            const w = herd.length !== hands.length ? herd.length > hands.length ? "herd" : "hands" : Math.abs(clean(herd) - clean(hands)) < 1 ? null : clean(herd) > clean(hands) ? "herd" : "hands";
+            if (!w) endRound(null, "Time is up, and both teams are exactly as messy as each other.");
+            else endRound(w, herd.length !== hands.length ? `Time is up. ${names[w]} have more players still standing.` : `Time is up. Same numbers, but ${names[w]} are cleaner.`);
+          }
+        } else if (game.state === "live") {
           const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
           const names = { herd: "The Herd", hands: "The Hands" };
           if (nDef === 0 && nAtt > 0) endRound(att, P.state === "planted" ? "Nobody is left to cork the pumpkin." : `Every defender got splatted. ${names[att]} take the round.`);
@@ -5308,6 +5444,34 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.viewH = h;
     }
     let pickTeam = "herd", pickDiff = "easy", welcomed = false;
+    function showMode() {
+      const m = MODES[game.mode];
+      document.querySelectorAll("#modes button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.mode === game.mode)));
+      $2("job-herd").textContent = m.jobs.herd;
+      $2("job-hands").textContent = m.jobs.hands;
+      m.how.forEach(([title, text], i) => {
+        const li = $2("how-" + i);
+        li.textContent = "";
+        const b = document.createElement("b");
+        b.textContent = title;
+        li.append(b, text);
+      });
+      $2("key-use").hidden = game.mode === "lts";
+    }
+    function setMode(id) {
+      if (!MODES[id]) return;
+      game.mode = id;
+      try {
+        localStorage.setItem("hs-mode", id);
+      } catch (e) {
+      }
+      showMode();
+    }
+    document.querySelectorAll("#modes button").forEach((b) => b.addEventListener("click", () => {
+      setMode(b.dataset.mode);
+      audio.ui();
+    }));
+    showMode();
     const choose = (group2, attr, value) => document.querySelectorAll(group2).forEach((b) => b.setAttribute("aria-checked", String(b.dataset[attr] === value)));
     document.querySelectorAll(".side").forEach((b) => b.addEventListener("click", () => {
       pickTeam = b.dataset.team;
@@ -5384,8 +5548,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.simulate = (seconds, step = 1 / 60) => {
       for (let t = 0; t < seconds; t += step) update(step);
     };
-    game.begin = (team, diff, map) => {
+    game.begin = (team, diff, map, mode) => {
       if (map) loadMap(map);
+      if (mode) setMode(mode);
       pickTeam = team;
       pickDiff = diff;
       begin();

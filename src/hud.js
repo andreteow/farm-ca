@@ -86,8 +86,10 @@ export function createHud(game) {
         else if (Math.hypot(p.pos.x - P.x, p.pos.z - P.z) < OBJ.reach) prompt = 'Hold [E] to cork the pumpkin';
       }
     }
+    const hunt = game.mode === 'lts';
+    if (hunt && game.state === 'live' && game.revealed) status = 'Everyone is showing on the map';
     show('st', el.status, !!status);
-    if (status) { set('stt', el['status-text'], status); el.status.classList.toggle('hot', hot); }
+    if (status) { set('stt', el['status-text'], status); el.status.classList.toggle('hot', hot); el.status.classList.toggle('plain', hunt); }
     show('pr', el.prompt, !!prompt);
     if (prompt) {
       if (last.prt !== prompt) { last.prt = prompt; el['prompt-text'].innerHTML = prompt.replace('[E]', '<kbd>E</kbd>'); }
@@ -122,7 +124,7 @@ export function createHud(game) {
       const k = document.createElement('kbd'); k.textContent = String(i + 1);
       const mid = document.createElement('span');
       const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name;
-      const bl = document.createElement('span'); bl.className = 'bl'; bl.textContent = it.state === 'role' ? 'Only useful when your team is defending.' : it.blurb;
+      const bl = document.createElement('span'); bl.className = 'bl'; bl.textContent = it.blurb;
       mid.append(nm, document.createElement('br'), bl);
       const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = it.state === 'own' ? 'Owned' : it.price.toLocaleString('en-US');
       b.append(k, img, mid, pr);
@@ -142,9 +144,11 @@ export function createHud(game) {
     for (const z of game.world.slowZones) c.fillRect(z.x1, z.z1, z.x2 - z.x1, z.z2 - z.z1);
     c.fillStyle = 'rgba(58,38,22,0.32)';
     for (const b of game.world.boxes) if (b.y2 >= 2.2 && b.y1 < 1) c.fillRect(b.x1, b.z1, b.x2 - b.x1, b.z2 - b.z1);
+    c.font = '800 4px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
     for (const key of ['A', 'B']) {
       const s = game.world.sites[key];
-      c.strokeStyle = key === 'A' ? '#d9463e' : '#3f8fd9'; c.lineWidth = 0.6; c.beginPath(); c.arc(s.x, s.z, s.r, 0, 7); c.stroke();
+      c.strokeStyle = c.fillStyle = key === 'A' ? '#d9463e' : '#3f8fd9'; c.lineWidth = 0.6; c.beginPath(); c.arc(s.x, s.z, s.r, 0, 7); c.stroke();
+      c.save(); c.translate(s.x, s.z); c.rotate(-yaw); c.fillText(key, 0, 0.3); c.restore();
     }
     const dot = (a, colr, rad) => { c.fillStyle = colr; c.strokeStyle = '#3a2616'; c.lineWidth = 0.35; c.beginPath(); c.arc(a.x, a.z, rad, 0, 7); c.fill(); c.stroke(); };
     for (const a of game.actors) if (a !== v && a.alive && a.team === game.playerTeam) dot(a.pos, TEAM[a.team].color, P.carrier === a ? 1.7 : 1.25);

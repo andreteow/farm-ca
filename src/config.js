@@ -21,6 +21,35 @@ export const ROUND = {
   winTarget: 6, // first team to this many rounds wins the match
   half: 5, // teams swap jobs after this many rounds
   endDelay: 5,
+  reveal: 30, // Last Team Standing: with this many seconds left, everyone still standing shows on the map
+};
+
+// the ways to play
+export const MODES = {
+  pumpkin: {
+    name: 'Stink-Pumpkin',
+    jobs: {
+      herd: 'The animals. They start by sneaking the Stink-Pumpkin to site A or B.',
+      hands: 'The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.',
+    },
+    how: [
+      ['Plant it', 'Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.'],
+      ['Cork it', 'Defenders win by corking the pumpkin, or by keeping it from being planted in time.'],
+      ['Shop smart', 'Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.'],
+    ],
+  },
+  lts: {
+    name: 'Last Team Standing',
+    jobs: {
+      herd: 'The animals. They start at the south end of the map and go looking for farmhands.',
+      hands: 'The farmhands. They start at the north end of the map and go looking for animals.',
+    },
+    how: [
+      ['Splat them all', 'No pumpkin this time. Splat every player on the other team to win the round.'],
+      ['Stay standing', 'Out means out until the next round. If time runs out, the team with more players left wins.'],
+      ['Shop smart', 'Win rounds and splat opponents to earn corn coins. Teams swap ends after 5 rounds. First to 6 wins.'],
+    ],
+  },
 };
 
 // the Stink-Pumpkin
