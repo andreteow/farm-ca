@@ -1,9 +1,11 @@
 const { open } = require('./harness.cjs');
+const map = process.argv[2] || 'farm';
 (async () => {
   const { browser, page, errors } = await open();
   await page.screenshot({ path: 'shots/01-menu.png' });
-  const info = await page.evaluate(() => {
+  const info = await page.evaluate((map) => {
     const g = window.__hs; if (!g) return { fail: 'no game object' };
+    g.loadMap(map);
     const nav = g.nav, W = g.world, N = nav.N;
     let rows = [];
     for (let j = 0; j < N; j++) { let s = ''; for (let i = 0; i < N; i++) s += nav.blocked[j * N + i] ? '#' : '.'; rows.push(s); }
@@ -23,9 +25,9 @@ const { open } = require('./harness.cjs');
       let prev = W.spawns.attack[0];
       for (const n of r) { const q = W.points[n]; if (!nav.findPath(prev.x, prev.z, q.x, q.z)) problems.push(`route ${site}${ri} broken at ${n}`); prev = q; }
     });
-    return { map: rows.join('\n'), problems, lens, boxes: W.boxes.length };
-  });
-  console.log(info.map); console.log('problems:', info.problems); console.log('walk distances:', info.lens, 'boxes:', info.boxes);
+    return { map: rows.join('\n'), problems, lens, boxes: W.boxes.length, name: W.name };
+  }, map);
+  console.log(info.map); console.log('problems:', info.problems); console.log(info.name, 'walk distances:', info.lens, 'boxes:', info.boxes);
   console.log('errors:', errors.slice(0, 8));
   await browser.close();
 })();

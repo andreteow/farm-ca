@@ -1,9 +1,9 @@
 // Plays simulated rounds with the human player standing still, and logs how each round ended.
 const { open } = require('./harness.cjs');
-const team = process.argv[2] || 'herd', diff = process.argv[3] || 'easy', rounds = +(process.argv[4] || 6);
+const team = process.argv[2] || 'herd', diff = process.argv[3] || 'easy', rounds = +(process.argv[4] || 6), map = process.argv[5] || 'farm';
 (async () => {
   const { browser, page, errors } = await open();
-  await page.evaluate(([team, diff]) => { const g = window.__hs; g.input.noLock(); g.begin(team, diff); }, [team, diff]);
+  await page.evaluate(([team, diff, map]) => { const g = window.__hs; g.input.noLock(); g.begin(team, diff, map); }, [team, diff, map]);
   await page.waitForTimeout(500);
   const log = await page.evaluate((rounds) => {
     const g = window.__hs, out = [];

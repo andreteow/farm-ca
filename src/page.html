@@ -33,7 +33,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--hands); out
 }
 .panel {
   width: min(760px, 100%); margin: auto; background: var(--cream); border: 4px solid var(--ink); border-radius: 26px;
-  box-shadow: 0 8px 0 var(--ink); padding: 22px 26px 24px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 8px 0 var(--ink); padding: 16px 24px 18px; display: flex; flex-direction: column; gap: 11px;
 }
 .panel.small { width: min(440px, 100%); text-align: center; align-items: center; }
 .eyebrow { margin: 0; font-weight: 800; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leaf); }
@@ -45,11 +45,11 @@ h2 { font-size: 40px; color: var(--barn); }
 .title { display: flex; flex-direction: column; gap: 6px; }
 .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .side {
-  display: grid; grid-template-columns: 96px 1fr; gap: 4px 14px; align-items: center; text-align: left; min-width: 0;
+  display: grid; grid-template-columns: 78px 1fr; gap: 2px 12px; align-items: center; text-align: left; min-width: 0;
   background: #fff; border: 4px solid var(--ink); border-radius: 20px; padding: 12px 14px; box-shadow: 0 5px 0 var(--ink);
   transition: transform 0.08s, box-shadow 0.08s;
 }
-.side img { grid-row: span 2; width: 96px; height: 96px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
+.side img { grid-row: span 2; width: 78px; height: 78px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
 .side-name { font-family: var(--display); font-size: 26px; align-self: end; }
 .side-job { font-size: 14px; line-height: 1.3; align-self: start; }
 .side[data-team="herd"] .side-name { color: #c9650c; }
@@ -60,6 +60,10 @@ h2 { font-size: 40px; color: var(--barn); }
 .seg button { border: 0; background: transparent; padding: 10px 16px; font-weight: 800; }
 .seg button + button { border-left: 3px solid var(--ink); }
 .seg button[aria-checked="true"] { background: var(--leaf); color: #fff; }
+.pick { display: grid; gap: 3px; }
+.lab { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.seg button { padding: 8px 12px; font-size: 14.5px; }
+.blurb { margin: -8px 0 0; font-size: 13.5px; }
 .go {
   font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
   border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
@@ -76,11 +80,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .panel.small p { margin: 0; max-width: 34ch; }
 .logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.head { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 4px 18px; align-items: center; }
-.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 150px; max-height: 215px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
+.head { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 2px 18px; align-items: center; }
+.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 130px; max-height: 172px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
 .head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
 .how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
-.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 8px 10px; }
+.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 10px; }
 .how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
 
 /* ---------- in-game display ---------- */
@@ -207,18 +211,18 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <h1 class="sr">Harvest Standoff</h1>
         <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
         <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
-        <p class="tag">Sunnyside Farm, 5 against 5. Nobody gets hurt, just very messy.</p>
+        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
       </header>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin into the barn or the garden.</span>
+          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. They start by guarding the farm and corking the pumpkin if it gets planted.</span>
+          <span class="side-job">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
       <ul class="how">
@@ -227,13 +231,24 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
       </ul>
       <div class="row">
-        <div class="seg" role="radiogroup" aria-label="How tough are the computer players">
-          <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
-          <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false">Medium</button>
-          <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+        <div class="pick">
+          <span class="lab">Map</span>
+          <div class="seg" id="maps" role="radiogroup" aria-label="Choose the map">
+            <button id="map-farm" data-map="farm" role="radio" aria-checked="true">Sunnyside Farm</button>
+            <button id="map-mill" data-map="mill" role="radio" aria-checked="false">Applewood Mill</button>
+          </div>
+        </div>
+        <div class="pick">
+          <span class="lab">Level</span>
+          <div class="seg" id="levels" role="radiogroup" aria-label="How tough are the computer players">
+            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
+            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false">Medium</button>
+            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+          </div>
         </div>
         <button id="play" class="go">Play</button>
       </div>
+      <p class="blurb" id="map-blurb"></p>
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>

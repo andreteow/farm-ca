@@ -6,7 +6,7 @@ The Herd (animals) try to splat the Hands (farmhands) before the clock runs out.
 ## Where things are
 
 - `src/config.js` holds every number that changes how the game feels (speeds, launcher strength, prices, round and fuse lengths, difficulty).
-- `src/world.js` is the map, Sunnyside Farm.
+- `src/world.js` holds the maps (Sunnyside Farm and Applewood Mill). Both are built from one shared kit of walls and props; each map is a `layout...()` function listing what goes where, plus the places computer players know about.
 - `src/characters.js` builds the animals, farmhands, launchers and the Stink-Pumpkin.
 - `src/bot.js` is the thinking for computer players.
 - `src/main.js` runs the match: rounds, shop, coins, the pumpkin, half-time.
@@ -65,8 +65,8 @@ fonts are copied next to the game.
 
 ## Status
 
-Milestone 5: over-the-shoulder view (V key) and public deployment, on top of Blender-sculpted characters, the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
+Milestone 6: a second map (Applewood Mill, with a creek that is slow to wade through), on top of the over-the-shoulder view (V key), public deployment, Blender-sculpted characters, the throwables (Flour Bomb, Rooster Crow, Mud Balloon), the shop and
 corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated
 textures and menu art, and recorded voice lines, music and sound effects.
 
-Not built yet: the other three modes, more maps, online play.
+Not built yet: the other three modes, online play.

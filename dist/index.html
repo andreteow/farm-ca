@@ -50,7 +50,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--hands); out
 }
 .panel {
   width: min(760px, 100%); margin: auto; background: var(--cream); border: 4px solid var(--ink); border-radius: 26px;
-  box-shadow: 0 8px 0 var(--ink); padding: 22px 26px 24px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 8px 0 var(--ink); padding: 16px 24px 18px; display: flex; flex-direction: column; gap: 11px;
 }
 .panel.small { width: min(440px, 100%); text-align: center; align-items: center; }
 .eyebrow { margin: 0; font-weight: 800; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leaf); }
@@ -62,11 +62,11 @@ h2 { font-size: 40px; color: var(--barn); }
 .title { display: flex; flex-direction: column; gap: 6px; }
 .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .side {
-  display: grid; grid-template-columns: 96px 1fr; gap: 4px 14px; align-items: center; text-align: left; min-width: 0;
+  display: grid; grid-template-columns: 78px 1fr; gap: 2px 12px; align-items: center; text-align: left; min-width: 0;
   background: #fff; border: 4px solid var(--ink); border-radius: 20px; padding: 12px 14px; box-shadow: 0 5px 0 var(--ink);
   transition: transform 0.08s, box-shadow 0.08s;
 }
-.side img { grid-row: span 2; width: 96px; height: 96px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
+.side img { grid-row: span 2; width: 78px; height: 78px; border-radius: 16px; border: 3px solid var(--ink); background: var(--sky); object-fit: cover; }
 .side-name { font-family: var(--display); font-size: 26px; align-self: end; }
 .side-job { font-size: 14px; line-height: 1.3; align-self: start; }
 .side[data-team="herd"] .side-name { color: #c9650c; }
@@ -77,6 +77,10 @@ h2 { font-size: 40px; color: var(--barn); }
 .seg button { border: 0; background: transparent; padding: 10px 16px; font-weight: 800; }
 .seg button + button { border-left: 3px solid var(--ink); }
 .seg button[aria-checked="true"] { background: var(--leaf); color: #fff; }
+.pick { display: grid; gap: 3px; }
+.lab { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.seg button { padding: 8px 12px; font-size: 14.5px; }
+.blurb { margin: -8px 0 0; font-size: 13.5px; }
 .go {
   font-family: var(--display); font-size: 28px; letter-spacing: 0.03em; color: #fff; background: var(--barn);
   border: 4px solid var(--ink); border-radius: 18px; padding: 10px 34px; box-shadow: 0 6px 0 var(--ink);
@@ -93,11 +97,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .panel.small p { margin: 0; max-width: 34ch; }
 .logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.head { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 4px 18px; align-items: center; }
-.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 150px; max-height: 215px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
+.head { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 2px 18px; align-items: center; }
+.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 130px; max-height: 172px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
 .head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
 .how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
-.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 8px 10px; }
+.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 10px; }
 .how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
 
 /* ---------- in-game display ---------- */
@@ -227,18 +231,18 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <h1 class="sr">Harvest Standoff</h1>
         <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
         <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
-        <p class="tag">Sunnyside Farm, 5 against 5. Nobody gets hurt, just very messy.</p>
+        <p class="tag">Animals against farmhands, 5 a side. Nobody gets hurt, just very messy.</p>
       </header>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
           <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin into the barn or the garden.</span>
+          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin to site A or B.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
           <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. They start by guarding the farm and corking the pumpkin if it gets planted.</span>
+          <span class="side-job">The farmhands. They start by guarding both sites and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
       <ul class="how">
@@ -247,13 +251,24 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
       </ul>
       <div class="row">
-        <div class="seg" role="radiogroup" aria-label="How tough are the computer players">
-          <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
-          <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false">Medium</button>
-          <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+        <div class="pick">
+          <span class="lab">Map</span>
+          <div class="seg" id="maps" role="radiogroup" aria-label="Choose the map">
+            <button id="map-farm" data-map="farm" role="radio" aria-checked="true">Sunnyside Farm</button>
+            <button id="map-mill" data-map="mill" role="radio" aria-checked="false">Applewood Mill</button>
+          </div>
+        </div>
+        <div class="pick">
+          <span class="lab">Level</span>
+          <div class="seg" id="levels" role="radiogroup" aria-label="How tough are the computer players">
+            <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
+            <button id="diff-medium" data-diff="medium" role="radio" aria-checked="false">Medium</button>
+            <button id="diff-hard" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+          </div>
         </div>
         <button id="play" class="go">Play</button>
       </div>
+      <p class="blurb" id="map-blurb"></p>
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>
@@ -1201,13 +1216,50 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     treeA: 5220422,
     treeB: 7127639,
     water: 6605042,
-    metal: 10134445
+    metal: 10134445,
+    barrel: 11036986,
+    barrelBand: 5916214,
+    apple: 14234667
   };
-  function buildWorld(scene) {
+  var MAPS = {
+    farm: { id: "farm", name: "Sunnyside Farm", blurb: "A barn, a veggie garden and a cornfield to hide in." },
+    mill: { id: "mill", name: "Applewood Mill", blurb: "A cider mill, a market square and a creek with three bridges." }
+  };
+  var THEMES = {
+    farm: {
+      trees: [[5220422, 7127639]],
+      hedge: [5218114, 6731854],
+      grass: 16777215,
+      outer: 8176722,
+      hills: [7651154, 9097572],
+      sky: ["#3fa4ee", "#8fd0fb", "#e4f6ff"],
+      fog: 14676991,
+      hemi: [15004415, 14932144, 0.82],
+      sun: [16773328, 0.74, [34, 58, 30]],
+      specks: ["#ffffff", "#ffe36e", "#ff9ec4", "#fff3b0"],
+      mill: [-58, -52]
+    },
+    mill: {
+      trees: [[15238702, 15903035], [14243118, 15238702], [15910987, 15903035], [13191730, 14711342]],
+      hedge: [9083450, 10727498],
+      grass: 15983272,
+      outer: 11908181,
+      hills: [13216074, 14256698],
+      sky: ["#4a97dc", "#a8d0ee", "#ffe2ba"],
+      fog: 16771535,
+      hemi: [16773598, 15124378, 0.8],
+      sun: [16766106, 0.8, [-42, 44, 28]],
+      specks: ["#e8862e", "#d9463e", "#f2c84b", "#b5652a"],
+      mill: [62, -50]
+    }
+  };
+  function buildWorld(scene, mapId = "farm") {
+    const TH = THEMES[mapId] || THEMES.farm;
     const boxes = [];
     const root = group(scene);
     const bushes = [];
     const animated = [];
+    const owned = [];
     const solid = (x1, y1, z1, x2, y2, z2) => {
       const b = { x1, y1, z1, x2, y2, z2 };
       boxes.push(b);
@@ -1219,11 +1271,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       if (d > w) return add(root, rboxGeo(d, h, w, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2, { r: [0, Math.PI / 2, 0] });
       return add(root, rboxGeo(w, h, d, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2);
     };
-    const barnWall = (x1, z1, x2, z2, h, y = 0) => {
-      block(x1, z1, x2, z2, h, texMat("planks"), 0.06, y);
+    const lined = (outside, inside, cx0, cz0) => (x1, z1, x2, z2, h, y = 0) => {
+      block(x1, z1, x2, z2, h, outside, 0.06, y);
       const w = x2 - x1, d = z2 - z1, cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
-      if (d > w) add(root, rboxGeo(d, h, 0.08, 0.03), texMat("wood"), cx < -26 ? x2 + 0.02 : x1 - 0.02, y + h / 2, cz, { r: [0, Math.PI / 2, 0], cast: false });
-      else add(root, rboxGeo(w, h, 0.08, 0.03), texMat("wood"), cx, y + h / 2, cz < -13 ? z2 + 0.02 : z1 - 0.02, { cast: false });
+      if (d > w) add(root, rboxGeo(d, h, 0.08, 0.03), inside, cx < cx0 ? x2 + 0.02 : x1 - 0.02, y + h / 2, cz, { r: [0, Math.PI / 2, 0], cast: false });
+      else add(root, rboxGeo(w, h, 0.08, 0.03), inside, cx, y + h / 2, cz < cz0 ? z2 + 0.02 : z1 - 0.02, { cast: false });
     };
     const deco = (w, h, d, color, x, y, z, r = 0.06, o) => add(root, rboxGeo(w, h, d, r), color, x, y, z, o);
     function stone(x1, z1, x2, z2, h = 2.8) {
@@ -1239,7 +1291,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         const t = (i + 0.5) / n;
         const x = alongX ? x1 + len * t : (x1 + x2) / 2, z = alongX ? (z1 + z2) / 2 : z1 + len * t;
         const rr = thick * rand(0.72, 0.9);
-        bushes.push({ x: x + rand(-0.1, 0.1), y: h * 0.48, z: z + rand(-0.1, 0.1), sx: alongX ? 0.95 : rr, sy: h * rand(0.5, 0.58), sz: alongX ? rr : 0.95, c: i % 2 ? C.hedgeA : C.hedgeB });
+        bushes.push({ x: x + rand(-0.1, 0.1), y: h * 0.48, z: z + rand(-0.1, 0.1), sx: alongX ? 0.95 : rr, sy: h * rand(0.5, 0.58), sz: alongX ? rr : 0.95, c: TH.hedge[i % 2] });
       }
     }
     function fence(x1, z1, x2, z2) {
@@ -1271,12 +1323,89 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         deco(size + 0.04, 0.14, size + 0.04, C.woodDark, x, y - size / 2 + 0.1, z, 0.04);
       }
     }
-    function tree(x, z, s = 1, collide = true) {
+    function tree(x, z, s = 1, collide = true, apples = false) {
       if (collide) solid(x - 0.4, 0, z - 0.4, x + 0.4, 5, z + 0.4);
+      const [ca, cb] = pick(TH.trees);
       add(root, cylGeo(0.26 * s, 0.38 * s, 2.6 * s, 10), C.trunk, x, 1.3 * s, z);
-      add(root, sphereLoGeo(), C.treeA, x, 3.5 * s, z, { s: [2 * s, 1.7 * s, 2 * s] });
-      add(root, sphereLoGeo(), C.treeB, x + 0.9 * s, 4.3 * s, z + 0.3 * s, { s: 1.3 * s });
-      add(root, sphereLoGeo(), C.treeB, x - 0.8 * s, 4.5 * s, z - 0.5 * s, { s: 1.15 * s });
+      add(root, sphereLoGeo(), ca, x, 3.5 * s, z, { s: [2 * s, 1.7 * s, 2 * s] });
+      add(root, sphereLoGeo(), cb, x + 0.9 * s, 4.3 * s, z + 0.3 * s, { s: 1.3 * s });
+      add(root, sphereLoGeo(), cb, x - 0.8 * s, 4.5 * s, z - 0.5 * s, { s: 1.15 * s });
+      if (apples) for (let i = 0; i < 9; i++) {
+        const a = rand(6.28), e = rand(-0.5, 0.7);
+        add(root, sphereLoGeo(), C.apple, x + Math.cos(a) * Math.cos(e) * 1.95 * s, 3.5 * s + Math.sin(e) * 1.65 * s, z + Math.sin(a) * Math.cos(e) * 1.95 * s, { s: 0.16, cast: false });
+      }
+    }
+    function barrel(x, z, levels = 1) {
+      solid(x - 0.48, 0, z - 0.48, x + 0.48, levels, z + 0.48);
+      for (let i = 0; i < levels; i++) {
+        add(root, cylGeo(0.42, 0.42, 1, 14), C.barrel, x, 0.5 + i, z);
+        add(root, cylGeo(0.5, 0.5, 0.5, 14), C.barrel, x, 0.5 + i, z);
+        for (const y of [0.16, 0.84]) add(root, cylGeo(0.47, 0.47, 0.07, 14), C.barrelBand, x, y + i, z);
+      }
+    }
+    function stall(x, z, colr, turned = false) {
+      const w = turned ? 1.2 : 3, d = turned ? 3 : 1.2;
+      block(x - w / 2, z - d / 2, x + w / 2, z + d / 2, 1.1, texMat("wood"), 0.08);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) deco(0.12, 2.5, 0.12, C.woodDark, x + sx * (w / 2 + 0.2), 1.25, z + sz * (d / 2 + 0.2), 0.04);
+      for (let i = 0; i < 6; i++) {
+        const t = (i + 0.5) / 6 - 0.5, L2 = (turned ? d : w) + 0.9;
+        deco(turned ? w + 0.9 : L2 / 6, 0.1, turned ? L2 / 6 : d + 0.9, i % 2 ? colr : C.trim, turned ? x : x + t * L2, 2.55 + (turned ? 0 : 0), turned ? z + t * L2 : z, 0.03);
+      }
+      for (let i = 0; i < 5; i++) add(root, sphereLoGeo(), [C.apple, 15910987, 9424992][i % 3], x + (turned ? rand(-0.3, 0.3) : -1 + i * 0.5), 1.22, z + (turned ? -1 + i * 0.5 : rand(-0.3, 0.3)), { s: 0.14, cast: false });
+    }
+    function fountain(x, z) {
+      solid(x - 1.5, 0, z - 1.5, x + 1.5, 0.9, z + 1.5);
+      add(root, cylGeo(1.65, 1.8, 0.85, 22), C.stone, x, 0.42, z);
+      add(root, cylGeo(1.4, 1.4, 0.06, 22), 5813480, x, 0.84, z, { cast: false });
+      add(root, cylGeo(0.22, 0.3, 1.5, 12), C.stoneCap, x, 1.2, z);
+      add(root, cylGeo(0.75, 0.3, 0.24, 16), C.stoneCap, x, 2, z);
+      add(root, sphereLoGeo(), 10214647, x, 2.2, z, { s: [0.45, 0.2, 0.45], cast: false });
+    }
+    function cart(x, z, turned = false) {
+      const w = turned ? 1.5 : 2.8, d = turned ? 2.8 : 1.5;
+      solid(x - w / 2, 0, z - d / 2, x + w / 2, 1.35, z + d / 2);
+      deco(w, 0.7, d, texMat("crate"), x, 0.95, z, 0.08);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(root, cylGeo(0.5, 0.5, 0.14, 16), C.woodDark, x + sx * (turned ? 0.82 : 0.95), 0.5, z + sz * (turned ? 0.95 : 0.82), { r: turned ? [0, 0, Math.PI / 2] : [Math.PI / 2, 0, 0] });
+      for (let i = 0; i < 8; i++) add(root, sphereLoGeo(), i % 3 ? C.apple : 15910987, x + rand(-w / 2 + 0.3, w / 2 - 0.3), 1.36 + rand(0, 0.1), z + rand(-d / 2 + 0.3, d / 2 - 0.3), { s: 0.17, cast: false });
+    }
+    function bridge(x1, x2, z1, z2, covered = false) {
+      deco(x2 - x1 + 0.4, 0.08, z2 - z1, C.wood, (x1 + x2) / 2, 0.05, (z1 + z2) / 2, 0.03, { cast: false });
+      for (let z = z1 + 0.5; z < z2; z += 1) deco(x2 - x1 + 0.4, 0.02, 0.06, C.woodDark, (x1 + x2) / 2, 0.1, z, 0.01, { cast: false });
+      if (covered) {
+        const wall = lined(texMat("planks"), texMat("wood"), (x1 + x2) / 2, 0);
+        wall(x1 - 0.4, z1, x1, z2, 2.7);
+        wall(x2, z1, x2 + 0.4, z2, 2.7);
+        solid(x1 - 0.4, 2.7, z1, x2 + 0.4, 3, z2);
+        deco(x2 - x1 + 1.5, 0.22, z2 - z1 + 0.9, C.roof, (x1 + x2) / 2, 2.85, (z1 + z2) / 2, 0.08);
+        deco(0.5, 0.3, z2 - z1 + 1.1, C.roof, (x1 + x2) / 2, 3.08, (z1 + z2) / 2, 0.1);
+        for (const z of [z1 - 0.05, z2 + 0.05]) deco(x2 - x1 + 0.9, 0.3, 0.14, C.trim, (x1 + x2) / 2, 2.55, z, 0.05);
+      } else {
+        for (const x of [x1 - 0.2, x2]) {
+          solid(x, 0, z1 + 0.1, x + 0.2, 1, z2 - 0.1);
+          deco(0.14, 0.12, z2 - z1, C.trim, x + 0.1, 0.95, (z1 + z2) / 2, 0.04);
+          for (const z of [z1 + 0.2, (z1 + z2) / 2, z2 - 0.2]) deco(0.18, 1, 0.18, C.trim, x + 0.1, 0.5, z, 0.05);
+        }
+      }
+    }
+    function waterWheel(x, y, z, r = 2.2) {
+      const wheel = group(root, x, y, z);
+      const parts = [add(wheel, cylGeo(r, r, 0.12, 24), C.woodDark, 0, 0, 0, { r: [Math.PI / 2, 0, 0] }), add(wheel, cylGeo(r - 0.35, r - 0.35, 0.16, 24), C.wood, 0, 0, 0, { r: [Math.PI / 2, 0, 0] }), add(wheel, cylGeo(0.3, 0.3, 0.6, 12), C.barrelBand, 0, 0, 0, { r: [Math.PI / 2, 0, 0] })];
+      for (let i = 0; i < 8; i++) {
+        const a = i / 8 * 6.28;
+        parts.push(add(wheel, rboxGeo(0.7, 0.14, 0.5, 0.04), C.wood, Math.cos(a) * r, Math.sin(a) * r, 0.1, { r: [0, 0, a + Math.PI / 2] }));
+      }
+      for (const m of parts) m.userData.keep = true;
+      animated.push((t) => {
+        wheel.rotation.z = -t * 0.6;
+      });
+    }
+    function bunting(x1, x2, z, y = 3.3) {
+      for (const x of [x1, x2]) deco(0.14, y + 0.2, 0.14, C.woodDark, x, (y + 0.2) / 2, z, 0.05);
+      const n = Math.round((x2 - x1) / 1.1);
+      for (let i = 1; i < n; i++) {
+        const t = i / n, sag = Math.sin(t * Math.PI) * 0.45;
+        add(root, coneGeo(0.2, 0.42, 3), [14828602, 15910987, 4165593, 5809500][i % 4], x1 + (x2 - x1) * t, y - sag - 0.2, z, { r: [Math.PI, 0, 0], s: [1, 1, 0.25], cast: false });
+      }
     }
     function planter(x1, z1, x2, z2, crop) {
       block(x1, z1, x2, z2, 0.5, C.wood, 0.08);
@@ -1422,6 +1551,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         g.textBaseline = "middle";
         g.fillText(letter, 64, 70);
       });
+      owned.push(tex);
       const m = new T3.MeshBasicMaterial({ map: tex, transparent: true, side: T3.DoubleSide });
       const disc = new T3.Mesh(new T3.CircleGeometry(0.62, 28), m);
       disc.position.set(x, 3.3, z);
@@ -1430,139 +1560,410 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         disc.rotation.y = t * 0.8;
       });
     }
-    hedge(-41, -41, 41, -40, 3.4);
-    hedge(-41, 40, 41, 41, 3.4);
-    hedge(-41, -40, -40, 40, 3.4);
-    hedge(40, -40, 41, 40, 3.4);
-    const H = 4.5;
-    barnWall(-34, -6.5, -28, -6, H);
-    barnWall(-24, -6.5, -18, -6, H);
-    barnWall(-28, -6.5, -24, -6, 1.5, 3);
-    barnWall(-34, -20, -24, -19.5, H);
-    barnWall(-21, -20, -18, -19.5, H);
-    barnWall(-24, -20, -21, -19.5, 1.5, 3);
-    barnWall(-34, -19.5, -33.5, -6.5, H);
-    barnWall(-18.5, -19.5, -18, -15, H);
-    barnWall(-18.5, -11, -18, -6.5, H);
-    barnWall(-18.5, -15, -18, -11, 1.5, 3);
-    gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 14462578);
-    gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, "shingle", C.barn);
-    for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
-    for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
-    deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
-    for (const z of [-15.1, -10.9]) deco(0.62, 3, 0.3, C.trim, -18.25, 1.5, z, 0.06);
-    deco(0.62, 0.3, 4.5, C.trim, -18.25, 3.1, -13, 0.06);
-    for (const x of [-24.1, -20.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -19.75, 0.06);
-    deco(3.5, 0.3, 0.62, C.trim, -22.5, 3.1, -19.75, 0.06);
-    hay(-30, -14, false, 2);
-    hay(-22, -12.5, true, 2);
-    crate(-29, -9, 1.2, 1);
-    hay(-26.5, -17.8, false, 1);
-    crate(-20, -17.5, 1.2, 2);
-    sign(-22.4, -4.6, "A", "#e2443a");
-    solid(-39, 0, -18, -35.6, 8, -14.6);
-    add(root, cylGeo(1.7, 1.7, 7.5, 22), 14673130, -37.3, 3.75, -16.3);
-    add(root, sphereLoGeo(), C.barn, -37.3, 7.5, -16.3, { s: [1.72, 1.1, 1.72] });
-    stone(12, -24, 13, -18);
-    stone(12, -15, 13, -9);
-    hedge(13, -24, 20, -23, 2.8);
-    hedge(24, -24, 40, -23, 2.8);
-    planter(16, -9, 22, -7.6, "cabbage");
-    planter(16, -13, 22, -11.6, "tomato");
-    planter(26, -8.6, 32, -7.2, "carrot");
-    planter(26, -12.4, 30, -11, "cabbage");
-    scarecrow(24, -10.2);
-    crate(21, -17, 1.3, 2);
-    crate(22.4, -17, 1.2, 1);
-    solid(29, 0, -21, 36, 3.2, -14);
-    deco(7, 0.9, 7, C.trim, 32.5, 0.45, -17.5, 0.1);
-    add(root, rboxGeo(6.8, 2.2, 6.8, 0.1), mat(C.glass, { transparent: true, opacity: 0.5 }), 32.5, 2, -17.5, { cast: false });
-    for (const [x, z] of [[29.1, -20.9], [35.9, -20.9], [29.1, -14.1], [35.9, -14.1], [32.5, -14.1], [32.5, -20.9]]) deco(0.2, 3.2, 0.2, C.trim, x, 1.6, z, 0.05);
-    deco(7.1, 0.2, 7.1, C.trim, 32.5, 3.15, -17.5, 0.06);
-    for (let i = 0; i < 5; i++) add(root, sphereLoGeo(), i % 2 ? C.leaf : C.cabbage, 30.2 + i * 1.15, 1.35, -17.5 + (i % 2 ? 1.2 : -1.2), { s: [0.5, 0.7, 0.5], cast: false });
-    block(15, -22, 19, -19, 2.7, texMat("wood"), 0.1);
-    deco(4.5, 0.2, 3.6, C.coopRoof, 17, 2.85, -20.5, 0.08, { r: [0.12, 0, 0] });
-    deco(1, 1.9, 0.1, C.woodDark, 17, 0.95, -18.97, 0.04);
-    for (const [x, z, s] of [[33.5, -10, 0.5], [34.6, -8.8, 0.38], [32.8, -5.4, 0.44], [14.6, -5, 0.4], [36.5, -11.6, 0.34]]) pumpkin(x, z, s);
-    sign(22.6, -4.4, "B", "#3f8fd9");
-    block(-9, -40, 9, -35, 5, C.house, 0.12);
-    gableRoof(-9.8, 9.8, -41, -34.2, 4.95, 8.2, C.houseRoof, C.house, 0.8);
-    deco(18.6, 0.18, 2.4, C.houseRoof, 0, 3.1, -33.9, 0.06);
-    for (const x of [-8.8, -3, 3, 8.8]) deco(0.2, 3.1, 0.2, C.trim, x, 1.55, -32.9, 0.06);
-    deco(1.3, 2.3, 0.12, 10181180, 0, 1.15, -34.95, 0.04);
-    for (const x of [-6, -3.2, 3.2, 6]) {
-      deco(1.3, 1.3, 0.1, 10475250, x, 2, -34.96, 0.04);
-      deco(1.5, 0.14, 0.16, C.trim, x, 1.3, -34.94, 0.04);
+    function layoutFarm() {
+      const wall = lined(texMat("planks"), texMat("wood"), -26, -13);
+      hedge(-41, -41, 41, -40, 3.4);
+      hedge(-41, 40, 41, 41, 3.4);
+      hedge(-41, -40, -40, 40, 3.4);
+      hedge(40, -40, 41, 40, 3.4);
+      const H = 4.5;
+      wall(-34, -6.5, -28, -6, H);
+      wall(-24, -6.5, -18, -6, H);
+      wall(-28, -6.5, -24, -6, 1.5, 3);
+      wall(-34, -20, -24, -19.5, H);
+      wall(-21, -20, -18, -19.5, H);
+      wall(-24, -20, -21, -19.5, 1.5, 3);
+      wall(-34, -19.5, -33.5, -6.5, H);
+      wall(-18.5, -19.5, -18, -15, H);
+      wall(-18.5, -11, -18, -6.5, H);
+      wall(-18.5, -15, -18, -11, 1.5, 3);
+      gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 14462578);
+      gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, "shingle", C.barn);
+      for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
+      for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
+      deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
+      for (const z of [-15.1, -10.9]) deco(0.62, 3, 0.3, C.trim, -18.25, 1.5, z, 0.06);
+      deco(0.62, 0.3, 4.5, C.trim, -18.25, 3.1, -13, 0.06);
+      for (const x of [-24.1, -20.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -19.75, 0.06);
+      deco(3.5, 0.3, 0.62, C.trim, -22.5, 3.1, -19.75, 0.06);
+      hay(-30, -14, false, 2);
+      hay(-22, -12.5, true, 2);
+      crate(-29, -9, 1.2, 1);
+      hay(-26.5, -17.8, false, 1);
+      crate(-20, -17.5, 1.2, 2);
+      sign(-22.4, -4.6, "A", "#e2443a");
+      solid(-39, 0, -18, -35.6, 8, -14.6);
+      add(root, cylGeo(1.7, 1.7, 7.5, 22), 14673130, -37.3, 3.75, -16.3);
+      add(root, sphereLoGeo(), C.barn, -37.3, 7.5, -16.3, { s: [1.72, 1.1, 1.72] });
+      stone(12, -24, 13, -18);
+      stone(12, -15, 13, -9);
+      hedge(13, -24, 20, -23, 2.8);
+      hedge(24, -24, 40, -23, 2.8);
+      planter(16, -9, 22, -7.6, "cabbage");
+      planter(16, -13, 22, -11.6, "tomato");
+      planter(26, -8.6, 32, -7.2, "carrot");
+      planter(26, -12.4, 30, -11, "cabbage");
+      scarecrow(24, -10.2);
+      crate(21, -17, 1.3, 2);
+      crate(22.4, -17, 1.2, 1);
+      solid(29, 0, -21, 36, 3.2, -14);
+      deco(7, 0.9, 7, C.trim, 32.5, 0.45, -17.5, 0.1);
+      add(root, rboxGeo(6.8, 2.2, 6.8, 0.1), mat(C.glass, { transparent: true, opacity: 0.5 }), 32.5, 2, -17.5, { cast: false });
+      for (const [x, z] of [[29.1, -20.9], [35.9, -20.9], [29.1, -14.1], [35.9, -14.1], [32.5, -14.1], [32.5, -20.9]]) deco(0.2, 3.2, 0.2, C.trim, x, 1.6, z, 0.05);
+      deco(7.1, 0.2, 7.1, C.trim, 32.5, 3.15, -17.5, 0.06);
+      for (let i = 0; i < 5; i++) add(root, sphereLoGeo(), i % 2 ? C.leaf : C.cabbage, 30.2 + i * 1.15, 1.35, -17.5 + (i % 2 ? 1.2 : -1.2), { s: [0.5, 0.7, 0.5], cast: false });
+      block(15, -22, 19, -19, 2.7, texMat("wood"), 0.1);
+      deco(4.5, 0.2, 3.6, C.coopRoof, 17, 2.85, -20.5, 0.08, { r: [0.12, 0, 0] });
+      deco(1, 1.9, 0.1, C.woodDark, 17, 0.95, -18.97, 0.04);
+      for (const [x, z, s] of [[33.5, -10, 0.5], [34.6, -8.8, 0.38], [32.8, -5.4, 0.44], [14.6, -5, 0.4], [36.5, -11.6, 0.34]]) pumpkin(x, z, s);
+      sign(22.6, -4.4, "B", "#3f8fd9");
+      block(-9, -40, 9, -35, 5, C.house, 0.12);
+      gableRoof(-9.8, 9.8, -41, -34.2, 4.95, 8.2, C.houseRoof, C.house, 0.8);
+      deco(18.6, 0.18, 2.4, C.houseRoof, 0, 3.1, -33.9, 0.06);
+      for (const x of [-8.8, -3, 3, 8.8]) deco(0.2, 3.1, 0.2, C.trim, x, 1.55, -32.9, 0.06);
+      deco(1.3, 2.3, 0.12, 10181180, 0, 1.15, -34.95, 0.04);
+      for (const x of [-6, -3.2, 3.2, 6]) {
+        deco(1.3, 1.3, 0.1, 10475250, x, 2, -34.96, 0.04);
+        deco(1.5, 0.14, 0.16, C.trim, x, 1.3, -34.94, 0.04);
+      }
+      block(5.6, -38.6, 6.8, -37.4, 9.4, 13201498, 0.1);
+      hedge(-7, -27, 7, -26, 2.7);
+      crate(-11.5, -31.5, 1.2, 1);
+      crate(11.5, -31.5, 1.2, 2);
+      well(0, -15);
+      tractor(-7, -21);
+      hay(6, -10, false, 2);
+      hay(-10, -8.6, true, 2);
+      hay(-8.9, -8.6, true, 1);
+      crate(8, -21, 1.3, 1);
+      hay(3.5, -23, false, 1);
+      stone(-11, -5, -8, -4);
+      stone(-5, -5, 5, -4);
+      stone(8, -5, 11, -4);
+      stone(-12, -5, -11, 17);
+      stone(-12, 20, -11, 26);
+      stone(11, -5, 12, 17);
+      stone(11, 20, 12, 26);
+      fence(-11, 26, -4, 26.4);
+      fence(4, 26, 11, 26.4);
+      hay(0, 18.5, false, 1);
+      hay(-6, 21, true, 1);
+      hay(6.5, 22.5, false, 2);
+      stone(-40, 4, -37, 5);
+      stone(-34, 4, -17, 5);
+      stone(-14, 4, -12, 5);
+      block(-30, 12, -22, 18, 3, C.coop, 0.12);
+      gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, "shingle", C.coop, 0.6);
+      deco(1, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
+      deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
+      for (const x of [-28.4, -23.6]) deco(1, 0.8, 0.1, 10475250, x, 1.9, 18.03, 0.04);
+      hay(-19, 9.5, false, 2);
+      hay(-17.4, 22, true, 1);
+      crate(-33, 10, 1.2, 1);
+      crate(-21.5, 1, 1.2, 2);
+      hay(-30, 0.5, false, 1);
+      hay(-14, -1.5, true, 2);
+      tree(-37.5, 22);
+      tree(-21, 25.5, 0.9);
+      tree(-38, -2.5, 0.9);
+      stone(12, 6, 15, 7);
+      stone(18, 6, 28, 7);
+      stone(37, 6, 40, 7);
+      block(28, 3, 31, 7, 3, C.stone, 0.14);
+      block(34, 3, 37, 7, 3, C.stone, 0.14);
+      block(31, 3, 34, 7, 0.7, C.stone, 0.14, 2.4);
+      deco(9.3, 0.26, 4.3, C.stoneCap, 32.5, 3.1, 5, 0.1);
+      crate(19.5, 11, 1.2, 2);
+      hay(28.5, 15, true, 1);
+      crate(36, 12, 1.2, 1);
+      hay(20, 1, false, 2);
+      crate(27, -0.5, 1.2, 1);
+      hay(15, 21.5, true, 1);
+      for (const [x, z, s] of [[23.5, 13, 0.55], [26.4, 21, 0.7], [22.6, 25, 0.5]]) {
+        solid(x - s, 0, z - s, x + s, s * 1.2, z + s);
+        add(root, sphereLoGeo(), 11118495, x, s * 0.5, z, { s: [s * 1.15, s * 0.85, s * 1.05] });
+      }
+      tree(36.5, 22);
+      tree(14.5, 25, 0.85);
+      tree(38, -1.5, 0.9);
+      hay(-9, 30, false, 1);
+      hay(9, 30, false, 1);
+      hay(-18, 33.5, true, 2);
+      hay(18, 33.5, true, 2);
+      tree(-28, 36.5);
+      tree(28, 36.5);
+      tree(0, 38.2, 0.8);
+      block(-3.2, 36.2, 3.2, 37, 0.6, C.wood, 0.1);
+      deco(6, 0.08, 0.5, C.water, 0, 0.6, 36.6, 0.03, { cast: false });
+      const pt = (x, z) => ({ x, z });
+      return {
+        corn: [[-10, -1.4, -1, 6], [-10, -1.4, 8.6, 15], [1.4, 10, -1, 6], [1.4, 10, 8.6, 15]],
+        lanes: [
+          [[-36, 31], [36, 31]],
+          [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
+          [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
+          [[0, 31], [0, -2]],
+          [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
+          [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
+          [[-10, 7.3], [10, 7.3]],
+          [[16.5, 31], [16.5, -1], [24, -10]],
+          [[32.5, 31], [32.5, -1], [24, -10]],
+          [[0, -31], [-10, -29], [-22.5, -23]],
+          [[0, -31], [10, -29], [22, -25], [24, -12]],
+          [[0, -18], [-15, -13], [-26, -13]],
+          [[0, -18], [10, -7], [14, -7]],
+          [[12, -16.5], [22, -14]],
+          [[-9, -29], [-9, -24], [0, -18]],
+          [[9, -29], [9, -24], [0, -18]],
+          [[-11.5, 18.5], [-15.5, 18.5]],
+          [[11.5, 18.5], [16.5, 18.5]]
+        ],
+        soil: [[14, -22, 22.5, 18, 30]],
+        paved: [],
+        floors: [[-33.6, -19.6, -18.4, -6.4]],
+        creeks: [{ pts: [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]], w: 2.3 }],
+        slowZones: [],
+        cluck: { x: -26, z: 15 },
+        points: {
+          A: pt(-26, -13),
+          B: pt(24, -12.6),
+          MID: pt(0, 7.3),
+          YARD: pt(3, -17),
+          HERD: pt(0, 32),
+          HANDS: pt(0, -31),
+          A_S: pt(-26, -3),
+          A_E: pt(-15, -13),
+          W_GATE: pt(-15.5, 8),
+          W_ALLEY: pt(-35.5, 8),
+          A_BACK: pt(-36, -2),
+          E_GATE: pt(16.5, 10),
+          E_TUNNEL: pt(32.5, 10),
+          B_S: pt(32.5, -2),
+          MID_L: pt(-6.5, -7),
+          MID_R: pt(6.5, -7),
+          B_W: pt(10, -7)
+        },
+        routes: {
+          A: [["W_GATE", "A_S", "A"], ["W_ALLEY", "A_BACK", "A_S", "A"], ["MID", "MID_L", "A_E", "A"]],
+          B: [["E_GATE", "B"], ["E_TUNNEL", "B_S", "B"], ["MID", "MID_R", "B_W", "B"]]
+        },
+        // where defenders like to stand, and what they keep an eye on
+        holds: {
+          A: [{ x: -32, z: -18, lx: -26, lz: -6 }, { x: -21.5, z: -8.5, lx: -18, lz: -13 }, { x: -19.5, z: -15.6, lx: -26, lz: -7 }, { x: -15, z: -9.5, lx: -15.5, lz: 4 }, { x: -25.5, z: -16.6, lx: -26, lz: -6 }],
+          B: [{ x: 33.5, z: -11.5, lx: 16.5, lz: 5 }, { x: 18, z: -16.5, lx: 32.5, lz: 2 }, { x: 26.5, z: -19, lx: 22, lz: 2 }, { x: 23, z: -17.2, lx: 16.5, lz: 6 }, { x: 14.5, z: -10.5, lx: 32, lz: 2 }],
+          MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }]
+        },
+        sites: { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } }
+      };
     }
-    block(5.6, -38.6, 6.8, -37.4, 9.4, 13201498, 0.1);
-    hedge(-7, -27, 7, -26, 2.7);
-    crate(-11.5, -31.5, 1.2, 1);
-    crate(11.5, -31.5, 1.2, 2);
-    well(0, -15);
-    tractor(-7, -21);
-    hay(6, -10, false, 2);
-    hay(-10, -8.6, true, 2);
-    hay(-8.9, -8.6, true, 1);
-    crate(8, -21, 1.3, 1);
-    hay(3.5, -23, false, 1);
-    stone(-11, -5, -8, -4);
-    stone(-5, -5, 5, -4);
-    stone(8, -5, 11, -4);
-    stone(-12, -5, -11, 17);
-    stone(-12, 20, -11, 26);
-    stone(11, -5, 12, 17);
-    stone(11, 20, 12, 26);
-    fence(-11, 26, -4, 26.4);
-    fence(4, 26, 11, 26.4);
-    hay(0, 18.5, false, 1);
-    hay(-6, 21, true, 1);
-    hay(6.5, 22.5, false, 2);
-    stone(-40, 4, -37, 5);
-    stone(-34, 4, -17, 5);
-    stone(-14, 4, -12, 5);
-    block(-30, 12, -22, 18, 3, C.coop, 0.12);
-    gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, "shingle", C.coop, 0.6);
-    deco(1, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
-    deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
-    for (const x of [-28.4, -23.6]) deco(1, 0.8, 0.1, 10475250, x, 1.9, 18.03, 0.04);
-    hay(-19, 9.5, false, 2);
-    hay(-17.4, 22, true, 1);
-    crate(-33, 10, 1.2, 1);
-    crate(-21.5, 1, 1.2, 2);
-    hay(-30, 0.5, false, 1);
-    hay(-14, -1.5, true, 2);
-    tree(-37.5, 22);
-    tree(-21, 25.5, 0.9);
-    tree(-38, -2.5, 0.9);
-    stone(12, 6, 15, 7);
-    stone(18, 6, 28, 7);
-    stone(37, 6, 40, 7);
-    block(28, 3, 31, 7, 3, C.stone, 0.14);
-    block(34, 3, 37, 7, 3, C.stone, 0.14);
-    block(31, 3, 34, 7, 0.7, C.stone, 0.14, 2.4);
-    deco(9.3, 0.26, 4.3, C.stoneCap, 32.5, 3.1, 5, 0.1);
-    crate(19.5, 11, 1.2, 2);
-    hay(28.5, 15, true, 1);
-    crate(36, 12, 1.2, 1);
-    hay(20, 1, false, 2);
-    crate(27, -0.5, 1.2, 1);
-    hay(15, 21.5, true, 1);
-    for (const [x, z, s] of [[23.5, 13, 0.55], [26.4, 21, 0.7], [22.6, 25, 0.5]]) {
-      solid(x - s, 0, z - s, x + s, s * 1.2, z + s);
-      add(root, sphereLoGeo(), 11118495, x, s * 0.5, z, { s: [s * 1.15, s * 0.85, s * 1.05] });
+    function layoutMill() {
+      const wall = lined(texMat("stone"), texMat("wood"), -27, -15);
+      hedge(-41, -41, 41, -40, 3.4);
+      hedge(-41, 40, 41, 41, 3.4);
+      hedge(-41, -40, -40, 40, 3.4);
+      hedge(40, -40, 41, 40, 3.4);
+      bridge(-29, -25, 2.5, 7.5);
+      bridge(-3, 3, 2.5, 7.5, true);
+      bridge(22, 26, 2.5, 7.5);
+      stone(-40, 1, -29, 2);
+      stone(-25, 1, -3.4, 2);
+      stone(3.4, 1, 10, 2);
+      stone(12, 1, 22, 2);
+      stone(26, 1, 40, 2);
+      for (const [x, z, s] of [[10.3, 0.4, 0.35], [11.8, 2.3, 0.3], [9.6, 2.6, 0.4], [-14, 8.2, 0.45], [15, 8.4, 0.5], [34, 8.1, 0.4], [-36, 8.3, 0.45]]) add(root, sphereLoGeo(), 11118495, x, s * 0.4, z, { s: [s * 1.2, s * 0.8, s] });
+      const H = 5;
+      wall(-36, -8.5, -29, -8, H);
+      wall(-25, -8.5, -18, -8, H);
+      wall(-29, -8.5, -25, -8, 2, 3);
+      wall(-36, -22, -24, -21.5, H);
+      wall(-21, -22, -18, -21.5, H);
+      wall(-24, -22, -21, -21.5, 2, 3);
+      wall(-36, -21.5, -35.5, -8.5, H);
+      wall(-18.5, -21.5, -18, -17, H);
+      wall(-18.5, -13, -18, -8.5, H);
+      wall(-18.5, -17, -18, -13, 2, 3);
+      gableRoof(-36.5, -17.5, -22.5, -7.5, H - 0.2, 9, 14462578);
+      gableRoof(-36.8, -17.2, -22.8, -7.2, H - 0.05, 9.2, "shingle", 13617336);
+      for (const [x, z] of [[-36, -8.25], [-18, -8.25], [-36, -21.75], [-18, -21.75]]) deco(0.7, H + 0.1, 0.7, C.woodDark, x, H / 2, z, 0.08);
+      for (const x of [-29.1, -24.9]) deco(0.3, 3, 0.62, C.woodDark, x, 1.5, -8.25, 0.06);
+      deco(4.5, 0.3, 0.62, C.woodDark, -27, 3.1, -8.25, 0.06);
+      for (const z of [-17.1, -12.9]) deco(0.62, 3, 0.3, C.woodDark, -18.25, 1.5, z, 0.06);
+      deco(0.62, 0.3, 4.5, C.woodDark, -18.25, 3.1, -15, 0.06);
+      for (const x of [-24.1, -20.9]) deco(0.3, 3, 0.62, C.woodDark, x, 1.5, -21.75, 0.06);
+      deco(3.5, 0.3, 0.62, C.woodDark, -22.5, 3.1, -21.75, 0.06);
+      block(-33.4, -19.6, -30.8, -17.6, 1.5, texMat("wood"), 0.1);
+      deco(0.3, 2.6, 0.3, C.woodDark, -33, 2.3, -18.6, 0.06);
+      deco(0.3, 2.6, 0.3, C.woodDark, -31.2, 2.3, -18.6, 0.06);
+      deco(2.4, 0.3, 0.4, C.woodDark, -32.1, 3.5, -18.6, 0.06);
+      add(root, cylGeo(0.12, 0.12, 2, 8), C.metal, -32.1, 2.6, -18.6);
+      add(root, cylGeo(0.75, 0.75, 0.3, 16), C.woodDark, -32.1, 1.75, -18.6);
+      barrel(-33.6, -11, 2);
+      barrel(-32.5, -10.2, 1);
+      barrel(-20.2, -10.2, 2);
+      barrel(-21.4, -10.2, 1);
+      crate(-23, -19.6, 1.2, 2);
+      barrel(-29.5, -12.6, 1);
+      hay(-20.6, -19.4, true, 1);
+      solid(-34.8, 0, -8, -30.2, 4.7, -7.5);
+      waterWheel(-32.5, 2.45, -7.62);
+      sign(-23.3, -6.7, "A", "#e2443a");
+      barrel(-27.5, -3.6, 2);
+      barrel(-26.5, -3.2, 1);
+      crate(-33.5, -2.5, 1.2, 1);
+      hay(-21.5, -4.5, false, 2);
+      barrel(-20, 0, 1);
+      cart(-37.2, -5.2, true);
+      tree(-38.2, -26.5, 0.9);
+      tree(-30, -27, 1);
+      cart(0.4, -9, false);
+      barrel(-8, -5.2, 2);
+      barrel(-8.9, -4.4, 1);
+      barrel(-7.2, -4.3, 1);
+      barrel(6.2, -4, 2);
+      barrel(7.2, -4.4, 1);
+      crate(4.5, -16, 1.3, 2);
+      crate(5.9, -16, 1.2, 1);
+      hay(-4, -20, false, 2);
+      barrel(-12.5, -14, 2);
+      barrel(-13.4, -13.2, 1);
+      stall(-9.5, -23, 15910987);
+      hay(8, -22.5, true, 1);
+      tree(-14.5, -1.2, 0.85);
+      tree(8.5, -27.5, 0.9);
+      block(10, -24, 13, -12, 3.6, C.house, 0.12);
+      deco(3.8, 0.24, 12.6, C.coopRoof, 11.5, 3.75, -18, 0.08, { r: [0, 0, 0.1] });
+      for (const z of [-21.5, -18, -14.5]) {
+        deco(0.1, 1.1, 1.3, 10475250, 13.03, 2, z, 0.04);
+        deco(0.16, 0.14, 1.5, C.trim, 13.04, 1.35, z, 0.04);
+      }
+      stone(10, -5, 22, -4);
+      stone(26, -5, 34, -4);
+      stone(37, -5, 40, -4);
+      hedge(13, -25, 26, -24, 2.8);
+      hedge(30, -25, 40, -24, 2.8);
+      fountain(31, -17);
+      stall(17.5, -9, 14828602);
+      stall(19, -20, 4165593);
+      stall(36, -11.5, 5809500, true);
+      stall(24.5, -22, 15764004);
+      barrel(22.3, -16.8, 2);
+      barrel(23.2, -16.2, 1);
+      crate(28.5, -7.6, 1.2, 1);
+      crate(15, -14.5, 1.2, 2);
+      barrel(34.5, -21.5, 1);
+      hay(27.5, -19.5, true, 1);
+      bunting(14, 39, -6.2);
+      bunting(14, 39, -23);
+      for (const [x, z, s] of [[38.3, -6.5, 0.45], [37.6, -7.6, 0.34], [14.4, -22.6, 0.42], [33.2, -6.4, 0.36]]) pumpkin(x, z, s);
+      sign(27.4, -3, "B", "#3f8fd9");
+      barrel(19.5, -1.6, 2);
+      crate(29.5, -1.8, 1.2, 1);
+      hay(16, -0.6, false, 1);
+      tree(38, -1.5, 0.85);
+      block(-9, -40, 9, -35, 5, C.coop, 0.12);
+      gableRoof(-9.8, 9.8, -41, -34.2, 4.95, 8.2, "shingle", C.coop, 0.8);
+      for (let i = 0; i < 9; i++) deco(2, 0.14, 2.2, i % 2 ? 14828602 : C.trim, -8 + i * 2, 3, -33.9, 0.05, { r: [0.2, 0, 0] });
+      for (const x of [-8.8, 0, 8.8]) deco(0.2, 3, 0.2, C.woodDark, x, 1.5, -32.9, 0.06);
+      deco(1.3, 2.3, 0.12, 10181180, -4, 1.15, -34.95, 0.04);
+      for (const x of [0, 3.2, 6]) {
+        deco(1.3, 1.3, 0.1, 10475250, x, 2, -34.96, 0.04);
+        deco(1.5, 0.14, 0.16, C.trim, x, 1.3, -34.94, 0.04);
+      }
+      hedge(-7, -27, 7, -26, 2.7);
+      barrel(-11.5, -31.5, 2);
+      barrel(11.5, -31.5, 1);
+      barrel(12.4, -30.9, 1);
+      stone(-13, 13, -12, 25);
+      stone(12, 13, 13, 25);
+      for (const x of [-36.5, -31.5, -22.5, -17.5]) for (const z of [12.5, 18.5, 24.5]) tree(x + rand(-0.3, 0.3), z + rand(-0.3, 0.3), rand(0.82, 0.95), true, true);
+      for (const x of [16.5, 20.2, 28, 32.5, 37]) for (const z of [12.5, 18.5, 24.5]) tree(x + rand(-0.3, 0.3), z + rand(-0.3, 0.3), rand(0.82, 0.95), true, true);
+      for (const x of [-7.5, 7.5]) for (const z of [13.5, 19.5, 25.5]) tree(x, z, 0.9, true, true);
+      crate(-30.6, 10, 1.2, 2);
+      barrel(-23.4, 10.2, 2);
+      barrel(-22.5, 9.6, 1);
+      crate(5.2, 10.6, 1.2, 1);
+      barrel(-5, 10.4, 2);
+      crate(20.4, 9.8, 1.2, 2);
+      barrel(27.6, 10.4, 1);
+      barrel(28.4, 9.8, 2);
+      hay(-27, 21, false, 1);
+      cart(-5.5, 29.5, false);
+      hay(24, 21.5, false, 2);
+      crate(-34, 15.6, 1.2, 1);
+      crate(34.6, 21.4, 1.2, 1);
+      hay(0, 16, false, 1);
+      hay(0.2, 22.4, true, 2);
+      hay(-18, 33.5, true, 2);
+      hay(18, 33.5, true, 2);
+      barrel(-9, 30, 1);
+      barrel(9, 30, 2);
+      tree(-28, 37, 1);
+      tree(28, 37, 1);
+      tree(0, 38.2, 0.8);
+      for (const [x, z, s] of [[-10.5, 27.5, 0.42], [-9.6, 28.4, 0.3], [10.6, 27.6, 0.4], [-38, 30, 0.45], [37.5, 29, 0.38]]) pumpkin(x, z, s);
+      const pt = (x, z) => ({ x, z });
+      return {
+        corn: [],
+        lanes: [
+          [[-36, 31], [36, 31]],
+          [[-27, 31], [-27, 8]],
+          [[0, 31], [0, 8]],
+          [[24, 31], [24, 8]],
+          [[-38, 9.6], [38, 9.6]],
+          [[-27, 1], [-27, -8]],
+          [[0, 1], [0, -6], [-4, -12], [-15, -15], [-18, -15]],
+          [[0, -6], [5, -8.5], [13, -8.5]],
+          [[24, 1], [24, -5]],
+          [[13, -1.5], [38, -1.5]],
+          [[35.5, -1.5], [35.5, -5]],
+          [[0, -31], [-12, -28], [-22.5, -24.5], [-22.5, -22]],
+          [[0, -31], [14, -28], [28, -26.5], [28, -24]],
+          [[-38, -1.5], [-38, -24.5], [-22.5, -24.5]],
+          [[-38, -1.5], [-27, -1.5]],
+          [[-9, -29], [-9, -25], [-4, -12]],
+          [[9, -29], [9, -25], [5, -8.5]]
+        ],
+        soil: [],
+        paved: [[13.2, -23.8, 26.6, 18.6, 26]],
+        floors: [[-35.4, -21.4, -18.6, -8.6]],
+        creeks: [{ pts: [[-41, 5], [41, 5]], w: 4 }],
+        slowZones: [[-40, 3, -29, 7], [-25, 3, -3, 7], [3, 3, 22, 7], [26, 3, 40, 7]].map(([x1, z1, x2, z2]) => ({ x1, z1, x2, z2, f: 0.5 })),
+        cluck: null,
+        points: {
+          A: pt(-27, -15),
+          B: pt(25, -13),
+          MID: pt(0, 10),
+          YARD: pt(-2, -15),
+          HERD: pt(0, 32),
+          HANDS: pt(0, -31),
+          W_S: pt(-27, 10),
+          W_N: pt(-27, -0.5),
+          M_S: pt(0, 10),
+          M_N: pt(0, -1),
+          E_S: pt(24, 10),
+          E_N: pt(24, -1),
+          A_E: pt(-15, -15),
+          A_BACK: pt(-38, -3),
+          A_NW: pt(-38, -24.5),
+          A_N: pt(-22.5, -24),
+          B_W: pt(8.5, -8.5),
+          B_GATE: pt(24, -6.5),
+          WADE_S: pt(11, 9.5),
+          WADE_N: pt(11, -1)
+        },
+        routes: {
+          A: [["W_S", "W_N", "A"], ["M_S", "M_N", "A_E", "A"], ["W_S", "W_N", "A_BACK", "A_NW", "A_N", "A"]],
+          B: [["E_S", "E_N", "B_GATE", "B"], ["M_S", "M_N", "B_W", "B"], ["WADE_S", "WADE_N", "B_W", "B"]]
+        },
+        holds: {
+          A: [{ x: -34.5, z: -15.5, lx: -27, lz: -8 }, { x: -20.5, z: -12, lx: -18, lz: -15 }, { x: -19.6, z: -20.4, lx: -27, lz: -8 }, { x: -15, z: -11, lx: -27, lz: 0 }, { x: -26, z: -19.6, lx: -27, lz: -8 }],
+          B: [{ x: 37.5, z: -21, lx: 24, lz: -4 }, { x: 15.5, z: -22, lx: 24, lz: -4 }, { x: 33, z: -17, lx: 24, lz: -4 }, { x: 21, z: -21.8, lx: 11, lz: -8 }, { x: 37.6, z: -9, lx: 24, lz: -4 }],
+          MID: [{ x: 2.5, z: -11.2, lx: 0, lz: 1 }, { x: -6, z: -21.6, lx: 0, lz: 1 }, { x: 7.5, z: -6.2, lx: 0, lz: 1 }]
+        },
+        sites: { A: { x: -27, z: -15, r: 3.4 }, B: { x: 25, z: -13, r: 3.4 } }
+      };
     }
-    tree(36.5, 22);
-    tree(14.5, 25, 0.85);
-    tree(38, -1.5, 0.9);
-    hay(-9, 30, false, 1);
-    hay(9, 30, false, 1);
-    hay(-18, 33.5, true, 2);
-    hay(18, 33.5, true, 2);
-    tree(-28, 36.5);
-    tree(28, 36.5);
-    tree(0, 38.2, 0.8);
-    block(-3.2, 36.2, 3.2, 37, 0.6, C.wood, 0.1);
-    deco(6, 0.08, 0.5, C.water, 0, 0.6, 36.6, 0.03, { cast: false });
+    const L = (mapId === "mill" ? layoutMill : layoutFarm)();
     const bushMesh = new T3.InstancedMesh(sphereLoGeo(), new T3.MeshLambertMaterial({ color: 16777215 }), bushes.length);
     const dummy = new T3.Object3D(), col = new T3.Color();
     bushes.forEach((b, i) => {
@@ -1576,86 +1977,69 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     bushMesh.receiveShadow = true;
     root.add(bushMesh);
     const cornZones = [];
-    const cornTex = canvasTexture(128, 256, (g) => {
-      g.lineCap = "round";
-      g.strokeStyle = "#4c9a36";
-      g.lineWidth = 9;
-      g.beginPath();
-      g.moveTo(64, 256);
-      g.lineTo(64, 22);
-      g.stroke();
-      const leaf = (y, dir, len, colr) => {
-        g.strokeStyle = colr;
-        g.lineWidth = 13;
+    if (L.corn.length) {
+      const cornTex = canvasTexture(128, 256, (g) => {
+        g.lineCap = "round";
+        g.strokeStyle = "#4c9a36";
+        g.lineWidth = 9;
         g.beginPath();
-        g.moveTo(64, y);
-        g.quadraticCurveTo(64 + dir * len * 0.7, y - 46, 64 + dir * len, y - 6);
+        g.moveTo(64, 256);
+        g.lineTo(64, 22);
         g.stroke();
-      };
-      leaf(240, 1, 52, "#5fb43f");
-      leaf(226, -1, 56, "#57a93a");
-      leaf(176, 1, 58, "#69c048");
-      leaf(158, -1, 54, "#5fb43f");
-      leaf(108, 1, 46, "#57a93a");
-      leaf(92, -1, 50, "#69c048");
-      leaf(48, 1, 30, "#69c048");
-      leaf(44, -1, 28, "#5fb43f");
-      g.fillStyle = "#f4cf45";
-      g.beginPath();
-      g.ellipse(80, 128, 11, 26, 0.25, 0, 7);
-      g.fill();
-      g.fillStyle = "#8fd060";
-      g.beginPath();
-      g.ellipse(76, 142, 9, 18, 0.25, 0, 7);
-      g.fill();
-      g.fillStyle = "#e8c56a";
-      g.beginPath();
-      g.ellipse(64, 16, 10, 16, 0, 0, 7);
-      g.fill();
-    });
-    const cornGeo = new T3.BufferGeometry();
-    const hw = 0.62, ch = 2.45;
-    cornGeo.setAttribute("position", new T3.Float32BufferAttribute([-hw, 0, 0, hw, 0, 0, hw, ch, 0, -hw, ch, 0, 0, 0, -hw, 0, 0, hw, 0, ch, hw, 0, ch, -hw], 3));
-    cornGeo.setAttribute("uv", new T3.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1], 2));
-    cornGeo.setAttribute("normal", new T3.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
-    cornGeo.setIndex([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
-    const stalks = [];
-    for (const [x1, x2] of [[-10, -1.4], [1.4, 10]]) for (const [z1, z2] of [[-1, 6], [8.6, 15]]) {
-      cornZones.push({ x1, y1: 0, z1, x2, y2: 2.3, z2 });
-      for (let x = x1 + 0.35; x < x2 - 0.2; x += 0.72) for (let z = z1 + 0.35; z < z2 - 0.2; z += 0.72) stalks.push([x + rand(-0.22, 0.22), z + rand(-0.22, 0.22)]);
+        const leaf = (y, dir, len, colr) => {
+          g.strokeStyle = colr;
+          g.lineWidth = 13;
+          g.beginPath();
+          g.moveTo(64, y);
+          g.quadraticCurveTo(64 + dir * len * 0.7, y - 46, 64 + dir * len, y - 6);
+          g.stroke();
+        };
+        leaf(240, 1, 52, "#5fb43f");
+        leaf(226, -1, 56, "#57a93a");
+        leaf(176, 1, 58, "#69c048");
+        leaf(158, -1, 54, "#5fb43f");
+        leaf(108, 1, 46, "#57a93a");
+        leaf(92, -1, 50, "#69c048");
+        leaf(48, 1, 30, "#69c048");
+        leaf(44, -1, 28, "#5fb43f");
+        g.fillStyle = "#f4cf45";
+        g.beginPath();
+        g.ellipse(80, 128, 11, 26, 0.25, 0, 7);
+        g.fill();
+        g.fillStyle = "#8fd060";
+        g.beginPath();
+        g.ellipse(76, 142, 9, 18, 0.25, 0, 7);
+        g.fill();
+        g.fillStyle = "#e8c56a";
+        g.beginPath();
+        g.ellipse(64, 16, 10, 16, 0, 0, 7);
+        g.fill();
+      });
+      owned.push(cornTex);
+      const cornGeo = new T3.BufferGeometry();
+      const hw = 0.62, ch = 2.45;
+      cornGeo.setAttribute("position", new T3.Float32BufferAttribute([-hw, 0, 0, hw, 0, 0, hw, ch, 0, -hw, ch, 0, 0, 0, -hw, 0, 0, hw, 0, ch, hw, 0, ch, -hw], 3));
+      cornGeo.setAttribute("uv", new T3.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1], 2));
+      cornGeo.setAttribute("normal", new T3.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
+      cornGeo.setIndex([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
+      const stalks = [];
+      for (const [x1, x2, z1, z2] of L.corn) {
+        cornZones.push({ x1, y1: 0, z1, x2, y2: 2.3, z2 });
+        for (let x = x1 + 0.35; x < x2 - 0.2; x += 0.72) for (let z = z1 + 0.35; z < z2 - 0.2; z += 0.72) stalks.push([x + rand(-0.22, 0.22), z + rand(-0.22, 0.22)]);
+      }
+      const corn = new T3.InstancedMesh(cornGeo, new T3.MeshLambertMaterial({ map: cornTex, alphaTest: 0.45, side: T3.DoubleSide }), stalks.length);
+      stalks.forEach(([x, z], i) => {
+        dummy.position.set(x, 0, z);
+        dummy.rotation.set(0, rand(Math.PI), 0);
+        dummy.scale.setScalar(rand(0.86, 1.14));
+        dummy.updateMatrix();
+        corn.setMatrixAt(i, dummy.matrix);
+      });
+      dummy.rotation.set(0, 0, 0);
+      corn.receiveShadow = true;
+      root.add(corn);
     }
-    const corn = new T3.InstancedMesh(cornGeo, new T3.MeshLambertMaterial({ map: cornTex, alphaTest: 0.45, side: T3.DoubleSide }), stalks.length);
-    stalks.forEach(([x, z], i) => {
-      dummy.position.set(x, 0, z);
-      dummy.rotation.set(0, rand(Math.PI), 0);
-      dummy.scale.setScalar(rand(0.86, 1.14));
-      dummy.updateMatrix();
-      corn.setMatrixAt(i, dummy.matrix);
-    });
-    dummy.rotation.set(0, 0, 0);
-    corn.receiveShadow = true;
-    root.add(corn);
     const P1 = (v, S) => (v + 48) * (S / 96);
-    const lanes = [
-      [[-36, 31], [36, 31]],
-      [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
-      [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
-      [[0, 31], [0, -2]],
-      [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
-      [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
-      [[-10, 7.3], [10, 7.3]],
-      [[16.5, 31], [16.5, -1], [24, -10]],
-      [[32.5, 31], [32.5, -1], [24, -10]],
-      [[0, -31], [-10, -29], [-22.5, -23]],
-      [[0, -31], [10, -29], [22, -25], [24, -12]],
-      [[0, -18], [-15, -13], [-26, -13]],
-      [[0, -18], [10, -7], [14, -7]],
-      [[12, -16.5], [22, -14]],
-      [[-9, -29], [-9, -24], [0, -18]],
-      [[9, -29], [9, -24], [0, -18]],
-      [[-11.5, 18.5], [-15.5, 18.5]],
-      [[11.5, 18.5], [16.5, 18.5]]
-    ];
     const maskTex = canvasTexture(1024, 1024, (g, S) => {
       const P = (v) => P1(v, S), m2p = S / 96;
       g.fillStyle = "#000";
@@ -1674,12 +2058,19 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         g.filter = "blur(5px)";
       } catch (e) {
       }
-      lanes.forEach((l) => stroke(l, 2.9, "#ff0000"));
+      L.lanes.forEach((l) => stroke(l, 2.9, "#ff0000"));
       g.fillStyle = "#00ff00";
-      roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 30);
-      g.fill();
+      for (const [x, z, w, d, r] of L.soil) {
+        roundRect(g, P(x), P(z), w * m2p, d * m2p, r);
+        g.fill();
+      }
       for (const z of cornZones) {
         roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 8);
+        g.fill();
+      }
+      g.fillStyle = "#0000ff";
+      for (const [x, z, w, d, r] of L.paved) {
+        roundRect(g, P(x), P(z), w * m2p, d * m2p, r);
         g.fill();
       }
       g.filter = "none";
@@ -1698,101 +2089,124 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
         g.stroke();
       };
-      const creek = [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]];
-      try {
-        g.filter = "blur(4px)";
-      } catch (e) {
+      for (const c of L.creeks) {
+        try {
+          g.filter = "blur(4px)";
+        } catch (e) {
+        }
+        stroke(c.pts, c.w + 1.1, "#9be2fb");
+        g.filter = "none";
+        stroke(c.pts, c.w, "#5fc4ef");
+        g.strokeStyle = "rgba(255,255,255,0.55)";
+        g.lineWidth = 3;
+        for (let k = 0; k < c.pts.length - 1; k++) {
+          const [ax, az] = c.pts[k], [bx, bz] = c.pts[k + 1], len = Math.hypot(bx - ax, bz - az), n = Math.floor(len / 1.3);
+          for (let i = 0; i < n; i++) {
+            const t = (i + 0.5) / n, x = ax + (bx - ax) * t + rand(-0.3, 0.3) * (c.w / 2.3), z = az + (bz - az) * t + rand(-0.4, 0.4) * (c.w / 2.3);
+            g.beginPath();
+            g.moveTo(P(x - 0.3), P(z));
+            g.lineTo(P(x + 0.3), P(z + 0.08));
+            g.stroke();
+          }
+        }
       }
-      stroke(creek, 3.4, "#9be2fb");
-      g.filter = "none";
-      stroke(creek, 2.3, "#5fc4ef");
-      g.strokeStyle = "rgba(255,255,255,0.55)";
-      g.lineWidth = 3;
-      for (let i = 0; i < 26; i++) {
-        const z = 9 + i * 1.15, x = 24.6 + Math.sin(i * 1.7) * 0.7;
-        g.beginPath();
-        g.moveTo(P(x - 0.3), P(z));
-        g.lineTo(P(x + 0.3), P(z + 0.1));
-        g.stroke();
+      for (const [x1, z1, x2, z2] of L.floors) {
+        g.fillStyle = "#d4a96f";
+        g.fillRect(P(x1), P(z1), (x2 - x1) * m2p, (z2 - z1) * m2p);
+        g.strokeStyle = "rgba(120,80,40,0.4)";
+        g.lineWidth = 2.5;
+        for (let z = z1 + 0.6; z < z2; z += 0.9) {
+          g.beginPath();
+          g.moveTo(P(x1), P(z));
+          g.lineTo(P(x2), P(z));
+          g.stroke();
+        }
       }
-      g.fillStyle = "#d4a96f";
-      g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
-      g.strokeStyle = "rgba(120,80,40,0.4)";
-      g.lineWidth = 2.5;
-      for (let z = -19; z < -6.5; z += 0.9) {
-        g.beginPath();
-        g.moveTo(P(-33.6), P(z));
-        g.lineTo(P(-18.4), P(z));
-        g.stroke();
-      }
-      const ring = (x, z) => {
+      for (const k of ["A", "B"]) {
+        const st = L.sites[k];
         g.strokeStyle = "rgba(255,248,230,0.95)";
         g.lineWidth = 0.28 * m2p;
         g.setLineDash([24, 16]);
         g.beginPath();
-        g.arc(P(x), P(z), 3.4 * m2p, 0, 7);
+        g.arc(P(st.x), P(st.z), st.r * m2p, 0, 7);
         g.stroke();
         g.setLineDash([]);
-      };
-      ring(-26, -13);
-      ring(24, -10.2);
+      }
       for (let i = 0; i < 1100; i++) {
-        g.fillStyle = ["#ffffff", "#ffe36e", "#ff9ec4", "#fff3b0"][i % 4];
+        g.fillStyle = TH.specks[i % 4];
         g.beginPath();
         g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7);
         g.fill();
       }
     });
-    const flat2 = (colr) => canvasTexture(4, 4, (g) => {
-      g.fillStyle = colr;
-      g.fillRect(0, 0, 4, 4);
-    });
-    const uni = { dirtMap: { value: flat2("#dcb98a") }, soilMap: { value: flat2("#9b6b46") }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
-    const groundMat = new T3.MeshLambertMaterial({ map: flat2("#86cf58") });
+    const flat2 = (colr) => {
+      const t = canvasTexture(4, 4, (g) => {
+        g.fillStyle = colr;
+        g.fillRect(0, 0, 4, 4);
+      });
+      owned.push(t);
+      return t;
+    };
+    owned.push(maskTex, detailTex);
+    const uni = { dirtMap: { value: flat2("#dcb98a") }, soilMap: { value: flat2("#9b6b46") }, paveMap: { value: flat2("#cfc7b6") }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
+    const groundMat = new T3.MeshLambertMaterial({ map: flat2("#86cf58"), color: TH.grass });
     groundMat.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, uni);
-      sh.fragmentShader = sh.fragmentShader.replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D maskMap; uniform sampler2D detailMap;").replace("#include <map_fragment>", `
+      sh.fragmentShader = sh.fragmentShader.replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D paveMap; uniform sampler2D maskMap; uniform sampler2D detailMap;").replace("#include <map_fragment>", `
         vec2 tuv = vUv * 30.0;
         vec4 mk = texture2D( maskMap, vUv );
-        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 );
+        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 ) * diffuseColor.rgb;
         vec3 col = mix( gcol, texture2D( dirtMap, tuv * 0.8 ).rgb, smoothstep( 0.15, 0.75, mk.r ) );
         col = mix( col, texture2D( soilMap, tuv * 0.8 ).rgb, smoothstep( 0.2, 0.8, mk.g ) );
+        col = mix( col, texture2D( paveMap, tuv * 0.55 ).rgb * vec3( 1.08, 1.05, 0.98 ), smoothstep( 0.2, 0.8, mk.b ) );
         vec4 det = texture2D( detailMap, vUv );
         col = mix( col, det.rgb, det.a );
-        diffuseColor.rgb *= col;`);
+        diffuseColor.rgb = col;`);
     };
-    loadTexture("grass", (t) => {
+    let alive = true;
+    const take = (t, use) => {
+      if (!alive) {
+        t.dispose();
+        return;
+      }
+      owned.push(t);
+      use(t);
+    };
+    loadTexture("grass", (t) => take(t, () => {
       groundMat.map = t;
       groundMat.needsUpdate = true;
-    });
-    loadTexture("dirt", (t) => {
+    }));
+    loadTexture("dirt", (t) => take(t, () => {
       uni.dirtMap.value = t;
-    });
-    loadTexture("soil", (t) => {
+    }));
+    loadTexture("soil", (t) => take(t, () => {
       uni.soilMap.value = t;
-    });
+    }));
+    if (L.paved.length) loadTexture("stone", (t) => take(t, () => {
+      uni.paveMap.value = t;
+    }));
     const ground = new T3.Mesh(new T3.PlaneGeometry(96, 96), groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     ground.userData.keep = true;
     root.add(ground);
-    const outer = new T3.Mesh(new T3.CircleGeometry(420, 40), mat(8176722));
+    const outer = new T3.Mesh(new T3.CircleGeometry(420, 40), mat(TH.outer));
     outer.rotation.x = -Math.PI / 2;
     outer.position.y = -0.06;
     root.add(outer);
     for (let i = 0; i < 16; i++) {
       const a = i / 16 * Math.PI * 2 + rand(0.2), d = rand(120, 230), s = rand(40, 85);
-      add(root, sphereLoGeo(), i % 2 ? 7651154 : 9097572, Math.cos(a) * d, -s * 0.18, Math.sin(a) * d, { s: [s, s * rand(0.3, 0.5), s], cast: false, receive: false });
+      add(root, sphereLoGeo(), TH.hills[i % 2], Math.cos(a) * d, -s * 0.18, Math.sin(a) * d, { s: [s, s * rand(0.3, 0.5), s], cast: false, receive: false });
     }
     for (let i = 0; i < 26; i++) {
       const a = rand(Math.PI * 2), d = rand(47, 80);
       tree(Math.cos(a) * d * 1.05, Math.sin(a) * d * 1.05, rand(1, 1.7), false);
     }
-    const mill = group(root, -58, 0, -52);
+    const mill = group(root, TH.mill[0], 0, TH.mill[1]);
     add(mill, cylGeo(1.6, 2.8, 12, 12), 16773590, 0, 6, 0);
     add(mill, coneGeo(2.2, 2.4, 12), C.coopRoof, 0, 13.2, 0);
-    const blades = group(mill, 2, 11, 1.2);
-    blades.rotation.y = 0.9;
+    const blades = group(mill, TH.mill[0] < 0 ? 2 : -2, 11, 1.2);
+    blades.rotation.y = TH.mill[0] < 0 ? 0.9 : -0.9;
     for (let i = 0; i < 4; i++) {
       const b = add(blades, rboxGeo(0.8, 7, 0.1, 0.04), C.trim, 0, 0, 0.3);
       b.geometry = b.geometry.clone().translate(0, 3.8, 0);
@@ -1823,61 +2237,66 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     });
     const skyTex = canvasTexture(16, 256, (g) => {
       const gr = g.createLinearGradient(0, 0, 0, 256);
-      gr.addColorStop(0, "#3fa4ee");
-      gr.addColorStop(0.45, "#8fd0fb");
-      gr.addColorStop(0.62, "#e4f6ff");
-      gr.addColorStop(1, "#e4f6ff");
+      gr.addColorStop(0, TH.sky[0]);
+      gr.addColorStop(0.45, TH.sky[1]);
+      gr.addColorStop(0.62, TH.sky[2]);
+      gr.addColorStop(1, TH.sky[2]);
       g.fillStyle = gr;
       g.fillRect(0, 0, 16, 256);
     });
+    owned.push(skyTex);
     const sky = new T3.Mesh(new T3.SphereGeometry(400, 20, 14), new T3.MeshBasicMaterial({ map: skyTex, side: T3.BackSide, fog: false }));
     root.add(sky);
     bakeTree(root);
-    scene.fog = new T3.Fog(14676991, 130, 520);
-    scene.add(new T3.HemisphereLight(15004415, 14932144, 0.82));
-    const sun = new T3.DirectionalLight(16773328, 0.74);
-    sun.position.set(34, 58, 30);
+    scene.fog = new T3.Fog(TH.fog, 130, 520);
+    const hemi = new T3.HemisphereLight(TH.hemi[0], TH.hemi[1], TH.hemi[2]);
+    scene.add(hemi);
+    const sun = new T3.DirectionalLight(TH.sun[0], TH.sun[1]);
+    sun.position.set(...TH.sun[2]);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     Object.assign(sun.shadow.camera, { left: -58, right: 58, top: 58, bottom: -58, near: 1, far: 160 });
     sun.shadow.bias = -5e-4;
     sun.shadow.normalBias = 0.04;
     scene.add(sun);
-    const pt = (x, z) => ({ x, z });
-    const points = {
-      A: pt(-26, -13),
-      B: pt(24, -12.6),
-      MID: pt(0, 7.3),
-      YARD: pt(3, -17),
-      HERD: pt(0, 32),
-      HANDS: pt(0, -31),
-      A_S: pt(-26, -3),
-      A_E: pt(-15, -13),
-      W_GATE: pt(-15.5, 8),
-      W_ALLEY: pt(-35.5, 8),
-      A_BACK: pt(-36, -2),
-      E_GATE: pt(16.5, 10),
-      E_TUNNEL: pt(32.5, 10),
-      B_S: pt(32.5, -2),
-      MID_L: pt(-6.5, -7),
-      MID_R: pt(6.5, -7),
-      B_W: pt(10, -7)
-    };
-    const routes = {
-      A: [["W_GATE", "A_S", "A"], ["W_ALLEY", "A_BACK", "A_S", "A"], ["MID", "MID_L", "A_E", "A"]],
-      B: [["E_GATE", "B"], ["E_TUNNEL", "B_S", "B"], ["MID", "MID_R", "B_W", "B"]]
-    };
-    const holds = {
-      A: [{ x: -32, z: -18, lx: -26, lz: -6 }, { x: -21.5, z: -8.5, lx: -18, lz: -13 }, { x: -19.5, z: -15.6, lx: -26, lz: -7 }, { x: -15, z: -9.5, lx: -15.5, lz: 4 }, { x: -25.5, z: -16.6, lx: -26, lz: -6 }],
-      B: [{ x: 33.5, z: -11.5, lx: 16.5, lz: 5 }, { x: 18, z: -16.5, lx: 32.5, lz: 2 }, { x: 26.5, z: -19, lx: 22, lz: 2 }, { x: 23, z: -17.2, lx: 16.5, lz: 6 }, { x: 14.5, z: -10.5, lx: 32, lz: 2 }],
-      MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }]
-    };
     const spawns = {
       attack: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
       defend: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI }))
     };
-    const sites = { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } };
-    return { boxes, cornZones, points, routes, holds, spawns, sites, animated, half: 40 };
+    const slowZones = L.slowZones;
+    return {
+      id: mapId,
+      name: MAPS[mapId].name,
+      boxes,
+      cornZones,
+      points: L.points,
+      routes: L.routes,
+      holds: L.holds,
+      spawns,
+      sites: L.sites,
+      animated,
+      half: 40,
+      slowZones,
+      cluck: L.cluck,
+      // how much slower you move here (1 = normal): wading through the creek is slow
+      slowAt(x, z) {
+        for (const s of slowZones) if (x > s.x1 && x < s.x2 && z > s.z1 && z < s.z2) return s.f;
+        return 1;
+      },
+      // take this map out of the scene so another can be built
+      dispose() {
+        alive = false;
+        scene.remove(root);
+        scene.remove(hemi);
+        scene.remove(sun);
+        sun.shadow.map && sun.shadow.map.dispose();
+        root.traverse((o) => {
+          if (o.isMesh && o.geometry) o.geometry.dispose();
+        });
+        for (const t of owned) t.dispose();
+        groundMat.dispose();
+      }
+    };
   }
   function roundRect(g, x, y, w, h, r) {
     g.beginPath();
@@ -1907,6 +2326,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           break;
         }
       }
+    }
+    const slow = new Float32Array(N * N).fill(1);
+    for (const z of world.slowZones || []) for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const x = -half + i + 0.5, y = -half + j + 0.5;
+      if (x > z.x1 && x < z.x2 && y > z.z1 && y < z.z2) slow[j * N + i] = 1 / z.f + 0.6;
     }
     const ci = (x) => Math.max(0, Math.min(N - 1, Math.floor(x + half)));
     const isBlocked = (x, z) => x <= -half || x >= half || z <= -half || z >= half || blocked[ci(z) * N + ci(x)] === 1;
@@ -1959,7 +2383,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           const ni = nz * N + nx;
           if (blocked[ni] || state[ni] === 2) continue;
           if (dx && dz && (blocked[cz * N + nx] || blocked[nz * N + cx])) continue;
-          const ng = g[cur] + cost * (1 + (wobble ? Math.random() * wobble : 0));
+          const ng = g[cur] + cost * slow[ni] * (1 + (wobble ? Math.random() * wobble : 0));
           if (state[ni] === 1 && ng >= g[ni]) continue;
           g[ni] = ng;
           came[ni] = cur;
@@ -2531,6 +2955,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const g = GADGETS[this.gadgetId];
       if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
       top *= this.game.throwables.slowAt(this.pos.x, this.pos.z);
+      top *= this.game.world.slowAt(this.pos.x, this.pos.z);
       const tx = wx * top, tz = wz * top;
       const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
       const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);
@@ -3578,10 +4003,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       // little bits of farm life in the background
       ambient(dt) {
         cluckT -= dt;
+        const coop = game.world.cluck;
         if (cluckT <= 0) {
           cluckT = 14 + Math.random() * 22;
-          const p = place(-26, 15);
-          sample("sfx_cluck", p.vol * 0.5 + 0.03, p.pan, wob());
+          if (coop) {
+            const p = place(coop.x, coop.z);
+            sample("sfx_cluck", p.vol * 0.5 + 0.03, p.pan, wob());
+          }
         }
       },
       setVolume(v) {
@@ -3838,6 +4266,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       c.scale(scale, scale);
       c.rotate(yaw);
       c.translate(-v.pos.x, -v.pos.z);
+      c.fillStyle = "rgba(95,196,239,0.55)";
+      for (const z of game.world.slowZones) c.fillRect(z.x1, z.z1, z.x2 - z.x1, z.z2 - z.z1);
       c.fillStyle = "rgba(58,38,22,0.32)";
       for (const b of game.world.boxes) if (b.y2 >= 2.2 && b.y1 < 1) c.fillRect(b.x1, b.z1, b.x2 - b.x1, b.z2 - b.z1);
       for (const key of ["A", "B"]) {
@@ -4059,7 +4489,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       intel: { herd: /* @__PURE__ */ new Map(), hands: /* @__PURE__ */ new Map() },
       pumpkin: { state: "none", carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null }
     };
-    game.world = buildWorld(scene);
+    game.mapId = "farm";
+    try {
+      const m = localStorage.getItem("hs-map");
+      if (MAPS[m]) game.mapId = m;
+    } catch (e) {
+    }
+    game.world = buildWorld(scene, game.mapId);
     game.nav = buildNav(game.world);
     game.fx = createFx(scene);
     game.audio = createAudio(game);
@@ -4068,7 +4504,24 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.hud = createHud(game);
     const vm = createViewModel();
     const botOf = /* @__PURE__ */ new Map();
-    const W = game.world, P = game.pumpkin, audio = game.audio, hud = game.hud;
+    let W = game.world;
+    const P = game.pumpkin, audio = game.audio, hud = game.hud;
+    function loadMap(id) {
+      if (!MAPS[id] || id === game.mapId) return;
+      game.world.dispose();
+      game.fx.clearDecals();
+      game.combat.clear();
+      game.throwables.clear();
+      game.mapId = id;
+      game.world = buildWorld(scene, id);
+      game.nav = buildNav(game.world);
+      W = game.world;
+      try {
+        localStorage.setItem("hs-map", id);
+      } catch (e) {
+      }
+    }
+    game.loadMap = loadMap;
     const roleOf = (team) => team === game.attackers ? "attack" : "defend";
     const alive = (team) => game.actors.filter((a) => a.team === team && a.alive);
     const dist = (a, x, z) => Math.hypot(a.pos.x - x, a.pos.z - z);
@@ -4273,7 +4726,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       if (half) {
         hud.banner("Half-time!", `Teams swap jobs. ${job}`, 5);
         audio.announce("ann_half");
-      } else hud.banner(`Round ${game.round}`, job, 3.2);
+      } else hud.banner(game.round === 1 ? W.name : `Round ${game.round}`, job, 3.2);
       if (point) audio.announce("ann_match_point");
       callT = -1;
     }
@@ -4881,11 +5334,21 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       choose(".side", "team", pickTeam);
       audio.ui();
     }));
-    document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#levels button").forEach((b) => b.addEventListener("click", () => {
       pickDiff = b.dataset.diff;
-      choose(".seg button", "diff", pickDiff);
+      choose("#levels button", "diff", pickDiff);
       audio.ui();
     }));
+    document.querySelectorAll("#maps button").forEach((b) => {
+      b.setAttribute("aria-checked", String(b.dataset.map === game.mapId));
+      b.addEventListener("click", () => {
+        loadMap(b.dataset.map);
+        choose("#maps button", "map", game.mapId);
+        $2("map-blurb").textContent = MAPS[game.mapId].blurb;
+        audio.ui();
+      });
+    });
+    $2("map-blurb").textContent = MAPS[game.mapId].blurb;
     document.addEventListener("pointerdown", () => {
       audio.init();
       if (game.state === "menu") {
@@ -4941,7 +5404,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.simulate = (seconds, step = 1 / 60) => {
       for (let t = 0; t < seconds; t += step) update(step);
     };
-    game.begin = (team, diff) => {
+    game.begin = (team, diff, map) => {
+      if (map) loadMap(map);
       pickTeam = team;
       pickDiff = diff;
       begin();

@@ -2,7 +2,7 @@
 import { sphereGeo } from './gfx.js';
 import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, THROWS, OBJ, ECON, DIFFICULTY, ROSTER, MOVE } from './config.js';
 import { createThrowables } from './throwables.js';
-import { buildWorld } from './world.js';
+import { buildWorld, MAPS } from './world.js';
 import { buildNav } from './nav.js';
 import { Actor } from './actor.js';
 import { Bot } from './bot.js';
@@ -46,7 +46,9 @@ function boot() {
     viewYaw: 0, viewH: 600, intel: { herd: new Map(), hands: new Map() },
     pumpkin: { state: 'none', carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null },
   };
-  game.world = buildWorld(scene);
+  game.mapId = 'farm';
+  try { const m = localStorage.getItem('hs-map'); if (MAPS[m]) game.mapId = m; } catch (e) { /* default map */ }
+  game.world = buildWorld(scene, game.mapId);
   game.nav = buildNav(game.world);
   game.fx = createFx(scene);
   game.audio = createAudio(game);
@@ -55,7 +57,20 @@ function boot() {
   game.hud = createHud(game);
   const vm = createViewModel();
   const botOf = new Map();
-  const W = game.world, P = game.pumpkin, audio = game.audio, hud = game.hud;
+  let W = game.world;
+  const P = game.pumpkin, audio = game.audio, hud = game.hud;
+  // swap to another map: clear away the old one and build the new one with its own paths for computer players
+  function loadMap(id) {
+    if (!MAPS[id] || id === game.mapId) return;
+    game.world.dispose();
+    game.fx.clearDecals(); game.combat.clear(); game.throwables.clear();
+    game.mapId = id;
+    game.world = buildWorld(scene, id);
+    game.nav = buildNav(game.world);
+    W = game.world;
+    try { localStorage.setItem('hs-map', id); } catch (e) { /* not saved */ }
+  }
+  game.loadMap = loadMap;
   const roleOf = (team) => (team === game.attackers ? 'attack' : 'defend');
   const alive = (team) => game.actors.filter((a) => a.team === team && a.alive);
   const dist = (a, x, z) => Math.hypot(a.pos.x - x, a.pos.z - z);
@@ -210,7 +225,7 @@ function boot() {
     const job = attacking ? (P.carrier === game.player ? 'You have the Stink-Pumpkin. Plant it at A or B.' : 'Help your team plant the Stink-Pumpkin at A or B.') : 'Stop the pumpkin being planted, or cork it in time.';
     const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
     if (half) { hud.banner('Half-time!', `Teams swap jobs. ${job}`, 5); audio.announce('ann_half'); }
-    else hud.banner(`Round ${game.round}`, job, 3.2);
+    else hud.banner(game.round === 1 ? W.name : `Round ${game.round}`, job, 3.2);
     if (point) audio.announce('ann_match_point');
     callT = -1;
   }
@@ -648,7 +663,12 @@ function boot() {
   let pickTeam = 'herd', pickDiff = 'easy', welcomed = false;
   const choose = (group, attr, value) => document.querySelectorAll(group).forEach((b) => b.setAttribute('aria-checked', String(b.dataset[attr] === value)));
   document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', () => { pickTeam = b.dataset.team; choose('.side', 'team', pickTeam); audio.ui(); }));
-  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('.seg button', 'diff', pickDiff); audio.ui(); }));
+  document.querySelectorAll('#levels button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('#levels button', 'diff', pickDiff); audio.ui(); }));
+  document.querySelectorAll('#maps button').forEach((b) => {
+    b.setAttribute('aria-checked', String(b.dataset.map === game.mapId));
+    b.addEventListener('click', () => { loadMap(b.dataset.map); choose('#maps button', 'map', game.mapId); $('map-blurb').textContent = MAPS[game.mapId].blurb; audio.ui(); });
+  });
+  $('map-blurb').textContent = MAPS[game.mapId].blurb;
   // sound can only start after the first click anywhere
   document.addEventListener('pointerdown', () => {
     audio.init();
@@ -687,7 +707,7 @@ function boot() {
 
   // handy for automated checks: run the game forward without waiting for real time
   game.simulate = (seconds, step = 1 / 60) => { for (let t = 0; t < seconds; t += step) update(step); };
-  game.begin = (team, diff) => { pickTeam = team; pickDiff = diff; begin(); };
+  game.begin = (team, diff, map) => { if (map) loadMap(map); pickTeam = team; pickDiff = diff; begin(); };
   game.setShoulder = (on) => { shoulder = on; };
   game.input = { keys, look: (dx, dy) => { mdx += dx; mdy += dy; }, fire: (down) => { mouseDown = down; fireEdge = down; }, noLock: () => { noLock = true; } };
   game.botOf = botOf;

@@ -68,6 +68,7 @@ export class Actor {
     const g = GADGETS[this.gadgetId];
     if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
     top *= this.game.throwables.slowAt(this.pos.x, this.pos.z); // sticky mud
+    top *= this.game.world.slowAt(this.pos.x, this.pos.z); // wading through the creek
     const tx = wx * top, tz = wz * top;
     const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
     const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);

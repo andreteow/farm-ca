@@ -11,6 +11,12 @@ export function buildNav(world) {
       if (x > b.x1 - R && x < b.x2 + R && z > b.z1 - R && z < b.z2 + R) { blocked[j * N + i] = 1; break; }
     }
   }
+  // some ground is slow to cross (the creek): paths through it cost more, so bridges are preferred
+  const slow = new Float32Array(N * N).fill(1);
+  for (const z of world.slowZones || []) for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const x = -half + i + 0.5, y = -half + j + 0.5;
+    if (x > z.x1 && x < z.x2 && y > z.z1 && y < z.z2) slow[j * N + i] = 1 / z.f + 0.6;
+  }
   const ci = (x) => Math.max(0, Math.min(N - 1, Math.floor(x + half)));
   const isBlocked = (x, z) => x <= -half || x >= half || z <= -half || z >= half || blocked[ci(z) * N + ci(x)] === 1;
 
@@ -60,7 +66,7 @@ export function buildNav(world) {
         const ni = nz * N + nx;
         if (blocked[ni] || state[ni] === 2) continue;
         if (dx && dz && (blocked[cz * N + nx] || blocked[nz * N + cx])) continue;
-        const ng = g[cur] + cost * (1 + (wobble ? Math.random() * wobble : 0));
+        const ng = g[cur] + cost * slow[ni] * (1 + (wobble ? Math.random() * wobble : 0));
         if (state[ni] === 1 && ng >= g[ni]) continue;
         g[ni] = ng; came[ni] = cur;
         const hx = Math.abs(nx - ti), hz = Math.abs(nz - tj);

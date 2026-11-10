@@ -138,6 +138,8 @@ export function createHud(game) {
     c.save();
     c.beginPath(); c.arc(S / 2, S / 2, r, 0, 7); c.clip();
     c.translate(S / 2, S / 2); c.scale(scale, scale); c.rotate(yaw); c.translate(-v.pos.x, -v.pos.z);
+    c.fillStyle = 'rgba(95,196,239,0.55)';
+    for (const z of game.world.slowZones) c.fillRect(z.x1, z.z1, z.x2 - z.x1, z.z2 - z.z1);
     c.fillStyle = 'rgba(58,38,22,0.32)';
     for (const b of game.world.boxes) if (b.y2 >= 2.2 && b.y1 < 1) c.fillRect(b.x1, b.z1, b.x2 - b.x1, b.z2 - b.z1);
     for (const key of ['A', 'B']) {

@@ -197,7 +197,8 @@ export function createAudio(game) {
     // little bits of farm life in the background
     ambient(dt) {
       cluckT -= dt;
-      if (cluckT <= 0) { cluckT = 14 + Math.random() * 22; const p = place(-26, 15); sample('sfx_cluck', p.vol * 0.5 + 0.03, p.pan, wob()); }
+      const coop = game.world.cluck; // only maps with a chicken coop have clucking
+      if (cluckT <= 0) { cluckT = 14 + Math.random() * 22; if (coop) { const p = place(coop.x, coop.z); sample('sfx_cluck', p.vol * 0.5 + 0.03, p.pan, wob()); } }
     },
     setVolume(v) { if (master) master.gain.value = v; },
     loaded() { return Object.keys(buffers).length; },
