@@ -1,10 +1,20 @@
-// Opens the built game in a headless browser with the 3D library served from node_modules.
+// Opens the built game in a headless browser. A tiny local web server hands out dist/ so pictures and sounds load.
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
+const TYPES = { '.html': 'text/html', '.js': 'application/javascript', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp3': 'audio/mpeg' };
 exports.open = async function open(opts = {}) {
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const root = path.join(__dirname, '../dist');
+  const server = http.createServer((req, res) => {
+    const file = path.join(root, decodeURIComponent(req.url.split('?')[0] === '/' ? '/index.html' : req.url.split('?')[0]));
+    if (!file.startsWith(root) || !fs.existsSync(file)) { res.writeHead(404); res.end(); return; }
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
+    fs.createReadStream(file).pipe(res);
+  });
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
   const page = await browser.newPage({ viewport: { width: opts.width || 1280, height: opts.height || 720 }, deviceScaleFactor: 1 });
   const errors = [];
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -12,7 +22,9 @@ exports.open = async function open(opts = {}) {
   const three = fs.readFileSync(path.join(__dirname, '../node_modules/three/build/three.min.js'), 'utf8');
   await page.route('**/three.min.js', (r) => r.fulfill({ contentType: 'application/javascript', body: three }));
   await page.route('**fonts.googleapis.com/**', (r) => r.abort());
-  await page.goto('file://' + path.join(__dirname, '../dist/index.html'));
-  await page.waitForTimeout(opts.wait || 1500);
+  await page.goto(`http://127.0.0.1:${server.address().port}/`);
+  await page.waitForTimeout(opts.wait || 2500);
+  const close = browser.close.bind(browser);
+  browser.close = async () => { await close(); server.close(); };
   return { browser, page, errors };
 };

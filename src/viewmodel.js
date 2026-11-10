@@ -12,7 +12,7 @@ export function createViewModel() {
   const sun = new T.DirectionalLight(0xfff2d6, 0.6); sun.position.set(-1, 2, 1.5); scene.add(sun);
   const holder = group(scene, 0, 0, 0);
   const gadgets = {};
-  for (const id in GADGETS) { const m = buildGadget(id); m.scale.setScalar(1.0); m.visible = false; holder.add(m); gadgets[id] = m; m.traverse((o) => { o.castShadow = false; o.receiveShadow = false; }); }
+  for (const id in GADGETS) { const m = buildGadget(id); m.scale.setScalar(id === 'pea' ? 0.78 : 1.0); if (id === 'pea') m.position.set(0, 0.01, -0.1); m.visible = false; holder.add(m); gadgets[id] = m; m.traverse((o) => { o.castShadow = false; o.receiveShadow = false; }); }
   const hand = add(holder, sphereGeo(), 0xffffff, 0, -0.07, 0.05, { s: [0.07, 0.075, 0.075], cast: false, receive: false });
   const arm = add(holder, capsuleGeo(0.055, 0.4), 0xffffff, 0.06, -0.2, 0.27, { r: [1.0, 0, -0.2], cast: false, receive: false });
   hand.material = new T.MeshLambertMaterial({ color: 0xffffff }); arm.material = new T.MeshLambertMaterial({ color: 0xffffff });

@@ -98,6 +98,11 @@ export function texMat(kind) {
           x += w;
         }
       }
+    } else if (kind === 'shingle') {
+      repeat = 0.3;
+      g.fillStyle = '#7a4f3e'; g.fillRect(0, 0, S, S);
+      lines(8, '#5f3c30', 4, false);
+      streaks(120, ['#8d6150', '#6a4335'], 30, true);
     } else if (kind === 'hay') {
       repeat = 1;
       g.fillStyle = '#f3cf62'; g.fillRect(0, 0, S, S);
@@ -111,9 +116,26 @@ export function texMat(kind) {
   });
   tex.wrapS = tex.wrapT = T.RepeatWrapping;
   tex.repeat.set(repeat, repeat);
-  m = new T.MeshLambertMaterial({ map: tex });
+  m = new T.MeshLambertMaterial({ map: tex, side: kind === 'shingle' ? T.DoubleSide : T.FrontSide });
   texMats.set(kind, m);
+  // the painted version (assets/tex) takes over as soon as it has loaded
+  const file = { planks: 'barn', wood: 'timber', stone: 'stone', hay: 'hay', crate: 'crate', shingle: 'shingle' }[kind];
+  const scale = { planks: 0.4, wood: 0.4, stone: 0.3, hay: 0.6, crate: 0.8, shingle: 0.3 }[kind];
+  if (file) loadTexture(file, (img) => {
+    if (kind === 'crate') { img.wrapS = img.wrapT = T.RepeatWrapping; img.offset.set(0.5, 0.5); }
+    img.repeat.set(scale, scale);
+    m.map = img; m.needsUpdate = true;
+  });
   return m;
+}
+
+const loader = new T.TextureLoader();
+export function loadTexture(file, onLoad) {
+  loader.load(`assets/tex/${file}.jpg`, (img) => {
+    img.encoding = T.sRGBEncoding; img.anisotropy = 8;
+    img.wrapS = img.wrapT = T.MirroredRepeatWrapping; // mirrored tiling hides any seam at the edges
+    onLoad(img);
+  }, undefined, () => { /* keep the hand-drawn pattern */ });
 }
 
 // ---------- baking: squash many small shapes into a few big ones so slow computers keep up ----------

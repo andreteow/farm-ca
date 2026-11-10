@@ -74,6 +74,14 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .slider input { accent-color: var(--barn); width: 150px; }
 .btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .panel.small p { margin: 0; max-width: 34ch; }
+.logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.head { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 4px 18px; align-items: center; }
+.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 150px; max-height: 215px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
+.head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
+.how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
+.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 8px 10px; }
+.how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
 
 /* ---------- in-game display ---------- */
 #hud { position: absolute; inset: 0; pointer-events: none; font-weight: 800; }
@@ -103,6 +111,34 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
 #slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
 #slots kbd { margin-right: 4px; }
+#slots div.empty { opacity: 0.45; }
+#purse { position: absolute; right: 14px; bottom: 92px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
+#purse img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
+#purse.flash { background: var(--hay); }
+#armor-row { display: none; } #armor-row.on { display: grid; gap: 4px; }
+#armor-fill { background: #4f84cf; }
+#status { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 5px 14px; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#status img { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; }
+#status.hot { background: var(--barn); color: #fff; }
+#timer.fuse { background: var(--barn); color: #fff; }
+#prompt { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); padding: 10px 18px; text-align: center; display: grid; gap: 6px; min-width: 240px; }
+#prompt kbd { font-size: 14px; }
+#prompt .bar { height: 14px; } #prompt-fill { background: var(--herd); width: 0; transition: none; }
+#scope { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0, transparent 34vh, rgba(20, 30, 12, 0.92) 34.6vh); }
+#scope::before, #scope::after { content: ""; position: absolute; background: rgba(20, 30, 12, 0.8); }
+#scope::before { left: 50%; top: calc(50% - 34vh); width: 2px; height: 68vh; margin-left: -1px; }
+#scope::after { top: 50%; left: calc(50% - 34vh); height: 2px; width: 68vh; margin-top: -1px; }
+#shop { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
+#shop h2 { font-size: 30px; display: flex; justify-content: space-between; align-items: baseline; }
+#shop h2 span { font-family: var(--body); font-weight: 800; font-size: 14px; color: var(--ink); }
+#shop-list { display: grid; gap: 7px; }
+.item { display: grid; grid-template-columns: 30px 54px 1fr auto; gap: 10px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
+.item img { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; }
+.item .nm { font-family: var(--display); font-size: 19px; line-height: 1.05; }
+.item .bl { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+.item .pr { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.item.no { opacity: 0.5; } .item.own { background: #dff3cf; } .item.own .pr { font-size: 15px; color: var(--leaf); }
+#shop .foot { font-size: 13px; text-align: center; }
 #cross { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
 #cross i { position: absolute; background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; }
 #ch-t, #ch-b { width: 4px; height: 11px; left: -2px; } #ch-l, #ch-r { width: 11px; height: 4px; top: -2px; }
@@ -112,7 +148,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #hurt { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; background: radial-gradient(ellipse at center, transparent 52%, rgba(217, 70, 62, 0.6) 100%); }
 #hurt-arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; opacity: 0; transition: opacity 0.6s; }
 #hurt-arrow i { position: absolute; left: -22px; top: -140px; border: 22px solid transparent; border-bottom: 30px solid var(--barn); border-top: 0; filter: drop-shadow(0 0 2px var(--ink)); }
-#banner { position: absolute; left: 50%; top: 13%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
+#banner { position: absolute; left: 50%; top: 17%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
 #banner-title { font-family: var(--display); font-size: clamp(26px, 5vw, 44px); color: var(--barn); line-height: 1; }
 #banner-sub { font-size: 15px; margin-top: 4px; }
 #spectate { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); padding: 8px 16px; font-size: 14px; text-align: center; }
@@ -125,6 +161,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
+  .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
+  #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
 </style>
 
@@ -143,32 +181,47 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     <div id="hurt-arrow"><i></i></div>
     <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
     <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
+    <div id="status" class="pill" hidden><img src="assets/ui/icon_pumpkin.jpg" alt=""><span id="status-text"></span></div>
+    <div id="scope" hidden></div>
+    <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
-    <div id="hpbox" class="pill meter"><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div data-id="squirter"><kbd>1</kbd>Squirter</div><div data-id="egg"><kbd>2</kbd>Egg Popper</div><div data-id="tomato"><kbd>3</kbd>Tomato Tosser</div></div>
+    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span>Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
+    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins"><span id="coins">800</span></div>
+    <div id="shop" class="pill" hidden>
+      <h2>Farm Shop <span id="shop-coins"></span></h2>
+      <div id="shop-list"></div>
+      <div class="foot">Press a number to buy. <kbd>B</kbd> closes the shop. Splatted players lose what they bought.</div>
+    </div>
     <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
   </div>
 
   <div id="menu" class="overlay">
     <div class="panel">
-      <header class="title">
-        <p class="eyebrow">Sunnyside Farm · 5 against 5 · feel test</p>
-        <h1>Harvest <span>Standoff</span></h1>
-        <p class="tag">Pick a side, splat the other team, and be the first to win 5 rounds. Nobody gets hurt, just very messy.</p>
+      <header class="head">
+        <h1 class="sr">Harvest Standoff</h1>
+        <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
+        <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
+        <p class="tag">Sunnyside Farm, 5 against 5. Nobody gets hurt, just very messy.</p>
       </header>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
-          <img id="pic-herd" alt="" width="96" height="96">
+          <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. Sneak in from the back pasture and splat every farmhand before time runs out.</span>
+          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin into the barn or the garden.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
-          <img id="pic-hands" alt="" width="96" height="96">
+          <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. Guard the barn and the veggie garden until the clock hits zero.</span>
+          <span class="side-job">The farmhands. They start by guarding the farm and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
+      <ul class="how">
+        <li><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
+        <li><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
+        <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+      </ul>
       <div class="row">
         <div class="seg" role="radiogroup" aria-label="How tough are the computer players">
           <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
@@ -180,14 +233,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>
-        <li><kbd>Space</kbd> jump</li>
-        <li><kbd>Shift</kbd> tiptoe quietly</li>
-        <li><kbd>C</kbd> crouch</li>
+        <li><kbd>E</kbd> plant or cork</li>
+        <li><kbd>B</kbd> shop</li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
         <li><kbd>R</kbd> refill</li>
-        <li><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> swap launcher</li>
-        <li><kbd>Esc</kbd> pause</li>
+        <li><kbd>Space</kbd> jump</li>
+        <li><kbd>Shift</kbd> tiptoe</li>
+        <li><kbd>C</kbd> crouch</li>
+        <li><kbd>Right-click</kbd> zoom</li>
       </ul>
-      <p class="note">Tip: stand still when you launch. Running makes your shots fly all over the place.</p>
       <p class="note" id="touch-note" hidden>This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
     </div>
   </div>
@@ -197,6 +251,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <h2>Paused</h2>
       <p>The farm is frozen. Nothing moves until you come back.</p>
       <label class="slider" for="sens">Mouse speed <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <label class="slider" for="vol">Sound volume <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
       <div class="btns"><button id="resume" class="go">Keep playing</button><button id="quit" class="go alt">Leave match</button></div>
     </div>
   </div>

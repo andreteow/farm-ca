@@ -198,6 +198,15 @@ export function buildGadget(id) {
     add(g, rboxGeo(0.055, 0.13, 0.065, 0.025), 0xb98452, 0, -0.035, 0.03, { r: [0.25, 0, 0] });
     add(g, rboxGeo(0.055, 0.08, 0.14, 0.025), 0xb98452, 0, 0.06, 0.12);
     muzzle = { y: 0.07, z: -0.34 };
+  } else if (id === 'pea') {
+    add(g, cylGeo(0.024, 0.028, 0.62, 10), 0xd9c27a, 0, 0.07, -0.34, { r: [HALF, 0, 0] });
+    add(g, sphereGeo(), 0x58b03c, 0, 0.06, -0.04, { s: [0.06, 0.07, 0.2] });
+    for (const z of [-0.14, -0.06, 0.02]) add(g, sphereGeo(), 0x9bdb72, 0, 0.1, z, { s: 0.036 });
+    add(g, cylGeo(0.026, 0.026, 0.2, 10), 0xc9a13a, 0, 0.165, -0.08, { r: [HALF, 0, 0] });
+    add(g, cylGeo(0.034, 0.026, 0.04, 10), 0xc9a13a, 0, 0.165, -0.19, { r: [HALF, 0, 0] });
+    add(g, rboxGeo(0.058, 0.09, 0.24, 0.03), 0xb98452, 0, 0.045, 0.18);
+    add(g, rboxGeo(0.055, 0.13, 0.065, 0.025), 0xb98452, 0, -0.035, 0.05, { r: [0.25, 0, 0] });
+    muzzle = { y: 0.07, z: -0.66 };
   } else {
     add(g, cylGeo(0.036, 0.04, 0.5, 12), 0x4fa846, 0, 0.07, -0.22, { r: [HALF, 0, 0] });
     add(g, cylGeo(0.052, 0.04, 0.06, 12), 0xe5412d, 0, 0.07, -0.47, { r: [HALF, 0, 0] });
@@ -210,4 +219,20 @@ export function buildGadget(id) {
   g.userData.muzzle = muzzle;
   bakeChildren(g);
   return g;
+}
+
+// ---------- the Stink-Pumpkin ----------
+export function buildPumpkin() {
+  const g = new T.Group();
+  const body = group(g, 0, 0.3, 0);
+  for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI; add(body, sphereGeo(), i % 2 ? 0xf08a24 : 0xe87b17, 0, 0, 0, { s: [0.36, 0.29, 0.17], r: [0, a, 0] }); }
+  for (const s of [-1, 1]) add(body, coneGeo(0.05, 0.08, 3), 0x3a2616, s * 0.12, 0.06, -0.31, { r: [HALF, 0, Math.PI], cast: false });
+  add(body, sphereGeo(), 0x3a2616, 0, -0.07, -0.33, { s: [0.14, 0.035, 0.03], cast: false });
+  add(body, cylGeo(0.07, 0.085, 0.14, 10), 0xd9b98a, 0, 0.3, 0);
+  add(body, cylGeo(0.1, 0.1, 0.05, 14), 0xe2443a, 0.3, 0.0, 0.0, { r: [0, 0, HALF] });
+  add(body, cylGeo(0.085, 0.085, 0.055, 14), 0xfff6df, 0.31, 0.0, 0.0, { r: [0, 0, HALF], cast: false });
+  bakeChildren(body);
+  const glow = add(g, sphereGeo(), new T.MeshBasicMaterial({ color: 0xb7f23a, transparent: true, opacity: 0.25, depthWrite: false }), 0, 0.3, 0, { s: 0.6, cast: false, receive: false });
+  glow.visible = false;
+  return { root: g, body, glow };
 }

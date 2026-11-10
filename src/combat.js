@@ -12,7 +12,7 @@ export function createCombat(game) {
   const shots = [];
 
   function tryFire(a) {
-    if (!a.alive || a.cooldown > 0 || a.reloadT > 0 || game.state !== 'live') return false;
+    if (!a.alive || a.busy || a.cooldown > 0 || a.reloadT > 0 || game.state !== 'live') return false;
     const g = GADGETS[a.gadgetId];
     if (a.ammo <= 0) { a.startReload(); return false; }
     a.ammo--; a.cooldown = 1 / g.rate;
@@ -32,8 +32,9 @@ export function createCombat(game) {
     shots.push(shot);
     a.bloom = Math.min(g.bloomMax, a.bloom + g.bloom);
     a.recoil += g.kick;
-    game.audio.shoot(g.id, a);
+    game.audio.shoot(g, a);
     if (a.isPlayer) game.onPlayerFire();
+    if (g.zoom) a.scoped = false; // the big shot knocks you out of the zoom
     if (a.ammo === 0) a.startReload();
     return true;
   }
@@ -42,7 +43,7 @@ export function createCombat(game) {
     const a = s.owner, px = s.x + dx * t, py = s.y + dy * t, pz = s.z + dz * t;
     let dmg = s.g.dmg * (head ? s.g.head : 1);
     if (v.isPlayer && !a.isPlayer) dmg *= game.diff.dmgToPlayer;
-    v.hp -= dmg;
+    v.hp -= v.soak(dmg);
     tmp.set(px, py, pz);
     addSplat(v.char, tmp, s.g.color);
     game.fx.burst(px, py, pz, s.g.color, 7);

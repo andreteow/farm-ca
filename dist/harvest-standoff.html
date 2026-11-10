@@ -74,6 +74,14 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 .slider input { accent-color: var(--barn); width: 150px; }
 .btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .panel.small p { margin: 0; max-width: 34ch; }
+.logo { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at center, #000 80%, transparent 100%); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.head { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 4px 18px; align-items: center; }
+.head .art { grid-column: 2; grid-row: 1 / span 2; width: 100%; height: 100%; min-height: 150px; max-height: 215px; object-fit: cover; object-position: 50% 42%; border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); min-width: 0; }
+.head .tag { grid-column: 1; max-width: 32ch; font-size: 15px; margin: 0; }
+.how { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13.5px; line-height: 1.3; }
+.how li { background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 8px 10px; }
+.how b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--barn); }
 
 /* ---------- in-game display ---------- */
 #hud { position: absolute; inset: 0; pointer-events: none; font-weight: 800; }
@@ -103,6 +111,34 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
 #slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
 #slots kbd { margin-right: 4px; }
+#slots div.empty { opacity: 0.45; }
+#purse { position: absolute; right: 14px; bottom: 92px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
+#purse img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
+#purse.flash { background: var(--hay); }
+#armor-row { display: none; } #armor-row.on { display: grid; gap: 4px; }
+#armor-fill { background: #4f84cf; }
+#status { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 5px 14px; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#status img { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--ink); object-fit: cover; }
+#status.hot { background: var(--barn); color: #fff; }
+#timer.fuse { background: var(--barn); color: #fff; }
+#prompt { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); padding: 10px 18px; text-align: center; display: grid; gap: 6px; min-width: 240px; }
+#prompt kbd { font-size: 14px; }
+#prompt .bar { height: 14px; } #prompt-fill { background: var(--herd); width: 0; transition: none; }
+#scope { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0, transparent 34vh, rgba(20, 30, 12, 0.92) 34.6vh); }
+#scope::before, #scope::after { content: ""; position: absolute; background: rgba(20, 30, 12, 0.8); }
+#scope::before { left: 50%; top: calc(50% - 34vh); width: 2px; height: 68vh; margin-left: -1px; }
+#scope::after { top: 50%; left: calc(50% - 34vh); height: 2px; width: 68vh; margin-top: -1px; }
+#shop { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
+#shop h2 { font-size: 30px; display: flex; justify-content: space-between; align-items: baseline; }
+#shop h2 span { font-family: var(--body); font-weight: 800; font-size: 14px; color: var(--ink); }
+#shop-list { display: grid; gap: 7px; }
+.item { display: grid; grid-template-columns: 30px 54px 1fr auto; gap: 10px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
+.item img { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; }
+.item .nm { font-family: var(--display); font-size: 19px; line-height: 1.05; }
+.item .bl { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+.item .pr { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.item.no { opacity: 0.5; } .item.own { background: #dff3cf; } .item.own .pr { font-size: 15px; color: var(--leaf); }
+#shop .foot { font-size: 13px; text-align: center; }
 #cross { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
 #cross i { position: absolute; background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; }
 #ch-t, #ch-b { width: 4px; height: 11px; left: -2px; } #ch-l, #ch-r { width: 11px; height: 4px; top: -2px; }
@@ -112,7 +148,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #hurt { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; background: radial-gradient(ellipse at center, transparent 52%, rgba(217, 70, 62, 0.6) 100%); }
 #hurt-arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; opacity: 0; transition: opacity 0.6s; }
 #hurt-arrow i { position: absolute; left: -22px; top: -140px; border: 22px solid transparent; border-bottom: 30px solid var(--barn); border-top: 0; filter: drop-shadow(0 0 2px var(--ink)); }
-#banner { position: absolute; left: 50%; top: 13%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
+#banner { position: absolute; left: 50%; top: 17%; transform: translateX(-50%); text-align: center; padding: 12px 28px; }
 #banner-title { font-family: var(--display); font-size: clamp(26px, 5vw, 44px); color: var(--barn); line-height: 1; }
 #banner-sub { font-size: 15px; margin-top: 4px; }
 #spectate { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); padding: 8px 16px; font-size: 14px; text-align: center; }
@@ -125,6 +161,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   #radar { width: 92px; height: 92px; } #feed { display: none; } #slots { display: none; }
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
+  .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
+  #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
 </style>
 
@@ -143,32 +181,47 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     <div id="hurt-arrow"><i></i></div>
     <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
     <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
+    <div id="status" class="pill" hidden><img src="assets/ui/icon_pumpkin.jpg" alt=""><span id="status-text"></span></div>
+    <div id="scope" hidden></div>
+    <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
-    <div id="hpbox" class="pill meter"><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div data-id="squirter"><kbd>1</kbd>Squirter</div><div data-id="egg"><kbd>2</kbd>Egg Popper</div><div data-id="tomato"><kbd>3</kbd>Tomato Tosser</div></div>
+    <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span>Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
+    <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins"><span id="coins">800</span></div>
+    <div id="shop" class="pill" hidden>
+      <h2>Farm Shop <span id="shop-coins"></span></h2>
+      <div id="shop-list"></div>
+      <div class="foot">Press a number to buy. <kbd>B</kbd> closes the shop. Splatted players lose what they bought.</div>
+    </div>
     <div id="ammobox" class="pill meter"><div class="cap"><span class="num" id="ammo-num">12</span><span id="gadget-name">Water Squirter</span></div><div class="bar"><i id="ammo-fill"></i></div></div>
   </div>
 
   <div id="menu" class="overlay">
     <div class="panel">
-      <header class="title">
-        <p class="eyebrow">Sunnyside Farm · 5 against 5 · feel test</p>
-        <h1>Harvest <span>Standoff</span></h1>
-        <p class="tag">Pick a side, splat the other team, and be the first to win 5 rounds. Nobody gets hurt, just very messy.</p>
+      <header class="head">
+        <h1 class="sr">Harvest Standoff</h1>
+        <img class="logo" src="assets/ui/logo.jpg" alt="Harvest Standoff" width="1000" height="563">
+        <img class="art" src="assets/ui/keyart.jpg" alt="Farm animals and farmhands in a water fight in front of a red barn" width="1536" height="864">
+        <p class="tag">Sunnyside Farm, 5 against 5. Nobody gets hurt, just very messy.</p>
       </header>
       <div class="sides" role="radiogroup" aria-label="Choose your side">
         <button class="side" id="side-herd" data-team="herd" role="radio" aria-checked="true">
-          <img id="pic-herd" alt="" width="96" height="96">
+          <img id="pic-herd" src="assets/ui/emblem_herd.jpg" alt="" width="96" height="96">
           <span class="side-name">The Herd</span>
-          <span class="side-job">The animals. Sneak in from the back pasture and splat every farmhand before time runs out.</span>
+          <span class="side-job">The animals. They start by sneaking the Stink-Pumpkin into the barn or the garden.</span>
         </button>
         <button class="side" id="side-hands" data-team="hands" role="radio" aria-checked="false">
-          <img id="pic-hands" alt="" width="96" height="96">
+          <img id="pic-hands" src="assets/ui/emblem_hands.jpg" alt="" width="96" height="96">
           <span class="side-name">The Hands</span>
-          <span class="side-job">The farmhands. Guard the barn and the veggie garden until the clock hits zero.</span>
+          <span class="side-job">The farmhands. They start by guarding the farm and corking the pumpkin if it gets planted.</span>
         </button>
       </div>
+      <ul class="how">
+        <li><b>Plant it</b>Carry the Stink-Pumpkin to A or B and hold E. If it goes off, your team wins the round.</li>
+        <li><b>Cork it</b>Defenders win by corking the pumpkin, or by keeping it from being planted in time.</li>
+        <li><b>Shop smart</b>Win rounds and splat opponents to earn corn coins. Teams swap jobs after 5 rounds. First to 6 wins.</li>
+      </ul>
       <div class="row">
         <div class="seg" role="radiogroup" aria-label="How tough are the computer players">
           <button id="diff-easy" data-diff="easy" role="radio" aria-checked="true">Easy</button>
@@ -180,14 +233,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <ul class="keys">
         <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</li>
         <li><kbd>Mouse</kbd> look, click to launch</li>
-        <li><kbd>Space</kbd> jump</li>
-        <li><kbd>Shift</kbd> tiptoe quietly</li>
-        <li><kbd>C</kbd> crouch</li>
+        <li><kbd>E</kbd> plant or cork</li>
+        <li><kbd>B</kbd> shop</li>
+        <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
         <li><kbd>R</kbd> refill</li>
-        <li><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> swap launcher</li>
-        <li><kbd>Esc</kbd> pause</li>
+        <li><kbd>Space</kbd> jump</li>
+        <li><kbd>Shift</kbd> tiptoe</li>
+        <li><kbd>C</kbd> crouch</li>
+        <li><kbd>Right-click</kbd> zoom</li>
       </ul>
-      <p class="note">Tip: stand still when you launch. Running makes your shots fly all over the place.</p>
       <p class="note" id="touch-note" hidden>This test version needs a keyboard and a mouse, so it will not work on a phone or tablet yet.</p>
     </div>
   </div>
@@ -197,6 +251,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       <h2>Paused</h2>
       <p>The farm is frozen. Nothing moves until you come back.</p>
       <label class="slider" for="sens">Mouse speed <input id="sens" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+      <label class="slider" for="vol">Sound volume <input id="vol" type="range" min="0" max="1" step="0.05" value="0.7"></label>
       <div class="btns"><button id="resume" class="go">Keep playing</button><button id="quit" class="go alt">Leave match</button></div>
     </div>
   </div>
@@ -355,6 +410,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
             x += w;
           }
         }
+      } else if (kind === "shingle") {
+        repeat = 0.3;
+        g.fillStyle = "#7a4f3e";
+        g.fillRect(0, 0, S, S);
+        lines(8, "#5f3c30", 4, false);
+        streaks(120, ["#8d6150", "#6a4335"], 30, true);
       } else if (kind === "hay") {
         repeat = 1;
         g.fillStyle = "#f3cf62";
@@ -370,9 +431,30 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     });
     tex.wrapS = tex.wrapT = T.RepeatWrapping;
     tex.repeat.set(repeat, repeat);
-    m = new T.MeshLambertMaterial({ map: tex });
+    m = new T.MeshLambertMaterial({ map: tex, side: kind === "shingle" ? T.DoubleSide : T.FrontSide });
     texMats.set(kind, m);
+    const file = { planks: "barn", wood: "timber", stone: "stone", hay: "hay", crate: "crate", shingle: "shingle" }[kind];
+    const scale = { planks: 0.4, wood: 0.4, stone: 0.3, hay: 0.6, crate: 0.8, shingle: 0.3 }[kind];
+    if (file) loadTexture(file, (img) => {
+      if (kind === "crate") {
+        img.wrapS = img.wrapT = T.RepeatWrapping;
+        img.offset.set(0.5, 0.5);
+      }
+      img.repeat.set(scale, scale);
+      m.map = img;
+      m.needsUpdate = true;
+    });
     return m;
+  }
+  var loader = new T.TextureLoader();
+  function loadTexture(file, onLoad) {
+    loader.load(`assets/tex/${file}.jpg`, (img) => {
+      img.encoding = T.sRGBEncoding;
+      img.anisotropy = 8;
+      img.wrapS = img.wrapT = T.MirroredRepeatWrapping;
+      onLoad(img);
+    }, void 0, () => {
+    });
   }
   var flatCache = /* @__PURE__ */ new WeakMap();
   function flat(g) {
@@ -456,13 +538,37 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     heightCrouch: 1.3
   };
   var ROUND = {
-    freeze: 3.5,
-    // seconds everyone waits at the start line
+    freeze: 8,
+    // seconds at the start line: this is shopping time
     length: 100,
-    // seconds per round
-    winTarget: 5,
+    // seconds to plant the pumpkin
+    winTarget: 6,
     // first team to this many rounds wins the match
-    endDelay: 4.5
+    half: 5,
+    // teams swap jobs after this many rounds
+    endDelay: 5
+  };
+  var OBJ = {
+    plantTime: 3,
+    // seconds holding E to plant
+    corkTime: 8,
+    // seconds holding E to cork it
+    corkTimeKit: 4,
+    // ...with a Cork Kit
+    fuse: 40,
+    // seconds from planted to "pee-yew"
+    reach: 1.7
+    // how close you must be to cork or pick up
+  };
+  var ECON = {
+    start: 800,
+    max: 16e3,
+    win: 3e3,
+    lose: [1400, 1900, 2400, 2900],
+    // grows with each loss in a row
+    splat: 300,
+    plant: 300,
+    cork: 300
   };
   var TEAM = {
     herd: { name: "The Herd", short: "Herd", color: "#f08a24" },
@@ -472,7 +578,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     squirter: {
       id: "squirter",
       name: "Water Squirter",
-      slot: 1,
+      short: "Squirter",
       auto: false,
       rate: 5.5,
       dmg: 24,
@@ -487,12 +593,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       kick: 0.011,
       speed: 110,
       color: 5752831,
-      splat: 0.2
+      splat: 0.2,
+      sound: "sfx_squirt"
     },
     egg: {
       id: "egg",
       name: "Egg Popper",
-      slot: 2,
+      short: "Egg Popper",
       auto: true,
       rate: 11,
       dmg: 13,
@@ -507,12 +614,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       kick: 6e-3,
       speed: 100,
       color: 16771496,
-      splat: 0.2
+      splat: 0.2,
+      sound: "sfx_egg"
     },
     tomato: {
       id: "tomato",
       name: "Tomato Tosser",
-      slot: 3,
+      short: "Tomato Tosser",
       auto: true,
       rate: 7.5,
       dmg: 27,
@@ -527,10 +635,42 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       kick: 0.015,
       speed: 115,
       color: 15024429,
-      splat: 0.25
+      splat: 0.25,
+      sound: "sfx_tomato"
+    },
+    pea: {
+      id: "pea",
+      name: "Pea Shooter",
+      short: "Pea Shooter",
+      auto: false,
+      rate: 0.95,
+      dmg: 88,
+      head: 2,
+      tank: 5,
+      reload: 2.8,
+      spread: 0.035,
+      zoomSpread: 7e-4,
+      moveSpread: 0.12,
+      airSpread: 0.15,
+      bloom: 0,
+      bloomMax: 0,
+      kick: 0.03,
+      speed: 170,
+      color: 9427274,
+      splat: 0.22,
+      sound: "sfx_pea",
+      zoom: true,
+      slow: 0.86
     }
   };
-  var GADGET_ORDER = ["squirter", "egg", "tomato"];
+  var PRIMARIES = ["egg", "tomato", "pea"];
+  var SHOP = [
+    { id: "egg", kind: "gadget", price: 1200, icon: "icon_egg", blurb: "Fast and cheap. Great up close." },
+    { id: "tomato", kind: "gadget", price: 2700, icon: "icon_tomato", blurb: "Strong all-rounder. Stand still to aim." },
+    { id: "pea", kind: "gadget", price: 4200, icon: "icon_pea", blurb: "One big long-range shot. Right-click to zoom." },
+    { id: "overalls", kind: "gear", name: "Padded Overalls", price: 650, icon: "icon_overalls", blurb: "Soaks up half of every splat until it wears out." },
+    { id: "kit", kind: "gear", name: "Cork Kit", price: 400, icon: "icon_cork_kit", blurb: "Cork the pumpkin twice as fast.", role: "defend" }
+  ];
   var DIFFICULTY = {
     easy: { label: "Easy", reaction: 0.8, aimErr: 0.085, turn: 3.2, dmgToPlayer: 0.55, fireMoving: true },
     medium: { label: "Medium", reaction: 0.48, aimErr: 0.05, turn: 5, dmgToPlayer: 0.8, fireMoving: false },
@@ -782,7 +922,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         zm
       ], 3));
       slopes.computeVertexNormals();
-      add(root, slopes, mat(color, { side: T2.DoubleSide }));
+      const run = Math.hypot(zm - z1, yR - yB);
+      slopes.setAttribute("uv", new T2.Float32BufferAttribute([x1, 0, x2, 0, x2, run, x1, 0, x2, run, x1, run, x2, 0, x1, 0, x1, run, x2, 0, x1, run, x2, run], 2));
+      add(root, slopes, color === "shingle" ? texMat("shingle") : mat(color, { side: T2.DoubleSide }));
       if (endColor !== void 0) {
         const ends = new T2.BufferGeometry();
         const i1 = x1 + inset, i2 = x2 - inset;
@@ -852,7 +994,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     barnWall(-18.5, -11, -18, -6.5, H);
     barnWall(-18.5, -15, -18, -11, 1.5, 3);
     gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 14462578);
-    gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, C.roof, C.barn);
+    gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, "shingle", C.barn);
     for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
     for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
     deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
@@ -927,7 +1069,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     stone(-34, 4, -17, 5);
     stone(-14, 4, -12, 5);
     block(-30, 12, -22, 18, 3, C.coop, 0.12);
-    gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, C.coopRoof, C.coop, 0.6);
+    gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, "shingle", C.coop, 0.6);
     deco(1, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
     deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
     for (const x of [-28.4, -23.6]) deco(1, 0.8, 0.1, 10475250, x, 1.9, 18.03, 0.04);
@@ -1041,77 +1183,98 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     dummy.rotation.set(0, 0, 0);
     corn.receiveShadow = true;
     root.add(corn);
-    const S = 2048, m2p = S / 96;
-    const P = (v) => (v + 48) * m2p;
-    const groundTex = canvasTexture(S, S, (g) => {
-      g.fillStyle = "#86cf58";
+    const P1 = (v, S) => (v + 48) * (S / 96);
+    const lanes = [
+      [[-36, 31], [36, 31]],
+      [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
+      [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
+      [[0, 31], [0, -2]],
+      [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
+      [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
+      [[-10, 7.3], [10, 7.3]],
+      [[16.5, 31], [16.5, -1], [24, -10]],
+      [[32.5, 31], [32.5, -1], [24, -10]],
+      [[0, -31], [-10, -29], [-22.5, -23]],
+      [[0, -31], [10, -29], [22, -25], [24, -12]],
+      [[0, -18], [-15, -13], [-26, -13]],
+      [[0, -18], [10, -7], [14, -7]],
+      [[12, -16.5], [22, -14]],
+      [[-9, -29], [-9, -24], [0, -18]],
+      [[9, -29], [9, -24], [0, -18]],
+      [[-11.5, 18.5], [-15.5, 18.5]],
+      [[11.5, 18.5], [16.5, 18.5]]
+    ];
+    const maskTex = canvasTexture(1024, 1024, (g, S) => {
+      const P = (v) => P1(v, S), m2p = S / 96;
+      g.fillStyle = "#000";
       g.fillRect(0, 0, S, S);
-      for (let i = 0; i < 1500; i++) {
-        g.fillStyle = pickGreen();
-        g.globalAlpha = rand(0.08, 0.2);
-        g.beginPath();
-        g.ellipse(rand(S), rand(S), rand(10, 60), rand(8, 40), rand(3), 0, 7);
-        g.fill();
-      }
-      g.globalAlpha = 1;
-      const path = (pts, w, colr) => {
+      g.globalCompositeOperation = "lighter";
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      const stroke = (pts, w, colr) => {
         g.strokeStyle = colr;
         g.lineWidth = w * m2p;
-        g.lineCap = "round";
-        g.lineJoin = "round";
         g.beginPath();
         pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
         g.stroke();
       };
-      const lanes = [
-        [[-36, 31], [36, 31]],
-        [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
-        [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
-        [[0, 31], [0, -2]],
-        [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
-        [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
-        [[-10, 7.3], [10, 7.3]],
-        [[16.5, 31], [16.5, -1], [24, -10]],
-        [[32.5, 31], [32.5, -1], [24, -10]],
-        [[0, -31], [-10, -29], [-22.5, -23]],
-        [[0, -31], [10, -29], [22, -25], [24, -12]],
-        [[0, -18], [-15, -13], [-26, -13]],
-        [[0, -18], [10, -7], [14, -7]],
-        [[12, -16.5], [22, -14]],
-        [[-9, -29], [-9, -24], [0, -18]],
-        [[9, -29], [9, -24], [0, -18]],
-        [[-11.5, 18.5], [-15.5, 18.5]],
-        [[11.5, 18.5], [16.5, 18.5]]
-      ];
       try {
-        g.filter = "blur(7px)";
+        g.filter = "blur(5px)";
       } catch (e) {
       }
-      lanes.forEach((l) => path(l, 3.6, "#d6b384"));
+      lanes.forEach((l) => stroke(l, 2.9, "#ff0000"));
+      g.fillStyle = "#00ff00";
+      roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 30);
+      g.fill();
+      for (const z of cornZones) {
+        roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 8);
+        g.fill();
+      }
       g.filter = "none";
-      lanes.forEach((l) => path(l, 2.2, "#e3c598"));
+      g.globalCompositeOperation = "source-over";
+    });
+    maskTex.encoding = T2.LinearEncoding;
+    const detailTex = canvasTexture(2048, 2048, (g, S) => {
+      const P = (v) => P1(v, S), m2p = S / 96;
+      g.clearRect(0, 0, S, S);
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      const stroke = (pts, w, colr) => {
+        g.strokeStyle = colr;
+        g.lineWidth = w * m2p;
+        g.beginPath();
+        pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
+        g.stroke();
+      };
+      const creek = [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]];
       try {
         g.filter = "blur(4px)";
       } catch (e) {
       }
-      path([[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]], 3.4, "#8fdcf7");
+      stroke(creek, 3.4, "#9be2fb");
       g.filter = "none";
-      path([[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]], 2.2, "#5fc4ef");
-      g.fillStyle = "#cfa46c";
+      stroke(creek, 2.3, "#5fc4ef");
+      g.strokeStyle = "rgba(255,255,255,0.55)";
+      g.lineWidth = 3;
+      for (let i = 0; i < 26; i++) {
+        const z = 9 + i * 1.15, x = 24.6 + Math.sin(i * 1.7) * 0.7;
+        g.beginPath();
+        g.moveTo(P(x - 0.3), P(z));
+        g.lineTo(P(x + 0.3), P(z + 0.1));
+        g.stroke();
+      }
+      g.fillStyle = "#d4a96f";
       g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
-      g.strokeStyle = "rgba(120,80,40,0.35)";
-      g.lineWidth = 2;
+      g.strokeStyle = "rgba(120,80,40,0.4)";
+      g.lineWidth = 2.5;
       for (let z = -19; z < -6.5; z += 0.9) {
         g.beginPath();
         g.moveTo(P(-33.6), P(z));
         g.lineTo(P(-18.4), P(z));
         g.stroke();
       }
-      g.fillStyle = "rgba(176,128,84,0.75)";
-      roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 60);
-      g.fill();
-      const ring = (x, z, colr) => {
-        g.strokeStyle = colr;
+      const ring = (x, z) => {
+        g.strokeStyle = "rgba(255,248,230,0.95)";
         g.lineWidth = 0.28 * m2p;
         g.setLineDash([24, 16]);
         g.beginPath();
@@ -1119,23 +1282,47 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         g.stroke();
         g.setLineDash([]);
       };
-      ring(-26, -13, "rgba(255,248,230,0.95)");
-      ring(24, -10.2, "rgba(255,248,230,0.95)");
-      g.fillStyle = "rgba(150,110,70,0.5)";
-      for (const z of cornZones) {
-        roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 14);
-        g.fill();
-      }
-      for (let i = 0; i < 900; i++) {
+      ring(-26, -13);
+      ring(24, -10.2);
+      for (let i = 0; i < 1100; i++) {
         g.fillStyle = ["#ffffff", "#ffe36e", "#ff9ec4", "#fff3b0"][i % 4];
         g.beginPath();
         g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7);
         g.fill();
       }
     });
-    const ground = new T2.Mesh(new T2.PlaneGeometry(96, 96), new T2.MeshLambertMaterial({ map: groundTex }));
+    const flat2 = (colr) => canvasTexture(4, 4, (g) => {
+      g.fillStyle = colr;
+      g.fillRect(0, 0, 4, 4);
+    });
+    const uni = { dirtMap: { value: flat2("#dcb98a") }, soilMap: { value: flat2("#9b6b46") }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
+    const groundMat = new T2.MeshLambertMaterial({ map: flat2("#86cf58") });
+    groundMat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, uni);
+      sh.fragmentShader = sh.fragmentShader.replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D maskMap; uniform sampler2D detailMap;").replace("#include <map_fragment>", `
+        vec2 tuv = vUv * 30.0;
+        vec4 mk = texture2D( maskMap, vUv );
+        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 );
+        vec3 col = mix( gcol, texture2D( dirtMap, tuv * 0.8 ).rgb, smoothstep( 0.15, 0.75, mk.r ) );
+        col = mix( col, texture2D( soilMap, tuv * 0.8 ).rgb, smoothstep( 0.2, 0.8, mk.g ) );
+        vec4 det = texture2D( detailMap, vUv );
+        col = mix( col, det.rgb, det.a );
+        diffuseColor.rgb *= col;`);
+    };
+    loadTexture("grass", (t) => {
+      groundMat.map = t;
+      groundMat.needsUpdate = true;
+    });
+    loadTexture("dirt", (t) => {
+      uni.dirtMap.value = t;
+    });
+    loadTexture("soil", (t) => {
+      uni.soilMap.value = t;
+    });
+    const ground = new T2.Mesh(new T2.PlaneGeometry(96, 96), groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
+    ground.userData.keep = true;
     root.add(ground);
     const outer = new T2.Mesh(new T2.CircleGeometry(420, 40), mat(8176722));
     outer.rotation.x = -Math.PI / 2;
@@ -1234,14 +1421,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }]
     };
     const spawns = {
-      herd: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
-      hands: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI }))
+      attack: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
+      defend: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI }))
     };
     const sites = { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } };
     return { boxes, cornZones, points, routes, holds, spawns, sites, animated, half: 40 };
-  }
-  function pickGreen() {
-    return ["#9bdc66", "#74c24a", "#a5e072", "#6ab944"][Math.random() * 4 | 0];
   }
   function roundRect(g, x, y, w, h, r) {
     g.beginPath();
@@ -1736,6 +1920,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       add(g, rboxGeo(0.055, 0.13, 0.065, 0.025), 12158034, 0, -0.035, 0.03, { r: [0.25, 0, 0] });
       add(g, rboxGeo(0.055, 0.08, 0.14, 0.025), 12158034, 0, 0.06, 0.12);
       muzzle = { y: 0.07, z: -0.34 };
+    } else if (id === "pea") {
+      add(g, cylGeo(0.024, 0.028, 0.62, 10), 14271098, 0, 0.07, -0.34, { r: [HALF, 0, 0] });
+      add(g, sphereGeo(), 5812284, 0, 0.06, -0.04, { s: [0.06, 0.07, 0.2] });
+      for (const z of [-0.14, -0.06, 0.02]) add(g, sphereGeo(), 10214258, 0, 0.1, z, { s: 0.036 });
+      add(g, cylGeo(0.026, 0.026, 0.2, 10), 13214010, 0, 0.165, -0.08, { r: [HALF, 0, 0] });
+      add(g, cylGeo(0.034, 0.026, 0.04, 10), 13214010, 0, 0.165, -0.19, { r: [HALF, 0, 0] });
+      add(g, rboxGeo(0.058, 0.09, 0.24, 0.03), 12158034, 0, 0.045, 0.18);
+      add(g, rboxGeo(0.055, 0.13, 0.065, 0.025), 12158034, 0, -0.035, 0.05, { r: [0.25, 0, 0] });
+      muzzle = { y: 0.07, z: -0.66 };
     } else {
       add(g, cylGeo(0.036, 0.04, 0.5, 12), 5220422, 0, 0.07, -0.22, { r: [HALF, 0, 0] });
       add(g, cylGeo(0.052, 0.04, 0.06, 12), 15024429, 0, 0.07, -0.47, { r: [HALF, 0, 0] });
@@ -1748,6 +1941,23 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     g.userData.muzzle = muzzle;
     bakeChildren(g);
     return g;
+  }
+  function buildPumpkin() {
+    const g = new T3.Group();
+    const body2 = group(g, 0, 0.3, 0);
+    for (let i = 0; i < 6; i++) {
+      const a = i / 6 * Math.PI;
+      add(body2, sphereGeo(), i % 2 ? 15764004 : 15235863, 0, 0, 0, { s: [0.36, 0.29, 0.17], r: [0, a, 0] });
+    }
+    for (const s of [-1, 1]) add(body2, coneGeo(0.05, 0.08, 3), 3810838, s * 0.12, 0.06, -0.31, { r: [HALF, 0, Math.PI], cast: false });
+    add(body2, sphereGeo(), 3810838, 0, -0.07, -0.33, { s: [0.14, 0.035, 0.03], cast: false });
+    add(body2, cylGeo(0.07, 0.085, 0.14, 10), 14268810, 0, 0.3, 0);
+    add(body2, cylGeo(0.1, 0.1, 0.05, 14), 14828602, 0.3, 0, 0, { r: [0, 0, HALF] });
+    add(body2, cylGeo(0.085, 0.085, 0.055, 14), 16774879, 0.31, 0, 0, { r: [0, 0, HALF], cast: false });
+    bakeChildren(body2);
+    const glow = add(g, sphereGeo(), new T3.MeshBasicMaterial({ color: 12055098, transparent: true, opacity: 0.25, depthWrite: false }), 0, 0.3, 0, { s: 0.6, cast: false, receive: false });
+    glow.visible = false;
+    return { root: g, body: body2, glow };
   }
 
   // src/actor.js
@@ -1769,13 +1979,22 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       this.alive = true;
       this.hp = 100;
       this.gadgetId = null;
+      this.lastGadget = "squirter";
       this.tanks = {};
       this.cooldown = 0;
       this.reloadT = 0;
       this.bloom = 0;
-      for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
+      this.primary = null;
+      this.armor = 0;
+      this.kit = false;
+      this.coins = ECON.start;
+      this.scoped = false;
       this.stepDist = 0;
       this.outT = 0;
+      this.busy = false;
+      this.sayT = 0;
+      this.splats = 0;
+      for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
       this.char = buildCharacter(info.kind, info.look);
       this.gadgetMeshes = {};
       for (const id in GADGETS) {
@@ -1794,29 +2013,56 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     set ammo(v) {
       this.tanks[this.gadgetId] = v;
     }
+    has(id) {
+      return id === "squirter" || id === this.primary;
+    }
     setGadget(id) {
-      if (this.gadgetId === id) return;
+      if (this.gadgetId === id || !this.has(id)) return false;
+      if (this.gadgetId) this.lastGadget = this.gadgetId;
       this.gadgetId = id;
       this.reloadT = 0;
       this.cooldown = 0.35;
       this.bloom = 0;
+      this.scoped = false;
       for (const k in this.gadgetMeshes) this.gadgetMeshes[k].visible = k === id;
       if (this.ammo <= 0) this.startReload();
+      return true;
     }
-    reset(spawn) {
+    givePrimary(id) {
+      this.primary = id;
+      if (id) {
+        this.tanks[id] = GADGETS[id].tank;
+        this.setGadget(id);
+      } else if (this.gadgetId !== "squirter") {
+        this.gadgetId = null;
+        this.setGadget("squirter");
+      }
+    }
+    // called at the start of every round; "keep" is false after being splatted or at half-time
+    reset(spawn, keep) {
       this.pos.set(spawn.x, 0, spawn.z);
       this.vel.set(0, 0, 0);
       this.yaw = spawn.yaw;
       this.pitch = 0;
       this.recoil = 0;
+      if (!keep) {
+        this.primary = null;
+        this.armor = 0;
+        this.kit = false;
+      }
       this.hp = 100;
       this.alive = true;
       this.crouched = false;
       this.outT = 0;
+      this.busy = false;
+      this.scoped = false;
       for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
       this.reloadT = 0;
       this.cooldown = 0;
       this.bloom = 0;
+      this.gadgetId = null;
+      this.setGadget(this.primary || "squirter");
+      this.cooldown = 0;
       clearSplats(this.char);
       this.char.root.visible = true;
       this.char.root.scale.setScalar(1);
@@ -1830,7 +2076,14 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     // wx,wz: the direction this character wants to go (length 0..1)
     move(dt, wx, wz, wantJump, walking, crouching) {
       this.crouched = crouching;
-      const top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
+      if (this.busy) {
+        wx = 0;
+        wz = 0;
+        wantJump = false;
+      }
+      let top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
+      const g = GADGETS[this.gadgetId];
+      if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
       const tx = wx * top, tz = wz * top;
       const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
       const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);
@@ -1864,7 +2117,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     // how wide the shots scatter right now (running and jumping make it much worse)
     spread() {
       const g = GADGETS[this.gadgetId];
-      let s = g.spread + this.bloom;
+      let s = (g.zoom && this.scoped ? g.zoomSpread : g.spread) + this.bloom;
       const sp = this.speed2d();
       if (sp > MOVE.walk + 0.4) s += g.moveSpread * Math.min(1, (sp - MOVE.walk) / (MOVE.run - MOVE.walk));
       if (!this.onGround) s += g.airSpread;
@@ -1875,10 +2128,24 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const g = GADGETS[this.gadgetId];
       if (this.reloadT > 0 || this.ammo >= g.tank) return;
       this.reloadT = g.reload;
-      if (this.isPlayer) this.game.audio.reload();
+      this.scoped = false;
+      this.game.audio.reload(this);
+    }
+    // returns the mess that actually lands after overalls soak some up
+    soak(dmg) {
+      if (this.armor > 0) {
+        const a = Math.min(this.armor, dmg * 0.5);
+        this.armor -= a;
+        dmg -= a;
+      }
+      return dmg;
+    }
+    earn(n) {
+      this.coins = Math.max(0, Math.min(ECON.max, this.coins + n));
     }
     tick(dt) {
       if (this.cooldown > 0) this.cooldown -= dt;
+      if (this.sayT > 0) this.sayT -= dt;
       if (this.reloadT > 0) {
         this.reloadT -= dt;
         if (this.reloadT <= 0) {
@@ -1895,7 +2162,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const c = this.char;
       c.root.position.copy(this.pos);
       c.root.rotation.y = this.yaw;
-      animateCharacter(c, dt, this.alive ? this.speed2d() : 0, this.pitch + this.recoil, this.crouched, this.alive);
+      animateCharacter(c, dt, this.alive ? this.speed2d() : 0, this.pitch + this.recoil, this.crouched || this.busy, this.alive);
       if (!this.alive) {
         const s = this.outT < 1.6 ? 1 : Math.max(0, 1 - (this.outT - 1.6) * 4);
         c.root.scale.setScalar(Math.max(1e-3, s));
@@ -1934,16 +2201,39 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       this.stuckZ = 0;
       this.jump = false;
       this.arrivedAt = 0;
-      this.holdFor = rand(5, 9);
+      this.holdFor = rand(6, 10);
       this.rotateAt = 0;
       this.alertYaw = null;
       this.alertT = 0;
       this.hold = plan ? plan.hold : null;
       this.crouchHold = Math.random() < 0.35;
+      this.sweep = rand(6.28);
       this.goal = null;
       this.repath = false;
       this.huntUntil = 0;
-      this.sweep = rand(6.28);
+      this.guarding = false;
+      this.corkDuty = false;
+      this.fetching = false;
+      if (this.a) this.a.wantUse = false;
+    }
+    // ---------- orders from the match ----------
+    sendTo(spot, guard) {
+      this.hold = spot;
+      this.legs = [spot];
+      this.path = null;
+      this.guarding = !!guard;
+      if (this.state !== "fight") this.state = "travel";
+    }
+    fetch(x, z) {
+      this.fetching = true;
+      this.sendTo({ x, z, lx: x, lz: z - 5 }, false);
+    }
+    // carry the pumpkin to a site and plant it there
+    carryTo(site) {
+      const s = this.g.world.sites[site], spot = this.g.nav.nearestFree(s.x + rand(-1.6, 1.6), s.z + rand(-1.6, 1.6));
+      this.fetching = false;
+      this.plan.site = site;
+      this.sendTo({ x: spot.x, z: spot.z, lx: s.x, lz: s.z + 8 }, true);
     }
     // ---------- seeing ----------
     canSee(e) {
@@ -1972,6 +2262,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           this.target = best;
           this.seenT = 0;
           this.errT = 0;
+          this.g.onSpot(a, best);
         }
         this.lastSeen = { x: best.pos.x, z: best.pos.z };
         this.g.report(a.team, best);
@@ -1994,30 +2285,33 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       return !!this.path;
     }
     decide() {
-      const now = this.g.time, a = this.a, W = this.g.world;
+      const now = this.g.time, a = this.a, W = this.g.world, attack = this.plan.role === "attack";
+      const afterFight = () => this.guarding || this.fetching || !attack ? "return" : "seek";
       if (this.target) {
         this.state = "fight";
         return;
       }
       if (this.repath) {
         this.repath = false;
-        if (this.goal && this.state !== "fight") {
+        if (this.goal) {
           this.goTo(this.goal.x, this.goal.z);
           return;
         }
       }
       if (this.state === "fight") {
-        this.state = "hunt";
-        this.huntUntil = now + rand(3, 5);
-        if (!this.lastSeen || !this.goTo(this.lastSeen.x, this.lastSeen.z)) {
-          this.state = this.plan.role === "attack" ? "seek" : "return";
+        const urgent = this.corkDuty || this.fetching || this.g.pumpkin.carrier === a;
+        if (urgent || !this.lastSeen || !this.goTo(this.lastSeen.x, this.lastSeen.z)) {
+          this.state = afterFight();
           this.path = null;
+        } else {
+          this.state = "hunt";
+          this.huntUntil = now + rand(2.5, 4.5);
         }
         return;
       }
       if (this.state === "hunt") {
         if (!this.path || this.pi >= this.path.length || now > this.huntUntil) {
-          this.state = this.plan.role === "attack" ? "seek" : "return";
+          this.state = afterFight();
           this.path = null;
         }
         return;
@@ -2042,16 +2336,21 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         return;
       }
       if (this.state === "hold") {
-        if (this.plan.role === "attack") {
+        if (this.hold && Math.hypot(a.pos.x - this.hold.x, a.pos.z - this.hold.z) > 1.6 && (this.guarding || this.corkDuty)) {
+          this.state = "return";
+          return;
+        }
+        if (this.guarding || this.corkDuty) return;
+        if (attack) {
           if (now - this.arrivedAt > this.holdFor) {
             this.state = "seek";
             this.path = null;
           }
         } else if (now - this.arrivedAt > 3 && now > this.rotateAt) {
-          const other = this.g.busiestSite(a.team);
-          if (other && other !== this.plan.site && Math.hypot(a.pos.x - W.points[other].x, a.pos.z - W.points[other].z) > 14) {
-            this.plan.site = other;
-            this.hold = pick(W.holds[other]);
+          const other2 = this.g.busiestSite(a.team);
+          if (other2 && other2 !== this.plan.site && Math.hypot(a.pos.x - W.points[other2].x, a.pos.z - W.points[other2].z) > 14) {
+            this.plan.site = other2;
+            this.hold = pick(W.holds[other2]);
             this.state = "travel";
             this.legs = [this.hold];
             this.path = null;
@@ -2063,16 +2362,34 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       if (this.state === "seek") {
         if (!this.path || this.pi >= this.path.length) {
           const tip = this.g.latestIntel(a.team);
-          const goal = tip || W.points[pick(["A", "B", "YARD", "MID", a.team === "herd" ? "HANDS" : "HERD"])];
+          const goal = tip || W.points[pick(["A", "B", "YARD", "MID", attack ? "HANDS" : "HERD"])];
           if (!this.goTo(goal.x + rand(-2, 2), goal.z + rand(-2, 2))) this.path = null;
         }
       }
     }
+    // should this character be holding the "use" key right now (planting or corking)?
+    wantsUse() {
+      const a = this.a, P = this.g.pumpkin, t = this.target;
+      if (P.carrier === a && P.state === "carried") {
+        const s = this.g.world.sites[this.g.siteAt(a.pos.x, a.pos.z)];
+        return !!s && this.state === "hold" && (!t || a.busy && P.progress > OBJ.plantTime * 0.5);
+      }
+      if (this.corkDuty && P.state === "planted") {
+        const near = Math.hypot(a.pos.x - P.x, a.pos.z - P.z) < OBJ.reach - 0.2;
+        const need = a.kit ? OBJ.corkTimeKit : OBJ.corkTime;
+        return near && (!t || a.busy && P.progress > need * 0.55);
+      }
+      return false;
+    }
     // ---------- acting ----------
     update(dt) {
       const a = this.a, g = this.g, D = g.diff;
-      if (!a.alive) return;
+      if (!a.alive) {
+        a.wantUse = false;
+        return;
+      }
       if (g.state !== "live") {
+        a.wantUse = false;
         a.move(dt, 0, 0, false, false, false);
         return;
       }
@@ -2083,9 +2400,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         this.decide();
       }
       if (this.alertT > 0) this.alertT -= dt;
-      let wx = 0, wz = 0, wantYaw = a.yaw, wantPitch = 0, crouch = false, walk = false;
+      a.wantUse = this.wantsUse();
+      let wx = 0, wz = 0, wantYaw = a.yaw, wantPitch = 0, crouch = false;
       const t = this.target;
-      if (t && t.alive) {
+      const gd = GADGETS[a.gadgetId];
+      if (t && t.alive && !a.busy) {
         this.seenT += dt;
         this.errT -= dt;
         if (this.errT <= 0) {
@@ -2094,14 +2413,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           this.errYaw = (Math.random() + Math.random() - 1) * D.aimErr * settle;
           this.errPitch = (Math.random() + Math.random() - 1) * D.aimErr * 0.6 * settle;
         }
-        const gd = GADGETS[a.gadgetId];
         const dx0 = t.pos.x - a.pos.x, dz0 = t.pos.z - a.pos.z, dist = Math.hypot(dx0, dz0);
         const lead = dist / gd.speed;
         const dx = dx0 + t.vel.x * lead, dz = dz0 + t.vel.z * lead;
         const ty = t.pos.y + (t.crouched ? 0.72 : 1), ey = a.pos.y + a.eyeY();
         wantYaw = yawTo(dx, dz) + this.errYaw;
         wantPitch = Math.atan2(ty - ey, Math.hypot(dx, dz)) + this.errPitch;
-        if (dist > 34 && this.plan.role === "attack") {
+        if (dist > 34 && this.plan.role === "attack" && !gd.zoom) {
           const k = 1 / dist;
           wx = dx0 * k;
           wz = dz0 * k;
@@ -2110,7 +2428,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           const k = 1 / (dist || 1);
           wx = -dz0 * k * this.strafeDir;
           wz = dx0 * k * this.strafeDir;
-          if (this.strafeT <= 0) this.standT = rand(0.5, 1.2);
+          if (this.strafeT <= 0) this.standT = rand(0.5, 1.2) * (gd.zoom ? 2 : 1);
         } else {
           this.standT -= dt;
           if (this.standT <= 0) {
@@ -2118,10 +2436,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
             this.strafeDir = Math.random() < 0.5 ? -1 : 1;
           }
         }
-        const aimed = Math.abs(angDiff(wantYaw, a.yaw)) < 0.07 && Math.abs(wantPitch - a.pitch) < 0.09;
-        const steady = D.fireMoving || a.speed2d() < MOVE.walk + 0.6;
+        const still = a.speed2d() < MOVE.walk + 0.6;
+        a.scoped = !!gd.zoom && still;
+        const tight = gd.zoom ? 0.03 : 0.07;
+        const aimed = Math.abs(angDiff(wantYaw, a.yaw)) < tight && Math.abs(wantPitch - a.pitch) < tight + 0.02;
+        const steady = gd.zoom ? still : D.fireMoving || still;
         if (this.pauseT > 0) this.pauseT -= dt;
-        else if (this.seenT > D.reaction && aimed && steady) {
+        else if (this.seenT > D.reaction + (gd.zoom ? 0.3 : 0) && aimed && steady) {
           if (this.burst <= 0) this.burst = gd.auto ? 3 + (Math.random() * 5 | 0) : 1 + (Math.random() * 3 | 0);
           if (a.cooldown <= 0 && g.combat.tryFire(a)) {
             this.burst--;
@@ -2129,8 +2450,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
             if (this.burst <= 0) this.pauseT = rand(0.22, 0.55);
           }
         }
+        if (a.ammo <= 0 && a.gadgetId !== "squirter" && dist < 14) a.setGadget("squirter");
       } else {
-        this.target = null;
+        if (!t || !t.alive) this.target = null;
+        a.scoped = false;
         if (this.path && this.pi < this.path.length) {
           const p = this.path[this.pi];
           const dx = p.x - a.pos.x, dz = p.z - a.pos.z, d = Math.hypot(dx, dz);
@@ -2154,10 +2477,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         } else if (this.state === "hold" && this.hold) {
           this.sweep += dt * 0.9;
           wantYaw = yawTo(this.hold.lx - a.pos.x, this.hold.lz - a.pos.z) + Math.sin(this.sweep) * 0.45;
-          crouch = this.crouchHold;
+          crouch = this.crouchHold && !this.corkDuty;
         }
         if (this.alertT > 0 && this.alertYaw !== null) wantYaw = this.alertYaw;
-        if (a.ammo < GADGETS[a.gadgetId].tank * 0.45) a.startReload();
+        if (a.primary && a.gadgetId !== a.primary && a.tanks[a.primary] > 0) a.setGadget(a.primary);
+        if (a.ammo < gd.tank * 0.45 && !a.busy) a.startReload();
       }
       const dy = angDiff(wantYaw, a.yaw), turn = D.turn * dt * (0.3 + Math.min(1, Math.abs(dy) / 0.6));
       a.yaw += clamp(dy, -turn, turn);
@@ -2177,7 +2501,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         wx /= wl;
         wz /= wl;
       }
-      a.move(dt, wx, wz, this.jump, walk, crouch);
+      a.move(dt, wx, wz, this.jump, false, crouch);
       this.jump = false;
     }
   };
@@ -2189,7 +2513,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   function createCombat(game) {
     const shots = [];
     function tryFire(a) {
-      if (!a.alive || a.cooldown > 0 || a.reloadT > 0 || game.state !== "live") return false;
+      if (!a.alive || a.busy || a.cooldown > 0 || a.reloadT > 0 || game.state !== "live") return false;
       const g = GADGETS[a.gadgetId];
       if (a.ammo <= 0) {
         a.startReload();
@@ -2223,8 +2547,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       shots.push(shot);
       a.bloom = Math.min(g.bloomMax, a.bloom + g.bloom);
       a.recoil += g.kick;
-      game.audio.shoot(g.id, a);
+      game.audio.shoot(g, a);
       if (a.isPlayer) game.onPlayerFire();
+      if (g.zoom) a.scoped = false;
       if (a.ammo === 0) a.startReload();
       return true;
     }
@@ -2232,7 +2557,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const a = s.owner, px = s.x + dx * t, py = s.y + dy * t, pz = s.z + dz * t;
       let dmg = s.g.dmg * (head ? s.g.head : 1);
       if (v.isPlayer && !a.isPlayer) dmg *= game.diff.dmgToPlayer;
-      v.hp -= dmg;
+      v.hp -= v.soak(dmg);
       tmp.set(px, py, pz);
       addSplat(v.char, tmp, s.g.color);
       game.fx.burst(px, py, pz, s.g.color, 7);
@@ -2409,27 +2734,98 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     return { shotMesh, freeShot, splat, burst, update, clearDecals };
   }
 
+  // src/audio-pack.js
+  var AUDIO_PACK = { "ann_corked": [0, 17598], "ann_defeat": [17598, 17389], "ann_go": [34987, 13209], "ann_half": [48196, 21986], "ann_hands_win": [70182, 20941], "ann_herd_win": [91123, 15508], "ann_match_point": [106631, 10701], "ann_planted": [117332, 25748], "ann_stink": [143080, 23031], "ann_ten": [166111, 11537], "ann_time": [177648, 7985], "ann_victory": [185633, 25957], "ann_welcome": [211590, 24703], "hands_corking": [236293, 16762], "hands_dropped": [253055, 9239], "hands_go_1": [262294, 13418], "hands_go_2": [275712, 10701], "hands_got_it": [286413, 9657], "hands_guard": [296070, 13836], "hands_hurt_1": [309906, 16762], "hands_hurt_2": [326668, 11955], "hands_nice": [338623, 9448], "hands_out_1": [348071, 23031], "hands_out_2": [371102, 18852], "hands_planted_a": [389954, 15090], "hands_planted_b": [405044, 14254], "hands_planting": [419298, 13836], "hands_refill": [433134, 10701], "hands_spot_1": [443835, 7985], "hands_spot_2": [451820, 11746], "hands_to_a": [463566, 8612], "hands_to_b": [472178, 9657], "herd_corking": [481835, 16762], "herd_dropped": [498597, 10701], "herd_go_1": [509298, 18225], "herd_go_2": [527523, 17180], "herd_got_it": [544703, 13209], "herd_guard": [557912, 13418], "herd_hurt_1": [571330, 14254], "herd_hurt_2": [585584, 16344], "herd_nice": [601928, 8821], "herd_out_1": [610749, 25121], "herd_out_2": [635870, 17598], "herd_planting": [653468, 15508], "herd_refill": [668976, 6731], "herd_spot_1": [675707, 9657], "herd_spot_2": [685364, 12582], "herd_to_a": [697946, 8821], "herd_to_b": [706767, 10701], "music_defeat": [717468, 420981], "music_fuse": [1138449, 420981], "music_lose": [1559430, 84890], "music_menu": [1644320, 858741], "music_victory": [2503061, 414764], "music_win": [2917825, 91838], "noise_chicken": [3009663, 9657], "noise_cow": [3019320, 13418], "noise_goat": [3032738, 16971], "noise_pig": [3049709, 18225], "noise_sheep": [3067934, 23031], "sfx_bell": [3090965, 21987], "sfx_click": [3112952, 7254], "sfx_cluck": [3120206, 39228], "sfx_cork_pop": [3159434, 6e3], "sfx_egg": [3165434, 4120], "sfx_flop": [3169554, 10703], "sfx_pea": [3180257, 6941], "sfx_refill": [3187198, 15091], "sfx_rooster": [3202289, 15718], "sfx_splat": [3218007, 9135], "sfx_squeak": [3227142, 12270], "sfx_squirt": [3239412, 6314], "sfx_step1": [3245726, 4120], "sfx_step2": [3249846, 4120], "sfx_step3": [3253966, 4120], "sfx_step4": [3258086, 4433], "sfx_thud": [3262519, 6e3], "sfx_thwap": [3268519, 6941], "sfx_tick": [3275460, 2239], "sfx_tock": [3277699, 2239], "sfx_tomato": [3279938, 5687] };
+
   // src/audio.js
+  var VOICE = [
+    "ann_welcome",
+    "ann_go",
+    "ann_planted",
+    "ann_corked",
+    "ann_stink",
+    "ann_herd_win",
+    "ann_hands_win",
+    "ann_time",
+    "ann_half",
+    "ann_match_point",
+    "ann_ten",
+    "ann_victory",
+    "ann_defeat",
+    "noise_chicken",
+    "noise_pig",
+    "noise_cow",
+    "noise_sheep",
+    "noise_goat"
+  ];
+  for (const t of ["herd", "hands"]) for (const k of ["go_1", "go_2", "spot_1", "spot_2", "planting", "guard", "dropped", "got_it", "hurt_1", "hurt_2", "out_1", "out_2", "nice", "refill", "to_a", "to_b", "corking"]) VOICE.push(`${t}_${k}`);
+  VOICE.push("hands_planted_a", "hands_planted_b");
+  var SFX = [
+    "sfx_squirt",
+    "sfx_egg",
+    "sfx_pea",
+    "sfx_tomato",
+    "sfx_splat",
+    "sfx_thwap",
+    "sfx_step1",
+    "sfx_step2",
+    "sfx_step3",
+    "sfx_step4",
+    "sfx_refill",
+    "sfx_bell",
+    "sfx_rooster",
+    "sfx_tick",
+    "sfx_tock",
+    "sfx_cork_pop",
+    "sfx_squeak",
+    "sfx_thud",
+    "sfx_click",
+    "sfx_flop",
+    "sfx_cluck"
+  ];
+  var MUSIC = ["music_menu", "music_win", "music_lose", "music_victory", "music_defeat", "music_fuse"];
   function createAudio(game) {
-    let ctx = null, master = null, noiseBuf = null;
-    function init() {
-      if (ctx) {
-        if (ctx.state === "suspended") ctx.resume();
-        return;
-      }
+    let ctx = null, master = null, musicBus = null, noiseBuf = null;
+    const buffers = {};
+    let musicNow = null, musicName = null, announcing = false, lastRadio = -9, cluckT = 14;
+    const queue = [];
+    function boot2() {
+      if (ctx) return;
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       try {
         ctx = new AC();
         master = ctx.createGain();
-        master.gain.value = 0.55;
+        master.gain.value = 0.7;
         master.connect(ctx.destination);
+        musicBus = ctx.createGain();
+        musicBus.gain.value = 0.5;
+        musicBus.connect(master);
         noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
         const d = noiseBuf.getChannelData(0);
         for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        fetch("assets/audio.mp3").then((r) => r.ok ? r.arrayBuffer() : Promise.reject()).then((pack) => {
+          for (const name of [...SFX, ...VOICE, ...MUSIC]) {
+            const at = AUDIO_PACK[name];
+            if (!at) continue;
+            new Promise((res, rej) => ctx.decodeAudioData(pack.slice(at[0], at[0] + at[1]), res, rej)).then((buf) => {
+              buffers[name] = buf;
+              if (name === musicName && !musicNow) startMusic(name, pendingLoop, pendingVol);
+            }).catch(() => {
+            });
+          }
+        }).catch(() => {
+        });
       } catch (e) {
         ctx = null;
       }
+    }
+    function init() {
+      boot2();
+      if (ctx && ctx.state === "suspended") ctx.resume().then(() => {
+        if (musicName && !musicNow) startMusic(musicName, pendingLoop, pendingVol);
+      }).catch(() => {
+      });
     }
     function place(x, z) {
       const c = game.camera.position, dx = x - c.x, dz = z - c.z, d = Math.hypot(dx, dz);
@@ -2437,19 +2833,30 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const pan = d < 0.6 ? 0 : clamp(-Math.sin(angDiff(yawTo(dx, dz), game.viewYaw)) * 0.85, -1, 1);
       return { vol, pan };
     }
-    function bus(vol, pan) {
+    function bus(vol, pan, dest) {
       const g = ctx.createGain();
       g.gain.value = vol;
-      if (ctx.createStereoPanner) {
+      if (pan && ctx.createStereoPanner) {
         const p = ctx.createStereoPanner();
         p.pan.value = pan;
         g.connect(p);
-        p.connect(master);
-      } else g.connect(master);
+        p.connect(dest || master);
+      } else g.connect(dest || master);
       return g;
     }
+    function sample(name, vol = 1, pan = 0, rate = 1, dest) {
+      const buf = buffers[name];
+      if (!ctx || !buf || ctx.state !== "running") return false;
+      if (vol < 4e-3) return true;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.playbackRate.value = rate;
+      src.connect(bus(vol, pan, dest));
+      src.start();
+      return src;
+    }
     function noise(dur, f0, f1, vol, pan = 0, type = "bandpass", q = 1.2) {
-      if (!ctx || vol < 4e-3) return;
+      if (!ctx || vol < 4e-3 || ctx.state !== "running") return;
       const t = ctx.currentTime, src = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), g = bus(1, pan), env = ctx.createGain();
       src.buffer = noiseBuf;
       src.loop = true;
@@ -2466,7 +2873,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       src.stop(t + dur + 0.02);
     }
     function tone(wave, f0, f1, dur, vol, pan = 0, delay = 0) {
-      if (!ctx || vol < 4e-3) return;
+      if (!ctx || vol < 4e-3 || ctx.state !== "running") return;
       const t = ctx.currentTime + delay, o = ctx.createOscillator(), env = ctx.createGain(), g = bus(1, pan);
       o.type = wave;
       o.frequency.setValueAtTime(f0, t);
@@ -2479,16 +2886,86 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       o.start(t);
       o.stop(t + dur + 0.03);
     }
+    const wob = () => 0.94 + Math.random() * 0.12;
+    function nextAnnouncement() {
+      const name = queue.shift();
+      if (!name) {
+        announcing = false;
+        return;
+      }
+      const src = sample(name, 1);
+      if (!src || src === true) {
+        nextAnnouncement();
+        return;
+      }
+      announcing = true;
+      src.onended = nextAnnouncement;
+    }
+    function announce(name) {
+      if (!ctx) return;
+      queue.push(name);
+      if (!announcing) nextAnnouncement();
+    }
+    let pendingLoop = true, pendingVol = 1;
+    function stopMusic(fade = 0.6) {
+      if (musicNow) {
+        const { src, gain } = musicNow;
+        try {
+          gain.gain.setTargetAtTime(0, ctx.currentTime, fade / 3);
+          src.stop(ctx.currentTime + fade);
+        } catch (e) {
+        }
+      }
+      musicNow = null;
+    }
+    function music(name, loop = true, vol = 1) {
+      if (!ctx) return;
+      if (musicName === name && musicNow) return;
+      stopMusic();
+      musicName = name;
+      pendingLoop = loop;
+      pendingVol = vol;
+      startMusic(name, loop, vol);
+    }
+    function startMusic(name, loop, vol) {
+      const buf = buffers[name];
+      if (!buf || ctx.state !== "running") return;
+      const src = ctx.createBufferSource(), gain = ctx.createGain();
+      src.buffer = buf;
+      src.loop = loop;
+      gain.gain.value = vol;
+      src.connect(gain);
+      gain.connect(musicBus);
+      src.start();
+      musicNow = { src, gain };
+      if (!loop) src.onended = () => {
+        if (musicNow && musicNow.src === src) {
+          musicNow = null;
+          musicName = null;
+        }
+      };
+    }
     return {
       init,
-      shoot(id, a) {
+      boot: boot2,
+      announce,
+      music,
+      stopMusic(fade) {
+        musicName = null;
+        stopMusic(fade);
+      },
+      shoot(g, a) {
         if (!ctx) return;
-        const p = a.isPlayer ? { vol: 0.8, pan: 0 } : place(a.pos.x, a.pos.z);
+        const p = a.isPlayer ? { vol: 0.9, pan: 0 } : place(a.pos.x, a.pos.z);
+        if (sample(g.sound, p.vol * 0.8, p.pan, wob())) {
+          if (g.id === "tomato") tone("triangle", 190, 70, 0.1, p.vol * 0.35, p.pan);
+          return;
+        }
         const v = p.vol * 0.5;
-        if (id === "squirter") {
+        if (g.id === "squirter") {
           noise(0.11, 2600, 700, v, p.pan);
           tone("sine", 900, 380, 0.08, v * 0.5, p.pan);
-        } else if (id === "egg") {
+        } else if (g.id === "egg") {
           tone("sine", 520, 190, 0.07, v * 0.9, p.pan);
           noise(0.05, 1500, 600, v * 0.5, p.pan);
         } else {
@@ -2499,48 +2976,120 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       splat(x, y, z, onChar) {
         if (!ctx) return;
         const p = place(x, z);
+        if (sample("sfx_splat", p.vol * (onChar ? 0.75 : 0.4), p.pan, 0.9 + Math.random() * 0.35)) {
+          if (onChar) sample("sfx_thwap", p.vol * 0.5, p.pan, wob());
+          return;
+        }
         noise(0.13, onChar ? 1300 : 900, 160, p.vol * (onChar ? 0.5 : 0.25), p.pan, "lowpass");
       },
       step(a) {
         if (!ctx) return;
-        const p = a.isPlayer ? { vol: 0.25, pan: 0 } : place(a.pos.x, a.pos.z);
+        const p = a.isPlayer ? { vol: 0.32, pan: 0 } : place(a.pos.x, a.pos.z);
+        if (sample("sfx_step" + (1 + (Math.random() * 4 | 0)), p.vol * 0.9, p.pan, wob())) return;
         noise(0.06, 300, 90, p.vol * 0.55, p.pan, "lowpass", 0.7);
       },
-      reload() {
-        tone("square", 300, 520, 0.07, 0.08);
-        tone("square", 520, 700, 0.07, 0.08, 0, 0.16);
-        noise(0.25, 500, 1800, 0.06);
+      reload(a) {
+        if (!ctx) return;
+        const p = a.isPlayer ? { vol: 0.8, pan: 0 } : place(a.pos.x, a.pos.z);
+        if (sample("sfx_refill", p.vol * 0.6, p.pan, a.isPlayer ? 1 : wob())) return;
+        if (a.isPlayer) {
+          tone("square", 300, 520, 0.07, 0.08);
+          tone("square", 520, 700, 0.07, 0.08, 0, 0.16);
+        }
       },
       hitConfirm(head) {
-        tone("sine", head ? 1250 : 900, head ? 1700 : 1150, 0.07, 0.22);
-        if (head) tone("sine", 1900, 2300, 0.08, 0.16, 0, 0.06);
+        tone("sine", head ? 1250 : 900, head ? 1700 : 1150, 0.07, 0.2);
+        if (head) tone("sine", 1900, 2300, 0.08, 0.15, 0, 0.06);
       },
       hurt() {
-        tone("sine", 330, 140, 0.16, 0.3);
+        tone("sine", 330, 140, 0.16, 0.26);
       },
+      // someone got splatted out: a squeaky flop plus their own complaint
       out(a) {
+        if (!ctx) return;
         const p = place(a.pos.x, a.pos.z);
-        tone("sine", 950, 180, 0.45, p.vol * 0.3, p.pan);
-        tone("triangle", 160, 70, 0.14, p.vol * 0.3, p.pan, 0.42);
+        if (!sample("sfx_flop", p.vol * 0.6, p.pan, wob())) tone("sine", 950, 180, 0.45, p.vol * 0.3, p.pan);
+        const line = a.kind !== "farmer" && Math.random() < 0.6 ? `noise_${a.kind}` : `${a.team}_out_${1 + (Math.random() * 2 | 0)}`;
+        sample(line, Math.max(a.isPlayer ? 0.8 : 0, p.vol) * 0.95, p.pan);
+      },
+      // a character shouting from where they stand (anyone nearby hears it)
+      shout(a, key, chance = 1) {
+        if (!ctx || a.sayT > 0 || Math.random() > chance) return;
+        a.sayT = 3.5;
+        const p = a.isPlayer ? { vol: 0.75, pan: 0 } : place(a.pos.x, a.pos.z);
+        sample(`${a.team}_${key}`, p.vol * 0.9, p.pan);
+      },
+      // team radio: only your own side's calls reach you
+      radio(team, key) {
+        if (!ctx || team !== game.playerTeam || game.time - lastRadio < 1.6) return;
+        const name = Array.isArray(key) ? pick(key) : key;
+        if (sample(`${team}_${name}`, 0.85)) {
+          lastRadio = game.time;
+          noise(0.04, 3e3, 2500, 0.05);
+        }
       },
       bell() {
-        for (const f of [540, 806]) tone("square", f, f * 0.99, 0.5, 0.09);
-        tone("square", 540, 535, 0.5, 0.07, 0, 0.3);
+        if (!sample("sfx_bell", 0.6)) for (const f of [540, 806]) tone("square", f, f * 0.99, 0.5, 0.09);
       },
-      tick() {
+      rooster() {
+        sample("sfx_rooster", 0.6);
+      },
+      countdown() {
         tone("square", 700, 690, 0.05, 0.06);
       },
+      fuseTick(x, z, k) {
+        const p = place(x, z);
+        if (!sample(k % 2 ? "sfx_tock" : "sfx_tick", Math.max(0.12, p.vol) * 0.9, p.pan, 1 + k % 2 * 0.05)) tone("square", 900, 880, 0.05, Math.max(0.03, p.vol * 0.12), p.pan);
+      },
+      thud(x, z) {
+        const p = place(x, z);
+        if (!sample("sfx_thud", p.vol * 0.9, p.pan)) tone("triangle", 140, 60, 0.15, p.vol * 0.4, p.pan);
+      },
+      squeak(x, z) {
+        const p = place(x, z);
+        sample("sfx_squeak", p.vol * 0.6, p.pan, wob());
+      },
+      corkPop(x, z) {
+        const p = place(x, z);
+        if (!sample("sfx_cork_pop", Math.max(0.3, p.vol), p.pan)) tone("sine", 300, 900, 0.08, 0.3, p.pan);
+      },
+      stink(x, z) {
+        const p = place(x, z), v = Math.max(0.35, p.vol);
+        for (let i = 0; i < 7; i++) tone("sawtooth", 95 - i * 6, 60, 0.11, v * 0.3, p.pan, i * 0.09);
+        noise(1.6, 900, 200, v * 0.4, p.pan, "lowpass");
+        noise(2.2, 5e3, 1800, v * 0.12, p.pan, "highpass");
+      },
+      buy() {
+        sample("sfx_click", 0.6);
+        tone("sine", 1320, 1320, 0.09, 0.14);
+        tone("sine", 1760, 1760, 0.16, 0.14, 0, 0.08);
+      },
+      deny() {
+        tone("square", 170, 150, 0.14, 0.09);
+      },
       win() {
-        [523, 659, 784, 1047].forEach((f, i) => tone("triangle", f, f, 0.22, 0.2, 0, i * 0.12));
+        if (!sample("music_win", 0.7, 0, 1, musicBus)) [523, 659, 784, 1047].forEach((f, i) => tone("triangle", f, f, 0.22, 0.2, 0, i * 0.12));
       },
       lose() {
-        [440, 392, 330, 262].forEach((f, i) => tone("triangle", f, f * 0.97, 0.26, 0.18, 0, i * 0.16));
+        if (!sample("music_lose", 0.7, 0, 1, musicBus)) [440, 392, 330, 262].forEach((f, i) => tone("triangle", f, f * 0.97, 0.26, 0.18, 0, i * 0.16));
       },
       ui() {
-        tone("sine", 660, 880, 0.06, 0.12);
+        tone("sine", 660, 880, 0.06, 0.1);
+      },
+      // little bits of farm life in the background
+      ambient(dt) {
+        cluckT -= dt;
+        if (cluckT <= 0) {
+          cluckT = 14 + Math.random() * 22;
+          const p = place(-26, 15);
+          sample("sfx_cluck", p.vol * 0.5 + 0.03, p.pan, wob());
+        }
       },
       setVolume(v) {
         if (master) master.gain.value = v;
+      },
+      loaded() {
+        return Object.keys(buffers).length;
       }
     };
   }
@@ -2576,13 +3125,32 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       "ch-t",
       "ch-b",
       "ch-l",
-      "ch-r"
+      "ch-r",
+      "armor-row",
+      "armor-num",
+      "armor-fill",
+      "slot-1",
+      "slot-1-name",
+      "slot-2",
+      "slot-b",
+      "purse",
+      "coins",
+      "shop",
+      "shop-coins",
+      "shop-list",
+      "status",
+      "status-text",
+      "prompt",
+      "prompt-text",
+      "prompt-bar",
+      "prompt-fill",
+      "scope"
     ]) el[id] = $(id);
     for (const t of ["herd", "hands"]) {
       el["pips-" + t].innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
     }
     const rctx = el.radar.getContext("2d");
-    let bannerT = 0, tipT = 0, hitT = 0, hurtT = 0;
+    let bannerT = 0, tipT = 0, hitT = 0, hurtT = 0, shopKey = "";
     const last = {};
     const set = (key, node, value) => {
       if (last[key] !== value) {
@@ -2590,14 +3158,23 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         node.textContent = value;
       }
     };
+    const show = (key, node, on) => {
+      if (last[key] !== on) {
+        last[key] = on;
+        node.hidden = !on;
+      }
+    };
     function update(dt) {
       const p = game.player;
       if (!p) return;
+      const P = game.pumpkin;
       set("sh", el["score-herd"], String(game.score.herd));
       set("sf", el["score-hands"], String(game.score.hands));
-      const secs = Math.max(0, Math.ceil(game.state === "freeze" ? game.roundLen : game.roundT));
+      const planted = P.state === "planted";
+      const secs = Math.max(0, Math.ceil(planted ? P.fuse : game.state === "freeze" ? game.freezeT : game.roundT));
       set("tm", el.timer, `${secs / 60 | 0}:${String(secs % 60).padStart(2, "0")}`);
-      el.timer.classList.toggle("low", secs <= 15 && game.state === "live");
+      el.timer.classList.toggle("low", secs <= 15 && game.state === "live" && !planted);
+      el.timer.classList.toggle("fuse", planted);
       for (const t of ["herd", "hands"]) {
         const n = game.actors.filter((a) => a.team === t && a.alive).length;
         if (last["al" + t] !== n) {
@@ -2612,18 +3189,38 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         el["hp-fill"].style.width = hp + "%";
         el["hp-fill"].style.background = hp > 55 ? "" : hp > 25 ? "#f6cf58" : "#d9463e";
       }
-      const g = GADGETS[p.gadgetId];
-      const ammoText = p.reloadT > 0 ? "Refilling" : String(p.ammo);
-      set("am", el["ammo-num"], ammoText);
-      const frac = p.reloadT > 0 ? 1 - p.reloadT / g.reload : p.ammo / g.tank;
-      el["ammo-fill"].style.width = Math.round(frac * 100) + "%";
-      if (last.gid !== p.gadgetId) {
-        last.gid = p.gadgetId;
-        el["gadget-name"].textContent = g.name;
-        [...el.slots.children].forEach((c) => c.classList.toggle("on", c.dataset.id === p.gadgetId));
+      const ar = Math.ceil(p.armor);
+      if (last.ar !== ar) {
+        last.ar = ar;
+        el["armor-row"].classList.toggle("on", ar > 0);
+        el["armor-num"].textContent = ar;
+        el["armor-fill"].style.width = ar + "%";
       }
+      const g = GADGETS[p.gadgetId];
+      set("am", el["ammo-num"], p.reloadT > 0 ? "Refilling" : String(p.ammo));
+      el["ammo-fill"].style.width = Math.round((p.reloadT > 0 ? 1 - p.reloadT / g.reload : p.ammo / g.tank) * 100) + "%";
+      set("gn", el["gadget-name"], g.name);
+      set("s1", el["slot-1-name"], p.primary ? GADGETS[p.primary].short : "Empty");
+      const key = p.gadgetId + "|" + p.primary;
+      if (last.slot !== key) {
+        last.slot = key;
+        el["slot-1"].classList.toggle("on", p.gadgetId !== "squirter");
+        el["slot-1"].classList.toggle("empty", !p.primary);
+        el["slot-2"].classList.toggle("on", p.gadgetId === "squirter");
+      }
+      show("sb", el["slot-b"], game.state === "freeze");
+      if (last.coins !== p.coins) {
+        if (last.coins !== void 0) {
+          el.purse.classList.add("flash");
+          setTimeout(() => el.purse.classList.remove("flash"), 350);
+        }
+        last.coins = p.coins;
+        el.coins.textContent = p.coins.toLocaleString("en-US");
+      }
+      const zoomed = p.alive && p.scoped;
+      show("scope", el.scope, zoomed);
       const focal = game.viewH / 2 / Math.tan(game.camera.fov * Math.PI / 360);
-      const gap = Math.round(5 + p.spread() * focal);
+      const gap = Math.round(5 + Math.min(0.2, p.spread()) * focal);
       if (last.gap !== gap) {
         last.gap = gap;
         el["ch-t"].style.top = -gap - 11 + "px";
@@ -2631,7 +3228,48 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         el["ch-l"].style.left = -gap - 11 + "px";
         el["ch-r"].style.left = gap + "px";
       }
-      el.cross.style.display = p.alive ? "" : "none";
+      el.cross.style.display = p.alive && !zoomed ? "" : "none";
+      const attacking = game.attackers === p.team;
+      let status = "", hot = false, prompt = "", frac = -1;
+      if (game.state === "live" || game.state === "freeze") {
+        if (P.state === "carried") status = P.carrier === p ? "You have the Stink-Pumpkin" : attacking ? `${P.carrier.name} has the Stink-Pumpkin` : "";
+        else if (P.state === "dropped") status = attacking ? "The pumpkin was dropped. Grab it!" : "The pumpkin was dropped. Guard it!";
+        else if (planted) {
+          status = `Planted at ${P.site}. ${attacking ? "Guard it!" : "Cork it!"}`;
+          hot = true;
+        }
+      }
+      if (game.state === "live" && p.alive) {
+        if (P.state === "carried" && P.carrier === p) {
+          if (P.actor === p) {
+            prompt = "Planting...";
+            frac = P.progress / OBJ.plantTime;
+          } else prompt = game.siteAt(p.pos.x, p.pos.z) ? "Hold [E] to plant the pumpkin" : "Carry the pumpkin to A or B";
+        } else if (planted && !attacking) {
+          const need = p.kit ? OBJ.corkTimeKit : OBJ.corkTime;
+          if (P.actor === p) {
+            prompt = "Corking...";
+            frac = P.progress / need;
+          } else if (Math.hypot(p.pos.x - P.x, p.pos.z - P.z) < OBJ.reach) prompt = "Hold [E] to cork the pumpkin";
+        }
+      }
+      show("st", el.status, !!status);
+      if (status) {
+        set("stt", el["status-text"], status);
+        el.status.classList.toggle("hot", hot);
+      }
+      show("pr", el.prompt, !!prompt);
+      if (prompt) {
+        if (last.prt !== prompt) {
+          last.prt = prompt;
+          el["prompt-text"].innerHTML = prompt.replace("[E]", "<kbd>E</kbd>");
+        }
+        el["prompt-bar"].hidden = frac < 0;
+        if (frac >= 0) el["prompt-fill"].style.width = Math.min(100, frac * 100) + "%";
+      }
+      const open = game.shopOpen && game.state === "freeze" && p.alive;
+      show("shop", el.shop, open);
+      if (open) renderShop(p);
       if (bannerT > 0 && (bannerT -= dt) <= 0) el.banner.hidden = true;
       if (tipT > 0 && (tipT -= dt) <= 0) el.tip.hidden = true;
       if (hitT > 0 && (hitT -= dt) <= 0) el.hitmark.style.opacity = 0;
@@ -2641,9 +3279,41 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       radar();
     }
+    function renderShop(p) {
+      const items = game.shopItems(p);
+      const key = p.coins + "|" + items.map((i) => i.state).join("");
+      if (key === shopKey) return;
+      shopKey = key;
+      el["shop-coins"].textContent = `You have ${p.coins.toLocaleString("en-US")} corn coins`;
+      el["shop-list"].textContent = "";
+      items.forEach((it, i) => {
+        const b = document.createElement("button");
+        b.className = "item" + (it.state === "own" ? " own" : it.state === "ok" ? "" : " no");
+        b.id = "buy-" + it.id;
+        const img = document.createElement("img");
+        img.src = `assets/ui/${it.icon}.jpg`;
+        img.alt = "";
+        const k = document.createElement("kbd");
+        k.textContent = String(i + 1);
+        const mid = document.createElement("span");
+        const nm = document.createElement("span");
+        nm.className = "nm";
+        nm.textContent = it.name;
+        const bl = document.createElement("span");
+        bl.className = "bl";
+        bl.textContent = it.state === "role" ? "Only useful when your team is defending." : it.blurb;
+        mid.append(nm, document.createElement("br"), bl);
+        const pr = document.createElement("span");
+        pr.className = "pr";
+        pr.textContent = it.state === "own" ? "Owned" : it.price.toLocaleString("en-US");
+        b.append(k, img, mid, pr);
+        b.addEventListener("click", () => game.buy(p, it.id));
+        el["shop-list"].append(b);
+      });
+    }
     function radar() {
       const c = rctx, S = 272, r = 130, scale = r / 32;
-      const v = game.viewActor || game.player, yaw = game.viewYaw;
+      const v = game.viewActor || game.player, yaw = game.viewYaw, P = game.pumpkin;
       c.clearRect(0, 0, S, S);
       c.save();
       c.beginPath();
@@ -2672,10 +3342,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         c.fill();
         c.stroke();
       };
-      for (const a of game.actors) if (a !== v && a.alive && a.team === game.playerTeam) dot(a.pos, TEAM[a.team].color, 1.25);
+      for (const a of game.actors) if (a !== v && a.alive && a.team === game.playerTeam) dot(a.pos, TEAM[a.team].color, P.carrier === a ? 1.7 : 1.25);
       game.intel[game.playerTeam].forEach((info, enemy) => {
         if (enemy.alive && game.time - info.t < 1.5) dot(info, "#e5412d", 1.25);
       });
+      const mine = game.attackers === game.playerTeam;
+      if (P.state === "planted" || P.state === "dropped" && mine) {
+        const pulse = 1.5 + Math.sin(game.time * 8) * 0.4;
+        dot(P, "#ff8a00", pulse);
+      }
       c.restore();
       c.fillStyle = "#fff";
       c.strokeStyle = "#3a2616";
@@ -2739,8 +3414,18 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         while (el.feed.children.length > 5) el.feed.firstChild.remove();
         setTimeout(() => row.remove(), 6e3);
       },
+      note(text) {
+        const row = document.createElement("div");
+        row.textContent = text;
+        el.feed.append(row);
+        while (el.feed.children.length > 5) el.feed.firstChild.remove();
+        setTimeout(() => row.remove(), 6e3);
+      },
       clearFeed() {
         el.feed.textContent = "";
+      },
+      refreshShop() {
+        shopKey = "";
       }
     };
   }
@@ -2758,7 +3443,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     const gadgets = {};
     for (const id in GADGETS) {
       const m = buildGadget(id);
-      m.scale.setScalar(1);
+      m.scale.setScalar(id === "pea" ? 0.78 : 1);
+      if (id === "pea") m.position.set(0, 0.01, -0.1);
       m.visible = false;
       holder.add(m);
       gadgets[id] = m;
@@ -2812,6 +3498,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   // src/main.js
   var T8 = window.THREE;
   var $2 = (id) => document.getElementById(id);
+  var other = (team) => team === "herd" ? "hands" : "herd";
   function boot() {
     const canvas = $2("view"), rootEl = $2("game");
     let renderer;
@@ -2842,17 +3529,20 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       paused: false,
       time: 0,
       roundT: ROUND.length,
-      roundLen: ROUND.length,
       freezeT: 0,
       endT: 0,
       round: 0,
       score: { herd: 0, hands: 0 },
+      streak: { herd: 0, hands: 0 },
+      attackers: "herd",
       diff: DIFFICULTY.easy,
       diffKey: "easy",
       playerTeam: "herd",
+      shopOpen: false,
       viewYaw: 0,
       viewH: 600,
-      intel: { herd: /* @__PURE__ */ new Map(), hands: /* @__PURE__ */ new Map() }
+      intel: { herd: /* @__PURE__ */ new Map(), hands: /* @__PURE__ */ new Map() },
+      pumpkin: { state: "none", carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null }
     };
     game.world = buildWorld(scene);
     game.nav = buildNav(game.world);
@@ -2862,6 +3552,31 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.hud = createHud(game);
     const vm = createViewModel();
     const botOf = /* @__PURE__ */ new Map();
+    const W = game.world, P = game.pumpkin, audio = game.audio, hud = game.hud;
+    const roleOf = (team) => team === game.attackers ? "attack" : "defend";
+    const alive = (team) => game.actors.filter((a) => a.team === team && a.alive);
+    const dist = (a, x, z) => Math.hypot(a.pos.x - x, a.pos.z - z);
+    game.roleOf = roleOf;
+    game.siteAt = (x, z) => {
+      for (const k of ["A", "B"]) {
+        const s = W.sites[k];
+        if (Math.hypot(x - s.x, z - s.z) < s.r) return k;
+      }
+      return null;
+    };
+    const pumpkin = buildPumpkin();
+    pumpkin.root.visible = false;
+    scene.add(pumpkin.root);
+    const puffs = [];
+    function stinkCloud(x, z) {
+      for (let i = 0; i < 16; i++) {
+        const m = new T8.Mesh(sphereGeo(), new T8.MeshBasicMaterial({ color: i % 2 ? 12055098 : 9427274, transparent: true, opacity: 0.6, depthWrite: false }));
+        m.position.set(x + rand(-1, 1), 0.6 + rand(0, 1.2), z + rand(-1, 1));
+        scene.add(m);
+        puffs.push({ m, life: 0, max: rand(2.2, 3.6), vx: rand(-2.6, 2.6), vy: rand(0.4, 1.6), vz: rand(-2.6, 2.6), size: rand(1.2, 2.6) });
+      }
+      game.fx.burst(x, 0.8, z, 12055098, 30);
+    }
     game.report = (team, enemy) => {
       game.intel[team].set(enemy, { x: enemy.pos.x, z: enemy.pos.z, t: game.time });
     };
@@ -2873,11 +3588,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       return best;
     };
     game.busiestSite = (team) => {
-      const enemiesLeft = game.actors.filter((a) => a.alive && a.team !== team).length;
-      const need = enemiesLeft <= 2 ? 1 : 2;
+      const need = alive(other(team)).length <= 2 ? 1 : 2;
       let bestSite = null, bestN = 0;
       for (const key of ["A", "B"]) {
-        const s = game.world.points[key];
+        const s = W.points[key];
         let n = 0;
         game.intel[team].forEach((info, enemy) => {
           if (enemy.alive && game.time - info.t < 5 && Math.hypot(info.x - s.x, info.z - s.z) < 17) n++;
@@ -2889,6 +3603,47 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       return bestSite;
     };
+    const spotT = { herd: -9, hands: -9 };
+    game.onSpot = (a) => {
+      if (game.time - spotT[a.team] > 7) {
+        spotT[a.team] = game.time;
+        audio.radio(a.team, ["spot_1", "spot_2"]);
+      }
+    };
+    game.shopItems = (a) => SHOP.map((it) => {
+      const g = GADGETS[it.id];
+      let state = "ok";
+      if (it.kind === "gadget" ? a.primary === it.id : it.id === "overalls" ? a.armor >= 100 : a.kit) state = "own";
+      else if (it.role && it.role !== roleOf(a.team)) state = "role";
+      else if (a.coins < it.price) state = "poor";
+      return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
+    });
+    game.buy = (a, id) => {
+      const it = game.shopItems(a).find((i) => i.id === id);
+      if (!it || it.state !== "ok" || a.isPlayer && game.state !== "freeze") {
+        if (a.isPlayer) audio.deny();
+        return false;
+      }
+      a.coins -= it.price;
+      if (PRIMARIES.includes(id)) a.givePrimary(id);
+      else if (id === "overalls") a.armor = 100;
+      else a.kit = true;
+      if (a.isPlayer) {
+        audio.buy();
+        hud.refreshShop();
+      }
+      return true;
+    };
+    function botShop(a) {
+      const c = a.coins;
+      if (!a.primary) {
+        if (c >= 4850 && Math.random() < 0.22) game.buy(a, "pea");
+        else if (c >= 2700) game.buy(a, "tomato");
+        else if (c >= 1200 && (c < 1900 || Math.random() < 0.6)) game.buy(a, "egg");
+      }
+      if (a.armor < 60 && a.coins >= 650) game.buy(a, "overalls");
+      if (roleOf(a.team) === "defend" && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, "kit");
+    }
     function startMatch(team, diffKey) {
       for (const a of game.actors) scene.remove(a.char.root);
       game.actors = [];
@@ -2898,11 +3653,14 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.diffKey = diffKey;
       game.diff = DIFFICULTY[diffKey];
       game.score = { herd: 0, hands: 0 };
+      game.streak = { herd: 0, hands: 0 };
       game.round = 0;
+      game.attackers = "herd";
       for (const t of ["herd", "hands"]) {
         ROSTER[t].forEach((info, i) => {
           const isPlayer = t === team && i === 0;
           const a = new Actor(game, t, isPlayer ? { ...info, name: "You" } : info, isPlayer);
+          a.survived = false;
           game.actors.push(a);
           if (isPlayer) game.player = a;
           else {
@@ -2913,32 +3671,39 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           a.char.marker.visible = t === team && !isPlayer;
         });
       }
-      const p = game.player;
       if (team === "herd") vm.setColors(16774102, 16777215);
       else vm.setColors(15911328, 14239294);
-      vm.set(p.gadgetId);
       game.fx.clearDecals();
-      game.hud.clearFeed();
+      hud.clearFeed();
+      audio.stopMusic();
+      audio.rooster();
       startRound();
     }
+    let mainSite = "A", callT = -1;
     function planRound() {
-      const W = game.world, at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
-      const main = pick(["A", "B"]), other = main === "A" ? "B" : "A";
+      const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
+      mainSite = pick(["A", "B"]);
+      const otherSite = mainSite === "A" ? "B" : "A";
       const used = { A: 0, B: 0, MID: 0 };
       const routeOrder = { A: shuffle([0, 1, 2]), B: shuffle([0, 1, 2]) };
       let ai = 0, di = 0;
       const defendOrder = shuffle(["A", "B", "A", "B", "MID"]);
       for (const b of game.bots) {
         const a = b.a;
-        a.setGadget(pick(GADGET_ORDER));
-        a.cooldown = 0;
-        if (a.team === "herd") {
-          const site = Math.random() < 0.2 ? other : main;
+        botShop(a);
+        if (roleOf(a.team) === "attack") {
+          const carrier = P.carrier === a;
+          const site = !carrier && Math.random() < 0.2 ? otherSite : mainSite;
           const route = W.routes[site][routeOrder[site][ai++ % 3]];
           const hold = W.holds[site][used[site]++ % W.holds[site].length];
           const legs = route.slice(0, -1).map((n) => at(W.points[n].x, W.points[n].z));
-          legs.push(hold);
           b.newRound({ role: "attack", site, legs, hold });
+          if (carrier) {
+            b.legs = legs;
+            const keep = b.legs.slice();
+            b.carryTo(site);
+            b.legs = keep.concat(b.legs);
+          } else b.legs.push(hold);
         } else {
           const site = defendOrder[di++ % defendOrder.length];
           const hold = W.holds[site][used[site]++ % W.holds[site].length];
@@ -2947,6 +3712,16 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
     }
     function startRound() {
+      let half = false;
+      if (game.round === ROUND.half) {
+        half = true;
+        game.attackers = other(game.attackers);
+        game.streak = { herd: 0, hands: 0 };
+        for (const a of game.actors) {
+          a.coins = ECON.start;
+          a.survived = false;
+        }
+      }
       game.round++;
       game.state = "freeze";
       game.freezeT = ROUND.freeze;
@@ -2955,24 +3730,52 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.intel.herd.clear();
       game.intel.hands.clear();
       for (const t of ["herd", "hands"]) {
-        const slots = shuffle(game.world.spawns[t].slice());
-        game.actors.filter((a) => a.team === t).forEach((a, i) => a.reset(slots[i]));
+        const slots = shuffle(W.spawns[roleOf(t)].slice());
+        game.actors.filter((a) => a.team === t).forEach((a, i) => {
+          a.reset(slots[i], a.survived);
+          a.wantUse = false;
+        });
       }
+      Object.assign(P, { state: "carried", carrier: pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
+      pumpkin.glow.visible = false;
       planRound();
       spectateIdx = 0;
       game.viewActor = game.player;
-      game.hud.spectate(null);
-      const job = game.playerTeam === "herd" ? "Splat all the farmhands before time runs out." : "Keep the animals out until the clock hits zero.";
-      game.hud.banner(`Round ${game.round}`, job, ROUND.freeze);
+      game.shopOpen = true;
+      hud.refreshShop();
+      hud.spectate(null);
+      const attacking = roleOf(game.playerTeam) === "attack";
+      const job = attacking ? P.carrier === game.player ? "You have the Stink-Pumpkin. Plant it at A or B." : "Help your team plant the Stink-Pumpkin at A or B." : "Stop the pumpkin being planted, or cork it in time.";
+      const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
+      if (half) {
+        hud.banner("Half-time!", `Teams swap jobs. ${job}`, 5);
+        audio.announce("ann_half");
+      } else hud.banner(`Round ${game.round}`, job, 3.2);
+      if (point) audio.announce("ann_match_point");
+      callT = -1;
     }
     function endRound(winner, why) {
+      const loser = other(winner);
       game.score[winner]++;
+      game.streak[winner] = 0;
+      game.streak[loser]++;
+      const consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+      for (const a of game.actors) {
+        a.earn(a.team === winner ? ECON.win : consolation);
+        a.survived = a.alive;
+        a.busy = false;
+        a.wantUse = false;
+        a.scoped = false;
+      }
       game.state = "roundEnd";
       game.endT = ROUND.endDelay;
+      P.actor = null;
       const won = winner === game.playerTeam;
-      game.hud.banner(won ? "Round won!" : "Round lost", why, ROUND.endDelay);
-      if (won) game.audio.win();
-      else game.audio.lose();
+      hud.banner(won ? "Round won!" : "Round lost", why, ROUND.endDelay);
+      audio.stopMusic(0.3);
+      if (won) audio.win();
+      else audio.lose();
+      audio.announce(winner === "herd" ? "ann_herd_win" : "ann_hands_win");
     }
     function finishMatch() {
       game.state = "matchEnd";
@@ -2981,7 +3784,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       $2("end-title").textContent = won ? "You won the match!" : `${TEAM[winner].name} won`;
       $2("end-sub").textContent = `Final score: Herd ${game.score.herd}, Hands ${game.score.hands}. ${won ? "The farm is yours today." : "Shake off the mess and try again."}`;
       $2("end").hidden = false;
-      game.hud.hideBanner();
+      hud.hideBanner();
+      audio.music(won ? "music_victory" : "music_defeat", false, 1);
+      audio.announce(won ? "ann_victory" : "ann_defeat");
       if (document.pointerLockElement) document.exitPointerLock();
     }
     function toMenu() {
@@ -2993,36 +3798,227 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.player = null;
       game.viewActor = null;
       game.combat.clear();
+      P.state = "none";
+      P.carrier = null;
+      pumpkin.root.visible = false;
       $2("end").hidden = true;
       $2("pause").hidden = true;
       $2("menu").hidden = false;
-      game.hud.show(false);
+      hud.show(false);
+      audio.init();
+      audio.music("music_menu", true, 0.8);
       if (document.pointerLockElement) document.exitPointerLock();
     }
     game.onPlayerFire = () => vm.fire();
     game.onHit = (attacker, victim, head, out) => {
       if (attacker.isPlayer) {
-        game.hud.hitMarker(head);
-        game.audio.hitConfirm(head);
+        hud.hitMarker(head);
+        audio.hitConfirm(head);
       }
       if (victim.isPlayer) {
-        game.hud.hurt(attacker);
-        game.audio.hurt();
+        hud.hurt(attacker);
+        audio.hurt();
       }
       const vb = botOf.get(victim);
       if (vb) vb.onHurt(attacker);
       game.report(victim.team, attacker);
       if (out) {
-        game.hud.feed(attacker, victim, head);
-        game.audio.out(victim);
-      }
+        attacker.earn(ECON.splat);
+        attacker.splats++;
+        hud.feed(attacker, victim, head);
+        audio.out(victim);
+        if (attacker.isPlayer) {
+          const mate = alive(attacker.team).find((m) => m !== attacker && dist(m, attacker.pos.x, attacker.pos.z) < 20);
+          if (mate) audio.shout(mate, "nice", 0.5);
+        }
+      } else audio.shout(victim, "hurt_" + (1 + (Math.random() * 2 | 0)), victim.isPlayer ? 0.2 : 0.3);
     };
+    let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0;
+    function stopUse() {
+      if (P.actor) {
+        P.actor.busy = false;
+        P.actor = null;
+      }
+      P.progress = 0;
+    }
+    function pickUp(a) {
+      P.state = "carried";
+      P.carrier = a;
+      audio.radio(a.team, "got_it");
+      const b = botOf.get(a);
+      if (b) b.carryTo(nearestSite(a));
+      else hud.tip("You picked up the Stink-Pumpkin. Carry it to A or B.", 4);
+      for (const o of game.bots) o.fetching = o === b ? false : o.fetching && false;
+    }
+    const nearestSite = (a) => dist(a, W.sites.A.x, W.sites.A.z) < dist(a, W.sites.B.x, W.sites.B.z) ? "A" : "B";
+    function plant(c, site) {
+      stopUse();
+      Object.assign(P, { state: "planted", carrier: null, x: c.pos.x, z: c.pos.z, site, fuse: OBJ.fuse });
+      c.earn(ECON.plant);
+      tickT = 0;
+      tickN = 0;
+      dutyT = 0;
+      audio.thud(P.x, P.z);
+      audio.announce("ann_planted");
+      audio.music("music_fuse", true, 0.55);
+      const att = game.attackers, def = other(att), mine = att === game.playerTeam;
+      hud.banner(`Pumpkin planted at ${site}!`, mine ? `Guard it for ${OBJ.fuse} seconds.` : "Cork it before it goes off!", 3.5);
+      audio.radio(att, "guard");
+      if (def === "hands") audio.radio(def, site === "A" ? "planted_a" : "planted_b");
+      let i = 0, j = 0;
+      for (const b of game.bots) {
+        if (!b.a.alive) continue;
+        if (b.a.team === att) b.sendTo(W.holds[site][i++ % W.holds[site].length], true);
+        else {
+          const ang = rand(6.28), r = 2.4 + j++ % 3 * 1.1, s = game.nav.nearestFree(P.x + Math.cos(ang) * r, P.z + Math.sin(ang) * r);
+          b.sendTo({ x: s.x, z: s.z, lx: P.x, lz: P.z }, true);
+        }
+      }
+    }
+    function updatePumpkin(dt) {
+      const att = game.attackers, def = other(att);
+      if (P.state === "carried") {
+        const c = P.carrier;
+        if (!c.alive) {
+          stopUse();
+          const spot = game.nav.nearestFree(c.pos.x, c.pos.z);
+          Object.assign(P, { state: "dropped", carrier: null, x: spot.x, z: spot.z });
+          hud.note("The Stink-Pumpkin was dropped");
+          audio.thud(P.x, P.z);
+          dutyT = 0;
+        } else {
+          const site = game.siteAt(c.pos.x, c.pos.z);
+          if (c.wantUse && site && c.onGround) {
+            if (P.actor !== c) {
+              P.actor = c;
+              P.progress = 0;
+              c.busy = true;
+              audio.radio(att, "planting");
+            }
+            P.progress += dt;
+            if (P.progress >= OBJ.plantTime) plant(c, site);
+          } else if (P.actor) stopUse();
+        }
+      } else if (P.state === "dropped") {
+        for (const a of alive(att)) if (dist(a, P.x, P.z) < 1.3) {
+          pickUp(a);
+          return;
+        }
+        dutyT -= dt;
+        if (dutyT <= 0) {
+          dutyT = 1;
+          const bots = game.bots.filter((b) => b.a.alive && b.a.team === att);
+          if (bots.length && !bots.some((b) => b.fetching)) {
+            bots.sort((x, y) => dist(x.a, P.x, P.z) - dist(y.a, P.x, P.z));
+            bots[0].fetch(P.x, P.z);
+            audio.radio(att, "dropped");
+          }
+        }
+      } else if (P.state === "planted") {
+        P.fuse -= dt;
+        tickT -= dt;
+        if (tickT <= 0) {
+          tickT = 0.14 + 0.86 * clamp(P.fuse / OBJ.fuse, 0, 1);
+          audio.fuseTick(P.x, P.z, tickN++);
+        }
+        const can = (a) => a && a.alive && a.wantUse && a.team === def && dist(a, P.x, P.z) < OBJ.reach;
+        if (!can(P.actor)) {
+          stopUse();
+          const next = game.actors.find(can);
+          if (next) {
+            P.actor = next;
+            next.busy = true;
+            squeakT = 0;
+            audio.radio(def, "corking");
+          }
+        }
+        if (P.actor) {
+          P.progress += dt;
+          squeakT -= dt;
+          if (squeakT <= 0) {
+            squeakT = 1.15;
+            audio.squeak(P.x, P.z);
+          }
+          if (P.progress >= (P.actor.kit ? OBJ.corkTimeKit : OBJ.corkTime)) {
+            const hero = P.actor;
+            stopUse();
+            hero.earn(ECON.cork);
+            P.state = "corked";
+            audio.corkPop(P.x, P.z);
+            audio.announce("ann_corked");
+            endRound(def, hero.isPlayer ? "You corked the pumpkin just in time!" : `${hero.name} corked the pumpkin in time.`);
+            return;
+          }
+        }
+        if (P.fuse <= 0) {
+          stopUse();
+          P.state = "burst";
+          stinkCloud(P.x, P.z);
+          audio.stink(P.x, P.z);
+          audio.announce("ann_stink");
+          endRound(att, "Pee-yew! The Stink-Pumpkin went off.");
+          return;
+        }
+        dutyT -= dt;
+        if (dutyT <= 0) {
+          dutyT = 0.8;
+          const bots = game.bots.filter((b) => b.a.alive && b.a.team === def);
+          if (bots.length && !bots.some((b) => b.corkDuty)) {
+            bots.sort((x, y) => dist(x.a, P.x, P.z) - dist(y.a, P.x, P.z));
+            bots[0].corkDuty = true;
+            bots[0].sendTo({ x: P.x + 0.7, z: P.z + 0.5, lx: P.x, lz: P.z }, true);
+          }
+        }
+      }
+    }
+    function drawPumpkin(dt) {
+      const p = game.player, root = pumpkin.root;
+      if (P.state === "carried" && P.carrier) {
+        const c = P.carrier;
+        root.visible = c.alive && !(c === p && p.alive);
+        root.position.set(c.pos.x - dirX(c.yaw) * 0.42, c.pos.y + 0.62 - (c.crouched || c.busy ? 0.3 : 0), c.pos.z - dirZ(c.yaw) * 0.42);
+        root.rotation.y = c.yaw + Math.PI;
+        root.scale.setScalar(0.62);
+        pumpkin.glow.visible = false;
+      } else if (P.state === "dropped" || P.state === "planted" || P.state === "corked") {
+        root.visible = true;
+        root.position.set(P.x, P.state === "dropped" ? 0.06 + Math.abs(Math.sin(game.time * 3)) * 0.12 : 0, P.z);
+        root.scale.setScalar(1);
+        if (P.state === "dropped") root.rotation.y += dt * 1.5;
+        const hot = P.state === "planted";
+        pumpkin.glow.visible = hot;
+        if (hot) {
+          const k = 0.5 + 0.5 * Math.sin(game.time * (4 + 14 * (1 - P.fuse / OBJ.fuse)));
+          pumpkin.glow.scale.setScalar(0.55 + k * 0.25);
+          pumpkin.body.scale.setScalar(1 + k * 0.05);
+        } else pumpkin.body.scale.setScalar(1);
+      } else root.visible = false;
+      for (let i = puffs.length - 1; i >= 0; i--) {
+        const f = puffs[i];
+        f.life += dt;
+        const k = f.life / f.max;
+        if (k >= 1) {
+          scene.remove(f.m);
+          puffs.splice(i, 1);
+          continue;
+        }
+        f.m.position.x += f.vx * dt * (1 - k);
+        f.m.position.y += f.vy * dt;
+        f.m.position.z += f.vz * dt * (1 - k);
+        f.m.scale.setScalar(f.size * (0.4 + k * 1.4));
+        f.m.material.opacity = 0.6 * (1 - k);
+      }
+    }
     const keys = {};
     let mdx = 0, mdy = 0, mouseDown = false, fireEdge = false, locked = false, everLocked = false, noLock = false;
-    let sens = 1, spectateIdx = 0, eyeY = MOVE.eye;
+    let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72;
     try {
       const s = parseFloat(localStorage.getItem("hs-sens"));
       if (s > 0) sens = s;
+      const v = parseFloat(localStorage.getItem("hs-vol"));
+      if (v >= 0) {
+        $2("vol").value = v;
+      }
     } catch (e) {
     }
     $2("sens").value = sens;
@@ -3034,7 +4030,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         return;
       }
       noLock = true;
-      game.hud.tip("Move the mouse or use the arrow keys to look around. Press Esc to pause.", 7);
+      hud.tip("Move the mouse or use the arrow keys to look around. Press Esc to pause.", 7);
     }
     function lock() {
       if (noLock || locked) return;
@@ -3069,9 +4065,22 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         mdy += e.movementY || 0;
       }
     });
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+    function toggleZoom() {
+      const p = game.player;
+      if (p && p.alive && GADGETS[p.gadgetId].zoom && p.reloadT <= 0 && game.state === "live") {
+        p.scoped = !p.scoped;
+        audio.ui();
+      }
+    }
     canvas.addEventListener("mousedown", (e) => {
-      if (!playing() || game.paused || e.button !== 0) return;
-      game.audio.init();
+      if (!playing() || game.paused) return;
+      audio.init();
+      if (e.button === 2) {
+        toggleZoom();
+        return;
+      }
+      if (e.button !== 0) return;
       if (!locked && !noLock) {
         lock();
         return;
@@ -3100,31 +4109,43 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       keys[e.code] = true;
       const p = game.player;
       if (!p || !p.alive) return;
-      const slot = { Digit1: "squirter", Digit2: "egg", Digit3: "tomato" }[e.code];
-      if (slot && slot !== p.gadgetId) {
-        p.setGadget(slot);
-        vm.set(slot);
-        game.audio.ui();
+      const digit = e.code.startsWith("Digit") ? +e.code.slice(5) : 0;
+      if (e.code === "KeyB" && game.state === "freeze") {
+        game.shopOpen = !game.shopOpen;
+        audio.ui();
+        return;
       }
+      if (game.shopOpen && game.state === "freeze" && digit >= 1 && digit <= SHOP.length) {
+        game.buy(p, SHOP[digit - 1].id);
+        return;
+      }
+      let want = null;
+      if (digit === 1) want = p.primary;
+      else if (digit === 2) want = "squirter";
+      else if (e.code === "KeyQ") want = p.has(p.lastGadget) ? p.lastGadget : "squirter";
+      if (want && p.setGadget(want)) audio.ui();
       if (e.code === "KeyR") p.startReload();
       if (e.code === "KeyF") fireEdge = true;
+      if (e.code === "KeyZ") toggleZoom();
     });
     window.addEventListener("keyup", (e) => {
       keys[e.code] = false;
     });
     function updatePlayer(dt) {
       const p = game.player;
-      const k = 21e-4 * sens;
+      const k = 21e-4 * sens * (fov / 72);
       p.yaw -= mdx * k;
       p.pitch = clamp(p.pitch - mdy * k, -1.45, 1.45);
       mdx = 0;
       mdy = 0;
-      p.yaw += ((keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0)) * 2.4 * dt;
-      p.pitch = clamp(p.pitch + ((keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0)) * 1.6 * dt, -1.45, 1.45);
+      p.yaw += ((keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0)) * 2.4 * dt * (fov / 72);
+      p.pitch = clamp(p.pitch + ((keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0)) * 1.6 * dt * (fov / 72), -1.45, 1.45);
       if (!p.alive) {
         fireEdge = false;
+        p.wantUse = false;
         return;
       }
+      p.wantUse = !!keys.KeyE && game.state === "live";
       if (game.state === "live") {
         const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), s = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
         let wx = dirX(p.yaw) * f + Math.cos(p.yaw) * s, wz = dirZ(p.yaw) * f - Math.sin(p.yaw) * s;
@@ -3141,6 +4162,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
     function updateCamera(dt) {
       const p = game.player;
+      const wantFov = p && p.alive && p.scoped ? 22 : 72;
+      if (Math.abs(fov - wantFov) > 0.05) {
+        fov += (wantFov - fov) * Math.min(1, dt * 16);
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+      }
       if (game.state === "menu" || !p) {
         const a = game.time * 0.07;
         camera.position.set(Math.sin(a) * 50, 24, -4 + Math.cos(a) * 50);
@@ -3149,7 +4176,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         return;
       }
       if (p.alive) {
-        eyeY += (p.eyeY() - eyeY) * Math.min(1, dt * 14);
+        eyeY += ((p.busy ? MOVE.eyeCrouch : p.eyeY()) - eyeY) * Math.min(1, dt * 14);
         camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
         camera.rotation.set(p.pitch + p.recoil, p.yaw, 0);
         game.viewYaw = p.yaw;
@@ -3158,50 +4185,67 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       let target = p;
       if (p.outT > 1.5) {
-        const mates = game.actors.filter((a) => a.alive && a.team === p.team);
+        const mates = alive(p.team);
         const others = mates.length ? mates : game.actors.filter((a) => a.alive);
         if (others.length) target = others[spectateIdx % others.length];
-        game.hud.spectate(target === p ? "You are out this round." : `You are out this round. Watching ${target.name}. Click to switch.`);
+        hud.spectate(target === p ? "You are out this round." : `You are out this round. Watching ${target.name}. Click to switch.`);
       }
       game.viewActor = target;
       game.viewYaw = target.yaw;
       const fx = dirX(target.yaw), fz = dirZ(target.yaw);
       const hx = target.pos.x, hy = target.pos.y + 1.7, hz = target.pos.z;
-      let dist = 3.6;
-      const hit = raycast(hx, hy, hz, -fx * 0.94, 0.33, -fz * 0.94, dist, game.world.boxes);
-      if (hit) dist = Math.max(0.6, hit.t - 0.25);
+      let d = 3.6;
+      const hit = raycast(hx, hy, hz, -fx * 0.94, 0.33, -fz * 0.94, d, W.boxes);
+      if (hit) d = Math.max(0.6, hit.t - 0.25);
       const k = Math.min(1, dt * 10);
-      camera.position.x += (hx - fx * 0.94 * dist - camera.position.x) * k;
-      camera.position.y += (hy + 0.33 * dist - camera.position.y) * k;
-      camera.position.z += (hz - fz * 0.94 * dist - camera.position.z) * k;
+      camera.position.x += (hx - fx * 0.94 * d - camera.position.x) * k;
+      camera.position.y += (hy + 0.33 * d - camera.position.y) * k;
+      camera.position.z += (hz - fz * 0.94 * d - camera.position.z) * k;
       camera.lookAt(hx + fx * 3, hy - 0.2, hz + fz * 3);
     }
     function update(dt) {
       game.time += dt;
-      for (const f of game.world.animated) f(game.time, dt);
+      for (const f of W.animated) f(game.time, dt);
       if (playing()) {
         if (game.state === "freeze") {
           game.freezeT -= dt;
+          if (game.freezeT <= 3 && Math.ceil(game.freezeT) !== Math.ceil(game.freezeT + dt) && game.freezeT > 0) audio.countdown();
           if (game.freezeT <= 0) {
             game.state = "live";
-            game.audio.bell();
-            game.hud.banner("Go!", "", 0.9);
+            game.shopOpen = false;
+            audio.bell();
+            audio.radio(game.playerTeam, ["go_1", "go_2"]);
+            hud.banner("Go!", "", 0.9);
+            callT = game.time + 2.2;
           }
         } else if (game.state === "live") {
-          const before = Math.ceil(game.roundT);
-          game.roundT -= dt;
-          if (game.roundT <= 10 && Math.ceil(game.roundT) !== before && game.roundT > 0) game.audio.tick();
+          const before = game.roundT;
+          if (P.state !== "planted") game.roundT -= dt;
+          if (before > 10 && game.roundT <= 10 && P.state !== "planted") audio.announce("ann_ten");
+          if (callT > 0 && game.time > callT) {
+            callT = -1;
+            if (roleOf(game.playerTeam) === "attack") {
+              audio.radio(game.playerTeam, mainSite === "A" ? "to_a" : "to_b");
+              hud.note(`Your team is heading to ${mainSite}`);
+            }
+          }
         }
         updatePlayer(dt);
         for (const b of game.bots) b.update(dt);
         for (const a of game.actors) a.tick(dt);
         game.combat.update(dt);
+        if (game.state === "live") updatePumpkin(dt);
         if (game.state === "live") {
-          const herd = game.actors.filter((a) => a.team === "herd" && a.alive).length;
-          const hands = game.actors.filter((a) => a.team === "hands" && a.alive).length;
-          if (hands === 0 && herd > 0) endRound("herd", "Every farmhand got splatted. The Herd takes the round.");
-          else if (herd === 0) endRound("hands", "Every animal got splatted. The Hands take the round.");
-          else if (game.roundT <= 0) endRound("hands", "Time is up. The Hands kept the farm safe.");
+          const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
+          const names = { herd: "The Herd", hands: "The Hands" };
+          if (nDef === 0 && nAtt > 0) endRound(att, P.state === "planted" ? "Nobody is left to cork the pumpkin." : `Every defender got splatted. ${names[att]} take the round.`);
+          else if (P.state !== "planted") {
+            if (nAtt === 0) endRound(def, `Every attacker got splatted. ${names[def]} take the round.`);
+            else if (game.roundT <= 0) {
+              audio.announce("ann_time");
+              endRound(def, "Time is up. The pumpkin never got planted.");
+            }
+          }
         } else if (game.state === "roundEnd") {
           game.endT -= dt;
           if (game.endT <= 0) {
@@ -3211,15 +4255,18 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         }
         for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive);
         if (game.player && game.player.alive) vm.update(dt, game.player);
+        audio.ambient(dt);
       }
+      drawPumpkin(dt);
       game.fx.update(dt);
       updateCamera(dt);
-      game.hud.update(dt);
+      hud.update(dt);
     }
     function render() {
       renderer.clear();
       renderer.render(scene, camera);
-      if (playing() && game.player && game.player.alive) {
+      const p = game.player;
+      if (playing() && p && p.alive && !p.scoped) {
         renderer.clearDepth();
         renderer.render(vm.scene, vm.cam);
       }
@@ -3233,54 +4280,33 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       vm.resize(w / h);
       game.viewH = h;
     }
-    function portrait(kind, look, img, bg) {
-      const s = new T8.Scene();
-      s.background = new T8.Color(bg);
-      s.add(new T8.HemisphereLight(16777215, 11587728, 0.95));
-      const d = new T8.DirectionalLight(16777215, 0.55);
-      d.position.set(-2, 3, -4);
-      s.add(d);
-      const c = buildCharacter(kind, look);
-      c.mount.add(buildGadget(kind === "farmer" ? "squirter" : "tomato"));
-      animateCharacter(c, 0.016, 0, 0.1, false, true);
-      c.root.rotation.y = 0.5;
-      s.add(c.root);
-      const cam = new T8.PerspectiveCamera(30, 1, 0.1, 20);
-      cam.position.set(0.15, 1.5, -2.5);
-      cam.lookAt(0.05, 1.3, 0);
-      renderer.setPixelRatio(1);
-      renderer.setSize(192, 192, false);
-      renderer.clear();
-      renderer.render(s, cam);
-      const out = document.createElement("canvas");
-      out.width = out.height = 192;
-      out.getContext("2d").drawImage(canvas, 0, 0);
-      try {
-        img.src = out.toDataURL("image/png");
-      } catch (e) {
-      }
-    }
-    portrait("chicken", 0, $2("pic-herd"), 16769720);
-    portrait("farmer", 0, $2("pic-hands"), 13625083);
-    let pickTeam = "herd", pickDiff = "easy";
+    let pickTeam = "herd", pickDiff = "easy", welcomed = false;
     const choose = (group2, attr, value) => document.querySelectorAll(group2).forEach((b) => b.setAttribute("aria-checked", String(b.dataset[attr] === value)));
     document.querySelectorAll(".side").forEach((b) => b.addEventListener("click", () => {
       pickTeam = b.dataset.team;
       choose(".side", "team", pickTeam);
-      game.audio.init();
-      game.audio.ui();
+      audio.ui();
     }));
     document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
       pickDiff = b.dataset.diff;
       choose(".seg button", "diff", pickDiff);
-      game.audio.init();
-      game.audio.ui();
+      audio.ui();
     }));
+    document.addEventListener("pointerdown", () => {
+      audio.init();
+      if (game.state === "menu") {
+        audio.music("music_menu", true, 0.8);
+        if (!welcomed) {
+          welcomed = true;
+          audio.announce("ann_welcome");
+        }
+      }
+    });
     function begin() {
-      game.audio.init();
+      audio.init();
       $2("menu").hidden = true;
       $2("end").hidden = true;
-      game.hud.show(true);
+      hud.show(true);
       startMatch(pickTeam, pickDiff);
       lock();
     }
@@ -3296,9 +4322,19 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       } catch (err) {
       }
     });
+    $2("vol").addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      audio.setVolume(v);
+      try {
+        localStorage.setItem("hs-vol", String(v));
+      } catch (err) {
+      }
+    });
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches && !window.matchMedia("(any-pointer: fine)").matches) $2("touch-note").hidden = false;
     window.addEventListener("resize", resize);
     resize();
+    audio.boot();
+    audio.setVolume(parseFloat($2("vol").value));
     let lastT = performance.now();
     function frame(now) {
       const dt = Math.min(0.05, (now - lastT) / 1e3);
@@ -3325,6 +4361,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }, noLock: () => {
       noLock = true;
     } };
+    game.botOf = botOf;
     window.__hs = game;
   }
   if (window.THREE) boot();

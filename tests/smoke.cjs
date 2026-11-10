@@ -15,12 +15,12 @@ const { open } = require('./harness.cjs');
     for (const t in W.spawns) W.spawns[t].forEach((s, i) => { check(`spawn ${t}${i}`, s); mark(s.x, s.z, 'S'); });
     const lens = {};
     for (const t of ['herd', 'hands']) for (const k of ['A', 'B']) {
-      const s = W.spawns[t][0], p = nav.findPath(s.x, s.z, W.points[k].x, W.points[k].z);
+      const s = W.spawns[t === 'herd' ? 'attack' : 'defend'][0], p = nav.findPath(s.x, s.z, W.points[k].x, W.points[k].z);
       let d = 0; if (p) for (let i = 1; i < p.length; i++) d += Math.hypot(p[i].x - p[i - 1].x, p[i].z - p[i - 1].z);
       lens[`${t}->${k}`] = p ? Math.round(d) + 'm' : 'NO PATH';
     }
     for (const site of ['A', 'B']) W.routes[site].forEach((r, ri) => {
-      let prev = W.spawns.herd[0];
+      let prev = W.spawns.attack[0];
       for (const n of r) { const q = W.points[n]; if (!nav.findPath(prev.x, prev.z, q.x, q.z)) problems.push(`route ${site}${ri} broken at ${n}`); prev = q; }
     });
     return { map: rows.join('\n'), problems, lens, boxes: W.boxes.length };

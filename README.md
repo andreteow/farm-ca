@@ -5,11 +5,15 @@ The Herd (animals) try to splat the Hands (farmhands) before the clock runs out.
 
 ## Where things are
 
-- `src/config.js` holds every number that changes how the game feels (speeds, launcher strength, round length, difficulty).
+- `src/config.js` holds every number that changes how the game feels (speeds, launcher strength, prices, round and fuse lengths, difficulty).
 - `src/world.js` is the map, Sunnyside Farm.
-- `src/characters.js` builds the animals, farmhands and launchers.
+- `src/characters.js` builds the animals, farmhands, launchers and the Stink-Pumpkin.
 - `src/bot.js` is the thinking for computer players.
-- `dist/index.html` is the finished game as one stand-alone page (upload this to any web host).
+- `src/main.js` runs the match: rounds, shop, coins, the pumpkin, half-time.
+- `assets/` holds what the game loads: surface textures (`tex`), menu and shop art (`ui`) and all sounds (`audio`).
+- `art/generated/` keeps the full-size generated artwork; `art/reference/` has a top-down picture of the map.
+- `tools/audio/` has the scripts that generated and trimmed the voice lines, music and sound effects.
+- `dist/` is the finished game: `index.html` plus its `assets` folder (upload both to any web host).
 
 ## Rebuild after a change
 
@@ -29,7 +33,13 @@ node build.mjs
 node tests/play.cjs herd easy 6
 ```
 
+```bash
+node tests/objective.cjs
+```
+
 ## Status
 
-Milestone 1, the feel test: one map, movement, three launchers, computer players, rounds and scoring.
-Not built yet: the round shop, the plant-and-cork objective, side swap at half-time, the over-the-shoulder view, and the other three modes.
+Milestone 2: shop and corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin plant-and-cork objective,
+half-time job swap, generated textures and menu art, recorded voice lines, music and sound effects.
+
+Not built yet: throwables (flour bomb and friends), the over-the-shoulder view, the other three modes, more maps, online play.

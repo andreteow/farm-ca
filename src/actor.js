@@ -1,5 +1,5 @@
-// One character in the match (the player or a computer player): movement, mess meter, launcher state.
-import { MOVE, GADGETS } from './config.js';
+// One character in the match (the player or a computer player): movement, mess meter, launcher state, purse.
+import { MOVE, GADGETS, ECON } from './config.js';
 import { moveAndCollide } from './collide.js';
 import { buildCharacter, animateCharacter, clearSplats, buildGadget } from './characters.js';
 
@@ -11,9 +11,10 @@ export class Actor {
     this.pos = new T.Vector3(); this.vel = new T.Vector3();
     this.yaw = 0; this.pitch = 0; this.recoil = 0;
     this.crouched = false; this.onGround = true; this.alive = true; this.hp = 100;
-    this.gadgetId = null; this.tanks = {}; this.cooldown = 0; this.reloadT = 0; this.bloom = 0;
+    this.gadgetId = null; this.lastGadget = 'squirter'; this.tanks = {}; this.cooldown = 0; this.reloadT = 0; this.bloom = 0;
+    this.primary = null; this.armor = 0; this.kit = false; this.coins = ECON.start; this.scoped = false;
+    this.stepDist = 0; this.outT = 0; this.busy = false; this.sayT = 0; this.splats = 0;
     for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
-    this.stepDist = 0; this.outT = 0;
     this.char = buildCharacter(info.kind, info.look);
     this.gadgetMeshes = {};
     for (const id in GADGETS) { const m = buildGadget(id); m.visible = false; this.char.mount.add(m); this.gadgetMeshes[id] = m; }
@@ -24,21 +25,32 @@ export class Actor {
   // each launcher keeps its own tank, so swapping is never a free refill
   get ammo() { return this.tanks[this.gadgetId]; }
   set ammo(v) { this.tanks[this.gadgetId] = v; }
+  has(id) { return id === 'squirter' || id === this.primary; }
 
   setGadget(id) {
-    if (this.gadgetId === id) return;
+    if (this.gadgetId === id || !this.has(id)) return false;
+    if (this.gadgetId) this.lastGadget = this.gadgetId;
     this.gadgetId = id;
-    this.reloadT = 0; this.cooldown = 0.35; this.bloom = 0;
+    this.reloadT = 0; this.cooldown = 0.35; this.bloom = 0; this.scoped = false;
     for (const k in this.gadgetMeshes) this.gadgetMeshes[k].visible = k === id;
     if (this.ammo <= 0) this.startReload();
+    return true;
   }
 
-  reset(spawn) {
+  givePrimary(id) {
+    this.primary = id;
+    if (id) { this.tanks[id] = GADGETS[id].tank; this.setGadget(id); } else if (this.gadgetId !== 'squirter') { this.gadgetId = null; this.setGadget('squirter'); }
+  }
+
+  // called at the start of every round; "keep" is false after being splatted or at half-time
+  reset(spawn, keep) {
     this.pos.set(spawn.x, 0, spawn.z); this.vel.set(0, 0, 0);
     this.yaw = spawn.yaw; this.pitch = 0; this.recoil = 0;
-    this.hp = 100; this.alive = true; this.crouched = false; this.outT = 0;
+    if (!keep) { this.primary = null; this.armor = 0; this.kit = false; }
+    this.hp = 100; this.alive = true; this.crouched = false; this.outT = 0; this.busy = false; this.scoped = false;
     for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
     this.reloadT = 0; this.cooldown = 0; this.bloom = 0;
+    this.gadgetId = null; this.setGadget(this.primary || 'squirter'); this.cooldown = 0;
     clearSplats(this.char);
     this.char.root.visible = true; this.char.root.scale.setScalar(1);
   }
@@ -49,7 +61,10 @@ export class Actor {
   // wx,wz: the direction this character wants to go (length 0..1)
   move(dt, wx, wz, wantJump, walking, crouching) {
     this.crouched = crouching;
-    const top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
+    if (this.busy) { wx = 0; wz = 0; wantJump = false; } // planting or corking: feet stay put
+    let top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
+    const g = GADGETS[this.gadgetId];
+    if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
     const tx = wx * top, tz = wz * top;
     const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
     const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);
@@ -72,7 +87,7 @@ export class Actor {
   // how wide the shots scatter right now (running and jumping make it much worse)
   spread() {
     const g = GADGETS[this.gadgetId];
-    let s = g.spread + this.bloom;
+    let s = (g.zoom && this.scoped ? g.zoomSpread : g.spread) + this.bloom;
     const sp = this.speed2d();
     if (sp > MOVE.walk + 0.4) s += g.moveSpread * Math.min(1, (sp - MOVE.walk) / (MOVE.run - MOVE.walk));
     if (!this.onGround) s += g.airSpread;
@@ -83,12 +98,21 @@ export class Actor {
   startReload() {
     const g = GADGETS[this.gadgetId];
     if (this.reloadT > 0 || this.ammo >= g.tank) return;
-    this.reloadT = g.reload;
-    if (this.isPlayer) this.game.audio.reload();
+    this.reloadT = g.reload; this.scoped = false;
+    this.game.audio.reload(this);
   }
+
+  // returns the mess that actually lands after overalls soak some up
+  soak(dmg) {
+    if (this.armor > 0) { const a = Math.min(this.armor, dmg * 0.5); this.armor -= a; dmg -= a; }
+    return dmg;
+  }
+
+  earn(n) { this.coins = Math.max(0, Math.min(ECON.max, this.coins + n)); }
 
   tick(dt) {
     if (this.cooldown > 0) this.cooldown -= dt;
+    if (this.sayT > 0) this.sayT -= dt;
     if (this.reloadT > 0) { this.reloadT -= dt; if (this.reloadT <= 0) { this.ammo = GADGETS[this.gadgetId].tank; this.reloadT = 0; } }
     const g = GADGETS[this.gadgetId];
     this.bloom = Math.max(0, this.bloom - g.bloomMax * 2.2 * dt);
@@ -100,7 +124,7 @@ export class Actor {
     const c = this.char;
     c.root.position.copy(this.pos);
     c.root.rotation.y = this.yaw;
-    animateCharacter(c, dt, this.alive ? this.speed2d() : 0, this.pitch + this.recoil, this.crouched, this.alive);
+    animateCharacter(c, dt, this.alive ? this.speed2d() : 0, this.pitch + this.recoil, this.crouched || this.busy, this.alive);
     if (!this.alive) {
       // lie there looking silly for a moment, then pop away
       const s = this.outT < 1.6 ? 1 : Math.max(0, 1 - (this.outT - 1.6) * 4);

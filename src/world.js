@@ -1,6 +1,6 @@
 // The first map: "Sunnyside Farm". An original three-lane layout.
 // North (-z) is the farmhouse where the Hands start; south (+z) is the back pasture where the Herd starts.
-import { mat, add, group, rboxGeo, sphereLoGeo as sphereGeo, cylGeo, coneGeo, canvasTexture, texMat, bakeTree } from './gfx.js';
+import { mat, add, group, rboxGeo, sphereLoGeo as sphereGeo, cylGeo, coneGeo, canvasTexture, texMat, bakeTree, loadTexture } from './gfx.js';
 import { rand } from './util.js';
 
 const T = window.THREE;
@@ -154,7 +154,9 @@ export function buildWorld(scene) {
       x2, yB, z1, x1, yB, z1, x1, yR, zm, x2, yB, z1, x1, yR, zm, x2, yR, zm,
     ], 3));
     slopes.computeVertexNormals();
-    add(root, slopes, mat(color, { side: T.DoubleSide }));
+    const run = Math.hypot(zm - z1, yR - yB);
+    slopes.setAttribute('uv', new T.Float32BufferAttribute([x1, 0, x2, 0, x2, run, x1, 0, x2, run, x1, run, x2, 0, x1, 0, x1, run, x2, 0, x1, run, x2, run], 2));
+    add(root, slopes, color === 'shingle' ? texMat('shingle') : mat(color, { side: T.DoubleSide }));
     if (endColor !== undefined) {
       const ends = new T.BufferGeometry();
       const i1 = x1 + inset, i2 = x2 - inset;
@@ -189,7 +191,7 @@ export function buildWorld(scene) {
   barnWall(-34, -19.5, -33.5, -6.5, H);
   barnWall(-18.5, -19.5, -18, -15, H); barnWall(-18.5, -11, -18, -6.5, H); barnWall(-18.5, -15, -18, -11, 1.5, 3);
   gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 0xdcae72);
-  gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, C.roof, C.barn);
+  gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, 'shingle', C.barn);
   for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
   for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
   deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
@@ -250,7 +252,7 @@ export function buildWorld(scene) {
   // ---------- west lane: Coop Alley and the Tractor Gate ----------
   stone(-40, 4, -37, 5); stone(-34, 4, -17, 5); stone(-14, 4, -12, 5);
   block(-30, 12, -22, 18, 3, C.coop, 0.12);
-  gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, C.coopRoof, C.coop, 0.6);
+  gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, 'shingle', C.coop, 0.6);
   deco(1.0, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
   deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
   for (const x of [-28.4, -23.6]) deco(1.0, 0.8, 0.1, 0x9fd6f2, x, 1.9, 18.03, 0.04);
@@ -313,52 +315,73 @@ export function buildWorld(scene) {
   root.add(corn);
 
   // ---------- ground ----------
-  const S = 2048, m2p = S / 96;
-  const P = (v) => (v + 48) * m2p;
-  const groundTex = canvasTexture(S, S, (g) => {
-    g.fillStyle = '#86cf58'; g.fillRect(0, 0, S, S);
-    for (let i = 0; i < 1500; i++) {
-      g.fillStyle = pickGreen(); g.globalAlpha = rand(0.08, 0.2);
-      g.beginPath(); g.ellipse(rand(S), rand(S), rand(10, 60), rand(8, 40), rand(3), 0, 7); g.fill();
-    }
-    g.globalAlpha = 1;
-    const path = (pts, w, colr) => {
-      g.strokeStyle = colr; g.lineWidth = w * m2p; g.lineCap = 'round'; g.lineJoin = 'round';
-      g.beginPath(); pts.forEach(([x, z], i) => (i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)))); g.stroke();
-    };
-    const lanes = [
-      [[-36, 31], [36, 31]], [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]], [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
-      [[0, 31], [0, -2]], [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]], [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]], [[-10, 7.3], [10, 7.3]],
-      [[16.5, 31], [16.5, -1], [24, -10]], [[32.5, 31], [32.5, -1], [24, -10]],
-      [[0, -31], [-10, -29], [-22.5, -23]], [[0, -31], [10, -29], [22, -25], [24, -12]], [[0, -18], [-15, -13], [-26, -13]], [[0, -18], [10, -7], [14, -7]], [[12, -16.5], [22, -14]],
-      [[-9, -29], [-9, -24], [0, -18]], [[9, -29], [9, -24], [0, -18]], [[-11.5, 18.5], [-15.5, 18.5]], [[11.5, 18.5], [16.5, 18.5]],
-    ];
-    try { g.filter = 'blur(7px)'; } catch (e) { /* older browsers: sharper path edges */ }
-    lanes.forEach((l) => path(l, 3.6, '#d6b384'));
-    g.filter = 'none';
-    lanes.forEach((l) => path(l, 2.2, '#e3c598'));
-    // creek
-    try { g.filter = 'blur(4px)'; } catch (e) { /* fine */ }
-    path([[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]], 3.4, '#8fdcf7');
-    g.filter = 'none';
-    path([[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]], 2.2, '#5fc4ef');
-    // barn floor
-    g.fillStyle = '#cfa46c'; g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
-    g.strokeStyle = 'rgba(120,80,40,0.35)'; g.lineWidth = 2;
-    for (let z = -19; z < -6.5; z += 0.9) { g.beginPath(); g.moveTo(P(-33.6), P(z)); g.lineTo(P(-18.4), P(z)); g.stroke(); }
-    // garden soil
-    g.fillStyle = 'rgba(176,128,84,0.75)'; roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 60); g.fill();
-    // site rings
-    const ring = (x, z, colr) => { g.strokeStyle = colr; g.lineWidth = 0.28 * m2p; g.setLineDash([24, 16]); g.beginPath(); g.arc(P(x), P(z), 3.4 * m2p, 0, 7); g.stroke(); g.setLineDash([]); };
-    ring(-26, -13, 'rgba(255,248,230,0.95)'); ring(24, -10.2, 'rgba(255,248,230,0.95)');
-    // corn soil
-    g.fillStyle = 'rgba(150,110,70,0.5)';
-    for (const z of cornZones) { roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 14); g.fill(); }
-    // wildflowers
-    for (let i = 0; i < 900; i++) { g.fillStyle = ['#ffffff', '#ffe36e', '#ff9ec4', '#fff3b0'][i % 4]; g.beginPath(); g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7); g.fill(); }
+  // Three painted surfaces (grass, dirt path, garden soil) are blended by a "mask" picture:
+  // red in the mask means path, green means soil. Small details (creek, barn floor, flowers) sit on top.
+  const P1 = (v, S) => (v + 48) * (S / 96);
+  const lanes = [
+    [[-36, 31], [36, 31]], [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]], [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
+    [[0, 31], [0, -2]], [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]], [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]], [[-10, 7.3], [10, 7.3]],
+    [[16.5, 31], [16.5, -1], [24, -10]], [[32.5, 31], [32.5, -1], [24, -10]],
+    [[0, -31], [-10, -29], [-22.5, -23]], [[0, -31], [10, -29], [22, -25], [24, -12]], [[0, -18], [-15, -13], [-26, -13]], [[0, -18], [10, -7], [14, -7]], [[12, -16.5], [22, -14]],
+    [[-9, -29], [-9, -24], [0, -18]], [[9, -29], [9, -24], [0, -18]], [[-11.5, 18.5], [-15.5, 18.5]], [[11.5, 18.5], [16.5, 18.5]],
+  ];
+  const maskTex = canvasTexture(1024, 1024, (g, S) => {
+    const P = (v) => P1(v, S), m2p = S / 96;
+    g.fillStyle = '#000'; g.fillRect(0, 0, S, S);
+    g.globalCompositeOperation = 'lighter';
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    const stroke = (pts, w, colr) => { g.strokeStyle = colr; g.lineWidth = w * m2p; g.beginPath(); pts.forEach(([x, z], i) => (i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)))); g.stroke(); };
+    try { g.filter = 'blur(5px)'; } catch (e) { /* sharper edges on older browsers */ }
+    lanes.forEach((l) => stroke(l, 2.9, '#ff0000'));
+    g.fillStyle = '#00ff00';
+    roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 30); g.fill();
+    for (const z of cornZones) { roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 8); g.fill(); }
+    g.filter = 'none'; g.globalCompositeOperation = 'source-over';
   });
-  const ground = new T.Mesh(new T.PlaneGeometry(96, 96), new T.MeshLambertMaterial({ map: groundTex }));
-  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+  maskTex.encoding = T.LinearEncoding;
+  const detailTex = canvasTexture(2048, 2048, (g, S) => {
+    const P = (v) => P1(v, S), m2p = S / 96;
+    g.clearRect(0, 0, S, S);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    const stroke = (pts, w, colr) => { g.strokeStyle = colr; g.lineWidth = w * m2p; g.beginPath(); pts.forEach(([x, z], i) => (i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)))); g.stroke(); };
+    const creek = [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]];
+    try { g.filter = 'blur(4px)'; } catch (e) { /* fine */ }
+    stroke(creek, 3.4, '#9be2fb');
+    g.filter = 'none';
+    stroke(creek, 2.3, '#5fc4ef');
+    g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = 3;
+    for (let i = 0; i < 26; i++) { const z = 9 + i * 1.15, x = 24.6 + Math.sin(i * 1.7) * 0.7; g.beginPath(); g.moveTo(P(x - 0.3), P(z)); g.lineTo(P(x + 0.3), P(z + 0.1)); g.stroke(); }
+    // barn floor boards
+    g.fillStyle = '#d4a96f'; g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
+    g.strokeStyle = 'rgba(120,80,40,0.4)'; g.lineWidth = 2.5;
+    for (let z = -19; z < -6.5; z += 0.9) { g.beginPath(); g.moveTo(P(-33.6), P(z)); g.lineTo(P(-18.4), P(z)); g.stroke(); }
+    // where the pumpkin can be planted
+    const ring = (x, z) => { g.strokeStyle = 'rgba(255,248,230,0.95)'; g.lineWidth = 0.28 * m2p; g.setLineDash([24, 16]); g.beginPath(); g.arc(P(x), P(z), 3.4 * m2p, 0, 7); g.stroke(); g.setLineDash([]); };
+    ring(-26, -13); ring(24, -10.2);
+    for (let i = 0; i < 1100; i++) { g.fillStyle = ['#ffffff', '#ffe36e', '#ff9ec4', '#fff3b0'][i % 4]; g.beginPath(); g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7); g.fill(); }
+  });
+  const flat = (colr) => canvasTexture(4, 4, (g) => { g.fillStyle = colr; g.fillRect(0, 0, 4, 4); });
+  const uni = { dirtMap: { value: flat('#dcb98a') }, soilMap: { value: flat('#9b6b46') }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
+  const groundMat = new T.MeshLambertMaterial({ map: flat('#86cf58') });
+  groundMat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uni);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <map_pars_fragment>', '#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D maskMap; uniform sampler2D detailMap;')
+      .replace('#include <map_fragment>', `
+        vec2 tuv = vUv * 30.0;
+        vec4 mk = texture2D( maskMap, vUv );
+        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 );
+        vec3 col = mix( gcol, texture2D( dirtMap, tuv * 0.8 ).rgb, smoothstep( 0.15, 0.75, mk.r ) );
+        col = mix( col, texture2D( soilMap, tuv * 0.8 ).rgb, smoothstep( 0.2, 0.8, mk.g ) );
+        vec4 det = texture2D( detailMap, vUv );
+        col = mix( col, det.rgb, det.a );
+        diffuseColor.rgb *= col;`);
+  };
+  loadTexture('grass', (t) => { groundMat.map = t; groundMat.needsUpdate = true; });
+  loadTexture('dirt', (t) => { uni.dirtMap.value = t; });
+  loadTexture('soil', (t) => { uni.soilMap.value = t; });
+  const ground = new T.Mesh(new T.PlaneGeometry(96, 96), groundMat);
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; ground.userData.keep = true;
   root.add(ground);
   const outer = new T.Mesh(new T.CircleGeometry(420, 40), mat(0x7cc452));
   outer.rotation.x = -Math.PI / 2; outer.position.y = -0.06;
@@ -429,8 +452,8 @@ export function buildWorld(scene) {
     MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }],
   };
   const spawns = {
-    herd: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
-    hands: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI })),
+    attack: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
+    defend: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI })),
   };
   const sites = { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } };
 

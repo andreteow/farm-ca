@@ -1,6 +1,6 @@
 // Harvest Standoff: ties the farm, the characters, the rules and the screen together.
-import { add } from './gfx.js';
-import { ROUND, TEAM, GADGETS, GADGET_ORDER, DIFFICULTY, ROSTER, MOVE } from './config.js';
+import { sphereGeo } from './gfx.js';
+import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, OBJ, ECON, DIFFICULTY, ROSTER, MOVE } from './config.js';
 import { buildWorld } from './world.js';
 import { buildNav } from './nav.js';
 import { Actor } from './actor.js';
@@ -10,12 +10,13 @@ import { createFx } from './fx.js';
 import { createAudio } from './audio.js';
 import { createHud } from './hud.js';
 import { createViewModel } from './viewmodel.js';
-import { buildCharacter, buildGadget, animateCharacter } from './characters.js';
+import { buildPumpkin } from './characters.js';
 import { raycast } from './collide.js';
 import { clamp, dirX, dirZ, shuffle, pick, rand } from './util.js';
 
 const T = window.THREE;
 const $ = (id) => document.getElementById(id);
+const other = (team) => (team === 'herd' ? 'hands' : 'herd');
 
 function boot() {
   const canvas = $('view'), rootEl = $('game');
@@ -38,9 +39,11 @@ function boot() {
 
   const game = {
     scene, camera, renderer, actors: [], bots: [], player: null, viewActor: null,
-    state: 'menu', paused: false, time: 0, roundT: ROUND.length, roundLen: ROUND.length, freezeT: 0, endT: 0, round: 0,
-    score: { herd: 0, hands: 0 }, diff: DIFFICULTY.easy, diffKey: 'easy', playerTeam: 'herd',
+    state: 'menu', paused: false, time: 0, roundT: ROUND.length, freezeT: 0, endT: 0, round: 0,
+    score: { herd: 0, hands: 0 }, streak: { herd: 0, hands: 0 }, attackers: 'herd',
+    diff: DIFFICULTY.easy, diffKey: 'easy', playerTeam: 'herd', shopOpen: false,
     viewYaw: 0, viewH: 600, intel: { herd: new Map(), hands: new Map() },
+    pumpkin: { state: 'none', carrier: null, x: 0, z: 0, site: null, fuse: 0, progress: 0, actor: null },
   };
   game.world = buildWorld(scene);
   game.nav = buildNav(game.world);
@@ -50,6 +53,27 @@ function boot() {
   game.hud = createHud(game);
   const vm = createViewModel();
   const botOf = new Map();
+  const W = game.world, P = game.pumpkin, audio = game.audio, hud = game.hud;
+  const roleOf = (team) => (team === game.attackers ? 'attack' : 'defend');
+  const alive = (team) => game.actors.filter((a) => a.team === team && a.alive);
+  const dist = (a, x, z) => Math.hypot(a.pos.x - x, a.pos.z - z);
+  game.roleOf = roleOf;
+  game.siteAt = (x, z) => { for (const k of ['A', 'B']) { const s = W.sites[k]; if (Math.hypot(x - s.x, z - s.z) < s.r) return k; } return null; };
+
+  // the pumpkin itself, and the green cloud when it goes off
+  const pumpkin = buildPumpkin();
+  pumpkin.root.visible = false;
+  scene.add(pumpkin.root);
+  const puffs = [];
+  function stinkCloud(x, z) {
+    for (let i = 0; i < 16; i++) {
+      const m = new T.Mesh(sphereGeo(), new T.MeshBasicMaterial({ color: i % 2 ? 0xb7f23a : 0x8fd94a, transparent: true, opacity: 0.6, depthWrite: false }));
+      m.position.set(x + rand(-1, 1), 0.6 + rand(0, 1.2), z + rand(-1, 1));
+      scene.add(m);
+      puffs.push({ m, life: 0, max: rand(2.2, 3.6), vx: rand(-2.6, 2.6), vy: rand(0.4, 1.6), vz: rand(-2.6, 2.6), size: rand(1.2, 2.6) });
+    }
+    game.fx.burst(x, 0.8, z, 0xb7f23a, 30);
+  }
 
   // ---------- what each team knows about the other ----------
   game.report = (team, enemy) => { game.intel[team].set(enemy, { x: enemy.pos.x, z: enemy.pos.z, t: game.time }); };
@@ -59,59 +83,90 @@ function boot() {
     return best;
   };
   game.busiestSite = (team) => {
-    const enemiesLeft = game.actors.filter((a) => a.alive && a.team !== team).length;
-    const need = enemiesLeft <= 2 ? 1 : 2;
+    const need = alive(other(team)).length <= 2 ? 1 : 2;
     let bestSite = null, bestN = 0;
     for (const key of ['A', 'B']) {
-      const s = game.world.points[key];
+      const s = W.points[key];
       let n = 0;
       game.intel[team].forEach((info, enemy) => { if (enemy.alive && game.time - info.t < 5 && Math.hypot(info.x - s.x, info.z - s.z) < 17) n++; });
       if (n >= need && n > bestN) { bestN = n; bestSite = key; }
     }
     return bestSite;
   };
+  const spotT = { herd: -9, hands: -9 };
+  game.onSpot = (a) => { if (game.time - spotT[a.team] > 7) { spotT[a.team] = game.time; audio.radio(a.team, ['spot_1', 'spot_2']); } };
+
+  // ---------- the shop ----------
+  game.shopItems = (a) => SHOP.map((it) => {
+    const g = GADGETS[it.id];
+    let state = 'ok';
+    if (it.kind === 'gadget' ? a.primary === it.id : it.id === 'overalls' ? a.armor >= 100 : a.kit) state = 'own';
+    else if (it.role && it.role !== roleOf(a.team)) state = 'role';
+    else if (a.coins < it.price) state = 'poor';
+    return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
+  });
+  game.buy = (a, id) => {
+    const it = game.shopItems(a).find((i) => i.id === id);
+    if (!it || it.state !== 'ok' || (a.isPlayer && game.state !== 'freeze')) { if (a.isPlayer) audio.deny(); return false; }
+    a.coins -= it.price;
+    if (PRIMARIES.includes(id)) a.givePrimary(id); else if (id === 'overalls') a.armor = 100; else a.kit = true;
+    if (a.isPlayer) { audio.buy(); hud.refreshShop(); }
+    return true;
+  };
+  function botShop(a) {
+    const c = a.coins;
+    if (!a.primary) {
+      if (c >= 4850 && Math.random() < 0.22) game.buy(a, 'pea');
+      else if (c >= 2700) game.buy(a, 'tomato');
+      else if (c >= 1200 && (c < 1900 || Math.random() < 0.6)) game.buy(a, 'egg');
+    }
+    if (a.armor < 60 && a.coins >= 650) game.buy(a, 'overalls');
+    if (roleOf(a.team) === 'defend' && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, 'kit');
+  }
 
   // ---------- match and round flow ----------
   function startMatch(team, diffKey) {
     for (const a of game.actors) scene.remove(a.char.root);
     game.actors = []; game.bots = []; botOf.clear();
     game.playerTeam = team; game.diffKey = diffKey; game.diff = DIFFICULTY[diffKey];
-    game.score = { herd: 0, hands: 0 }; game.round = 0;
+    game.score = { herd: 0, hands: 0 }; game.streak = { herd: 0, hands: 0 }; game.round = 0; game.attackers = 'herd';
     for (const t of ['herd', 'hands']) {
       ROSTER[t].forEach((info, i) => {
         const isPlayer = t === team && i === 0;
         const a = new Actor(game, t, isPlayer ? { ...info, name: 'You' } : info, isPlayer);
+        a.survived = false;
         game.actors.push(a);
         if (isPlayer) game.player = a;
         else { const b = new Bot(game, a); game.bots.push(b); botOf.set(a, b); }
         a.char.marker.visible = t === team && !isPlayer;
       });
     }
-    const p = game.player;
     if (team === 'herd') vm.setColors(0xfff3d6, 0xffffff); else vm.setColors(0xf2c9a0, 0xd9463e);
-    vm.set(p.gadgetId);
-    game.fx.clearDecals(); game.hud.clearFeed();
+    game.fx.clearDecals(); hud.clearFeed();
+    audio.stopMusic(); audio.rooster();
     startRound();
   }
 
+  let mainSite = 'A', callT = -1;
   function planRound() {
-    const W = game.world, at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
-    const main = pick(['A', 'B']), other = main === 'A' ? 'B' : 'A';
+    const at = (x, z) => game.nav.nearestFree(x + rand(-1.1, 1.1), z + rand(-1.1, 1.1));
+    mainSite = pick(['A', 'B']);
+    const otherSite = mainSite === 'A' ? 'B' : 'A';
     const used = { A: 0, B: 0, MID: 0 };
     const routeOrder = { A: shuffle([0, 1, 2]), B: shuffle([0, 1, 2]) };
     let ai = 0, di = 0;
     const defendOrder = shuffle(['A', 'B', 'A', 'B', 'MID']);
     for (const b of game.bots) {
       const a = b.a;
-      a.setGadget(pick(GADGET_ORDER));
-      a.cooldown = 0;
-      if (a.team === 'herd') {
-        const site = Math.random() < 0.2 ? other : main;
+      botShop(a);
+      if (roleOf(a.team) === 'attack') {
+        const carrier = P.carrier === a;
+        const site = !carrier && Math.random() < 0.2 ? otherSite : mainSite;
         const route = W.routes[site][routeOrder[site][ai++ % 3]];
         const hold = W.holds[site][used[site]++ % W.holds[site].length];
         const legs = route.slice(0, -1).map((n) => at(W.points[n].x, W.points[n].z));
-        legs.push(hold);
         b.newRound({ role: 'attack', site, legs, hold });
+        if (carrier) { b.legs = legs; const keep = b.legs.slice(); b.carryTo(site); b.legs = keep.concat(b.legs); } else b.legs.push(hold);
       } else {
         const site = defendOrder[di++ % defendOrder.length];
         const hold = W.holds[site][used[site]++ % W.holds[site].length];
@@ -121,27 +176,50 @@ function boot() {
   }
 
   function startRound() {
+    let half = false;
+    if (game.round === ROUND.half) {
+      // half-time: the teams swap jobs and everyone starts fresh
+      half = true;
+      game.attackers = other(game.attackers);
+      game.streak = { herd: 0, hands: 0 };
+      for (const a of game.actors) { a.coins = ECON.start; a.survived = false; }
+    }
     game.round++;
     game.state = 'freeze'; game.freezeT = ROUND.freeze; game.roundT = ROUND.length;
     game.combat.clear();
     game.intel.herd.clear(); game.intel.hands.clear();
     for (const t of ['herd', 'hands']) {
-      const slots = shuffle(game.world.spawns[t].slice());
-      game.actors.filter((a) => a.team === t).forEach((a, i) => a.reset(slots[i]));
+      const slots = shuffle(W.spawns[roleOf(t)].slice());
+      game.actors.filter((a) => a.team === t).forEach((a, i) => { a.reset(slots[i], a.survived); a.wantUse = false; });
     }
+    // somebody on the attacking team starts with the pumpkin
+    Object.assign(P, { state: 'carried', carrier: pick(alive(game.attackers)), site: null, fuse: 0, progress: 0, actor: null });
+    pumpkin.glow.visible = false;
     planRound();
-    spectateIdx = 0; game.viewActor = game.player;
-    game.hud.spectate(null);
-    const job = game.playerTeam === 'herd' ? 'Splat all the farmhands before time runs out.' : 'Keep the animals out until the clock hits zero.';
-    game.hud.banner(`Round ${game.round}`, job, ROUND.freeze);
+    spectateIdx = 0; game.viewActor = game.player; game.shopOpen = true; hud.refreshShop();
+    hud.spectate(null);
+    const attacking = roleOf(game.playerTeam) === 'attack';
+    const job = attacking ? (P.carrier === game.player ? 'You have the Stink-Pumpkin. Plant it at A or B.' : 'Help your team plant the Stink-Pumpkin at A or B.') : 'Stop the pumpkin being planted, or cork it in time.';
+    const point = Math.max(game.score.herd, game.score.hands) === ROUND.winTarget - 1;
+    if (half) { hud.banner('Half-time!', `Teams swap jobs. ${job}`, 5); audio.announce('ann_half'); }
+    else hud.banner(`Round ${game.round}`, job, 3.2);
+    if (point) audio.announce('ann_match_point');
+    callT = -1;
   }
 
   function endRound(winner, why) {
+    const loser = other(winner);
     game.score[winner]++;
+    game.streak[winner] = 0; game.streak[loser]++;
+    const consolation = ECON.lose[Math.min(ECON.lose.length - 1, game.streak[loser] - 1)];
+    for (const a of game.actors) { a.earn(a.team === winner ? ECON.win : consolation); a.survived = a.alive; a.busy = false; a.wantUse = false; a.scoped = false; }
     game.state = 'roundEnd'; game.endT = ROUND.endDelay;
+    P.actor = null;
     const won = winner === game.playerTeam;
-    game.hud.banner(won ? 'Round won!' : 'Round lost', why, ROUND.endDelay);
-    if (won) game.audio.win(); else game.audio.lose();
+    hud.banner(won ? 'Round won!' : 'Round lost', why, ROUND.endDelay);
+    audio.stopMusic(0.3);
+    if (won) audio.win(); else audio.lose();
+    audio.announce(winner === 'herd' ? 'ann_herd_win' : 'ann_hands_win');
   }
 
   function finishMatch() {
@@ -151,7 +229,9 @@ function boot() {
     $('end-title').textContent = won ? 'You won the match!' : `${TEAM[winner].name} won`;
     $('end-sub').textContent = `Final score: Herd ${game.score.herd}, Hands ${game.score.hands}. ${won ? 'The farm is yours today.' : 'Shake off the mess and try again.'}`;
     $('end').hidden = false;
-    game.hud.hideBanner();
+    hud.hideBanner();
+    audio.music(won ? 'music_victory' : 'music_defeat', false, 1);
+    audio.announce(won ? 'ann_victory' : 'ann_defeat');
     if (document.pointerLockElement) document.exitPointerLock();
   }
 
@@ -160,26 +240,159 @@ function boot() {
     for (const a of game.actors) scene.remove(a.char.root);
     game.actors = []; game.bots = []; game.player = null; game.viewActor = null;
     game.combat.clear();
+    P.state = 'none'; P.carrier = null; pumpkin.root.visible = false;
     $('end').hidden = true; $('pause').hidden = true; $('menu').hidden = false;
-    game.hud.show(false);
+    hud.show(false);
+    audio.init(); audio.music('music_menu', true, 0.8);
     if (document.pointerLockElement) document.exitPointerLock();
   }
 
   game.onPlayerFire = () => vm.fire();
   game.onHit = (attacker, victim, head, out) => {
-    if (attacker.isPlayer) { game.hud.hitMarker(head); game.audio.hitConfirm(head); }
-    if (victim.isPlayer) { game.hud.hurt(attacker); game.audio.hurt(); }
+    if (attacker.isPlayer) { hud.hitMarker(head); audio.hitConfirm(head); }
+    if (victim.isPlayer) { hud.hurt(attacker); audio.hurt(); }
     const vb = botOf.get(victim);
     if (vb) vb.onHurt(attacker);
     game.report(victim.team, attacker);
-    if (out) { game.hud.feed(attacker, victim, head); game.audio.out(victim); }
+    if (out) {
+      attacker.earn(ECON.splat); attacker.splats++;
+      hud.feed(attacker, victim, head); audio.out(victim);
+      if (attacker.isPlayer) { const mate = alive(attacker.team).find((m) => m !== attacker && dist(m, attacker.pos.x, attacker.pos.z) < 20); if (mate) audio.shout(mate, 'nice', 0.5); }
+    } else audio.shout(victim, 'hurt_' + (1 + ((Math.random() * 2) | 0)), victim.isPlayer ? 0.2 : 0.3);
   };
+
+  // ---------- the Stink-Pumpkin ----------
+  let dutyT = 0, tickT = 0, tickN = 0, squeakT = 0;
+  function stopUse() { if (P.actor) { P.actor.busy = false; P.actor = null; } P.progress = 0; }
+  function pickUp(a) {
+    P.state = 'carried'; P.carrier = a;
+    audio.radio(a.team, 'got_it');
+    const b = botOf.get(a);
+    if (b) b.carryTo(nearestSite(a)); else hud.tip('You picked up the Stink-Pumpkin. Carry it to A or B.', 4);
+    for (const o of game.bots) o.fetching = o === b ? false : o.fetching && false;
+  }
+  const nearestSite = (a) => (dist(a, W.sites.A.x, W.sites.A.z) < dist(a, W.sites.B.x, W.sites.B.z) ? 'A' : 'B');
+  function plant(c, site) {
+    stopUse();
+    Object.assign(P, { state: 'planted', carrier: null, x: c.pos.x, z: c.pos.z, site, fuse: OBJ.fuse });
+    c.earn(ECON.plant);
+    tickT = 0; tickN = 0; dutyT = 0;
+    audio.thud(P.x, P.z); audio.announce('ann_planted'); audio.music('music_fuse', true, 0.55);
+    const att = game.attackers, def = other(att), mine = att === game.playerTeam;
+    hud.banner(`Pumpkin planted at ${site}!`, mine ? `Guard it for ${OBJ.fuse} seconds.` : 'Cork it before it goes off!', 3.5);
+    audio.radio(att, 'guard');
+    if (def === 'hands') audio.radio(def, site === 'A' ? 'planted_a' : 'planted_b');
+    // attackers dig in around it; defenders come to take it back
+    let i = 0, j = 0;
+    for (const b of game.bots) {
+      if (!b.a.alive) continue;
+      if (b.a.team === att) b.sendTo(W.holds[site][i++ % W.holds[site].length], true);
+      else { const ang = rand(6.28), r = 2.4 + (j++ % 3) * 1.1, s = game.nav.nearestFree(P.x + Math.cos(ang) * r, P.z + Math.sin(ang) * r); b.sendTo({ x: s.x, z: s.z, lx: P.x, lz: P.z }, true); }
+    }
+  }
+  function updatePumpkin(dt) {
+    const att = game.attackers, def = other(att);
+    if (P.state === 'carried') {
+      const c = P.carrier;
+      if (!c.alive) {
+        stopUse();
+        const spot = game.nav.nearestFree(c.pos.x, c.pos.z);
+        Object.assign(P, { state: 'dropped', carrier: null, x: spot.x, z: spot.z });
+        hud.note('The Stink-Pumpkin was dropped');
+        audio.thud(P.x, P.z);
+        dutyT = 0;
+      } else {
+        const site = game.siteAt(c.pos.x, c.pos.z);
+        if (c.wantUse && site && c.onGround) {
+          if (P.actor !== c) { P.actor = c; P.progress = 0; c.busy = true; audio.radio(att, 'planting'); }
+          P.progress += dt;
+          if (P.progress >= OBJ.plantTime) plant(c, site);
+        } else if (P.actor) stopUse();
+      }
+    } else if (P.state === 'dropped') {
+      for (const a of alive(att)) if (dist(a, P.x, P.z) < 1.3) { pickUp(a); return; }
+      dutyT -= dt;
+      if (dutyT <= 0) {
+        dutyT = 1;
+        // make sure one computer player is on its way to fetch it
+        const bots = game.bots.filter((b) => b.a.alive && b.a.team === att);
+        if (bots.length && !bots.some((b) => b.fetching)) { bots.sort((x, y) => dist(x.a, P.x, P.z) - dist(y.a, P.x, P.z)); bots[0].fetch(P.x, P.z); audio.radio(att, 'dropped'); }
+      }
+    } else if (P.state === 'planted') {
+      P.fuse -= dt;
+      // tick faster and faster
+      tickT -= dt;
+      if (tickT <= 0) { tickT = 0.14 + 0.86 * clamp(P.fuse / OBJ.fuse, 0, 1); audio.fuseTick(P.x, P.z, tickN++); }
+      // corking: whoever is next to it and holding "use"
+      const can = (a) => a && a.alive && a.wantUse && a.team === def && dist(a, P.x, P.z) < OBJ.reach;
+      if (!can(P.actor)) {
+        stopUse();
+        const next = game.actors.find(can);
+        if (next) { P.actor = next; next.busy = true; squeakT = 0; audio.radio(def, 'corking'); }
+      }
+      if (P.actor) {
+        P.progress += dt;
+        squeakT -= dt;
+        if (squeakT <= 0) { squeakT = 1.15; audio.squeak(P.x, P.z); }
+        if (P.progress >= (P.actor.kit ? OBJ.corkTimeKit : OBJ.corkTime)) {
+          const hero = P.actor;
+          stopUse(); hero.earn(ECON.cork);
+          P.state = 'corked';
+          audio.corkPop(P.x, P.z); audio.announce('ann_corked');
+          endRound(def, hero.isPlayer ? 'You corked the pumpkin just in time!' : `${hero.name} corked the pumpkin in time.`);
+          return;
+        }
+      }
+      if (P.fuse <= 0) {
+        stopUse();
+        P.state = 'burst';
+        stinkCloud(P.x, P.z); audio.stink(P.x, P.z); audio.announce('ann_stink');
+        endRound(att, 'Pee-yew! The Stink-Pumpkin went off.');
+        return;
+      }
+      dutyT -= dt;
+      if (dutyT <= 0) {
+        dutyT = 0.8;
+        // one computer defender gets the job of corking
+        const bots = game.bots.filter((b) => b.a.alive && b.a.team === def);
+        if (bots.length && !bots.some((b) => b.corkDuty)) {
+          bots.sort((x, y) => dist(x.a, P.x, P.z) - dist(y.a, P.x, P.z));
+          bots[0].corkDuty = true; bots[0].sendTo({ x: P.x + 0.7, z: P.z + 0.5, lx: P.x, lz: P.z }, true);
+        }
+      }
+    }
+  }
+  function drawPumpkin(dt) {
+    const p = game.player, root = pumpkin.root;
+    if (P.state === 'carried' && P.carrier) {
+      const c = P.carrier;
+      root.visible = c.alive && !(c === p && p.alive);
+      root.position.set(c.pos.x - dirX(c.yaw) * 0.42, c.pos.y + 0.62 - (c.crouched || c.busy ? 0.3 : 0), c.pos.z - dirZ(c.yaw) * 0.42);
+      root.rotation.y = c.yaw + Math.PI; root.scale.setScalar(0.62);
+      pumpkin.glow.visible = false;
+    } else if (P.state === 'dropped' || P.state === 'planted' || P.state === 'corked') {
+      root.visible = true;
+      root.position.set(P.x, P.state === 'dropped' ? 0.06 + Math.abs(Math.sin(game.time * 3)) * 0.12 : 0, P.z);
+      root.scale.setScalar(1);
+      if (P.state === 'dropped') root.rotation.y += dt * 1.5;
+      const hot = P.state === 'planted';
+      pumpkin.glow.visible = hot;
+      if (hot) { const k = 0.5 + 0.5 * Math.sin(game.time * (4 + 14 * (1 - P.fuse / OBJ.fuse))); pumpkin.glow.scale.setScalar(0.55 + k * 0.25); pumpkin.body.scale.setScalar(1 + k * 0.05); } else pumpkin.body.scale.setScalar(1);
+    } else root.visible = false;
+    for (let i = puffs.length - 1; i >= 0; i--) {
+      const f = puffs[i]; f.life += dt;
+      const k = f.life / f.max;
+      if (k >= 1) { scene.remove(f.m); puffs.splice(i, 1); continue; }
+      f.m.position.x += f.vx * dt * (1 - k); f.m.position.y += f.vy * dt; f.m.position.z += f.vz * dt * (1 - k);
+      f.m.scale.setScalar(f.size * (0.4 + k * 1.4)); f.m.material.opacity = 0.6 * (1 - k);
+    }
+  }
 
   // ---------- input ----------
   const keys = {};
   let mdx = 0, mdy = 0, mouseDown = false, fireEdge = false, locked = false, everLocked = false, noLock = false;
-  let sens = 1, spectateIdx = 0, eyeY = MOVE.eye;
-  try { const s = parseFloat(localStorage.getItem('hs-sens')); if (s > 0) sens = s; } catch (e) { /* no saved setting */ }
+  let sens = 1, spectateIdx = 0, eyeY = MOVE.eye, fov = 72;
+  try { const s = parseFloat(localStorage.getItem('hs-sens')); if (s > 0) sens = s; const v = parseFloat(localStorage.getItem('hs-vol')); if (v >= 0) { $('vol').value = v; } } catch (e) { /* no saved settings */ }
   $('sens').value = sens;
 
   const playing = () => game.state === 'freeze' || game.state === 'live' || game.state === 'roundEnd';
@@ -187,7 +400,7 @@ function boot() {
     if (locked) return;
     if (everLocked) { if (playing()) pause(); return; }
     noLock = true;
-    game.hud.tip('Move the mouse or use the arrow keys to look around. Press Esc to pause.', 7);
+    hud.tip('Move the mouse or use the arrow keys to look around. Press Esc to pause.', 7);
   }
   function lock() {
     if (noLock || locked) return;
@@ -210,9 +423,16 @@ function boot() {
   });
   document.addEventListener('pointerlockerror', lockFailed);
   document.addEventListener('mousemove', (e) => { if ((locked || noLock) && playing() && !game.paused) { mdx += e.movementX || 0; mdy += e.movementY || 0; } });
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  function toggleZoom() {
+    const p = game.player;
+    if (p && p.alive && GADGETS[p.gadgetId].zoom && p.reloadT <= 0 && game.state === 'live') { p.scoped = !p.scoped; audio.ui(); }
+  }
   canvas.addEventListener('mousedown', (e) => {
-    if (!playing() || game.paused || e.button !== 0) return;
-    game.audio.init();
+    if (!playing() || game.paused) return;
+    audio.init();
+    if (e.button === 2) { toggleZoom(); return; }
+    if (e.button !== 0) return;
     if (!locked && !noLock) { lock(); return; }
     mouseDown = true; fireEdge = true;
     if (game.player && !game.player.alive) spectateIdx++;
@@ -228,21 +448,27 @@ function boot() {
     keys[e.code] = true;
     const p = game.player;
     if (!p || !p.alive) return;
-    const slot = { Digit1: 'squirter', Digit2: 'egg', Digit3: 'tomato' }[e.code];
-    if (slot && slot !== p.gadgetId) { p.setGadget(slot); vm.set(slot); game.audio.ui(); }
+    const digit = e.code.startsWith('Digit') ? +e.code.slice(5) : 0;
+    if (e.code === 'KeyB' && game.state === 'freeze') { game.shopOpen = !game.shopOpen; audio.ui(); return; }
+    if (game.shopOpen && game.state === 'freeze' && digit >= 1 && digit <= SHOP.length) { game.buy(p, SHOP[digit - 1].id); return; }
+    let want = null;
+    if (digit === 1) want = p.primary; else if (digit === 2) want = 'squirter'; else if (e.code === 'KeyQ') want = p.has(p.lastGadget) ? p.lastGadget : 'squirter';
+    if (want && p.setGadget(want)) audio.ui();
     if (e.code === 'KeyR') p.startReload();
     if (e.code === 'KeyF') fireEdge = true;
+    if (e.code === 'KeyZ') toggleZoom();
   });
   window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
   function updatePlayer(dt) {
     const p = game.player;
-    const k = 0.0021 * sens;
+    const k = 0.0021 * sens * (fov / 72);
     p.yaw -= mdx * k; p.pitch = clamp(p.pitch - mdy * k, -1.45, 1.45);
     mdx = 0; mdy = 0;
-    p.yaw += ((keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0)) * 2.4 * dt;
-    p.pitch = clamp(p.pitch + ((keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0)) * 1.6 * dt, -1.45, 1.45);
-    if (!p.alive) { fireEdge = false; return; }
+    p.yaw += ((keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0)) * 2.4 * dt * (fov / 72);
+    p.pitch = clamp(p.pitch + ((keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0)) * 1.6 * dt * (fov / 72), -1.45, 1.45);
+    if (!p.alive) { fireEdge = false; p.wantUse = false; return; }
+    p.wantUse = !!keys.KeyE && game.state === 'live';
     if (game.state === 'live') {
       const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), s = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
       let wx = dirX(p.yaw) * f + Math.cos(p.yaw) * s, wz = dirZ(p.yaw) * f - Math.sin(p.yaw) * s;
@@ -258,6 +484,8 @@ function boot() {
   // ---------- camera ----------
   function updateCamera(dt) {
     const p = game.player;
+    const wantFov = p && p.alive && p.scoped ? 22 : 72;
+    if (Math.abs(fov - wantFov) > 0.05) { fov += (wantFov - fov) * Math.min(1, dt * 16); camera.fov = fov; camera.updateProjectionMatrix(); }
     if (game.state === 'menu' || !p) {
       const a = game.time * 0.07;
       camera.position.set(Math.sin(a) * 50, 24, -4 + Math.cos(a) * 50);
@@ -266,7 +494,7 @@ function boot() {
       return;
     }
     if (p.alive) {
-      eyeY += (p.eyeY() - eyeY) * Math.min(1, dt * 14);
+      eyeY += ((p.busy ? MOVE.eyeCrouch : p.eyeY()) - eyeY) * Math.min(1, dt * 14);
       camera.position.set(p.pos.x, p.pos.y + eyeY, p.pos.z);
       camera.rotation.set(p.pitch + p.recoil, p.yaw, 0);
       game.viewYaw = p.yaw; game.viewActor = p;
@@ -275,47 +503,58 @@ function boot() {
     // splatted out: watch yourself flop, then follow a teammate from behind
     let target = p;
     if (p.outT > 1.5) {
-      const mates = game.actors.filter((a) => a.alive && a.team === p.team);
+      const mates = alive(p.team);
       const others = mates.length ? mates : game.actors.filter((a) => a.alive);
       if (others.length) target = others[spectateIdx % others.length];
-      game.hud.spectate(target === p ? 'You are out this round.' : `You are out this round. Watching ${target.name}. Click to switch.`);
+      hud.spectate(target === p ? 'You are out this round.' : `You are out this round. Watching ${target.name}. Click to switch.`);
     }
     game.viewActor = target; game.viewYaw = target.yaw;
     const fx = dirX(target.yaw), fz = dirZ(target.yaw);
     const hx = target.pos.x, hy = target.pos.y + 1.7, hz = target.pos.z;
-    let dist = 3.6;
-    const hit = raycast(hx, hy, hz, -fx * 0.94, 0.33, -fz * 0.94, dist, game.world.boxes);
-    if (hit) dist = Math.max(0.6, hit.t - 0.25);
+    let d = 3.6;
+    const hit = raycast(hx, hy, hz, -fx * 0.94, 0.33, -fz * 0.94, d, W.boxes);
+    if (hit) d = Math.max(0.6, hit.t - 0.25);
     const k = Math.min(1, dt * 10);
-    camera.position.x += (hx - fx * 0.94 * dist - camera.position.x) * k;
-    camera.position.y += (hy + 0.33 * dist - camera.position.y) * k;
-    camera.position.z += (hz - fz * 0.94 * dist - camera.position.z) * k;
+    camera.position.x += (hx - fx * 0.94 * d - camera.position.x) * k;
+    camera.position.y += (hy + 0.33 * d - camera.position.y) * k;
+    camera.position.z += (hz - fz * 0.94 * d - camera.position.z) * k;
     camera.lookAt(hx + fx * 3, hy - 0.2, hz + fz * 3);
   }
 
   // ---------- one step of the game ----------
   function update(dt) {
     game.time += dt;
-    for (const f of game.world.animated) f(game.time, dt);
+    for (const f of W.animated) f(game.time, dt);
     if (playing()) {
       if (game.state === 'freeze') {
         game.freezeT -= dt;
-        if (game.freezeT <= 0) { game.state = 'live'; game.audio.bell(); game.hud.banner('Go!', '', 0.9); }
+        if (game.freezeT <= 3 && Math.ceil(game.freezeT) !== Math.ceil(game.freezeT + dt) && game.freezeT > 0) audio.countdown();
+        if (game.freezeT <= 0) {
+          game.state = 'live'; game.shopOpen = false;
+          audio.bell(); audio.radio(game.playerTeam, ['go_1', 'go_2']);
+          hud.banner('Go!', '', 0.9);
+          callT = game.time + 2.2;
+        }
       } else if (game.state === 'live') {
-        const before = Math.ceil(game.roundT);
-        game.roundT -= dt;
-        if (game.roundT <= 10 && Math.ceil(game.roundT) !== before && game.roundT > 0) game.audio.tick();
+        const before = game.roundT;
+        if (P.state !== 'planted') game.roundT -= dt;
+        if (before > 10 && game.roundT <= 10 && P.state !== 'planted') audio.announce('ann_ten');
+        // a teammate calls out where the team is heading
+        if (callT > 0 && game.time > callT) { callT = -1; if (roleOf(game.playerTeam) === 'attack') { audio.radio(game.playerTeam, mainSite === 'A' ? 'to_a' : 'to_b'); hud.note(`Your team is heading to ${mainSite}`); } }
       }
       updatePlayer(dt);
       for (const b of game.bots) b.update(dt);
       for (const a of game.actors) a.tick(dt);
       game.combat.update(dt);
+      if (game.state === 'live') updatePumpkin(dt);
       if (game.state === 'live') {
-        const herd = game.actors.filter((a) => a.team === 'herd' && a.alive).length;
-        const hands = game.actors.filter((a) => a.team === 'hands' && a.alive).length;
-        if (hands === 0 && herd > 0) endRound('herd', 'Every farmhand got splatted. The Herd takes the round.');
-        else if (herd === 0) endRound('hands', 'Every animal got splatted. The Hands take the round.');
-        else if (game.roundT <= 0) endRound('hands', 'Time is up. The Hands kept the farm safe.');
+        const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
+        const names = { herd: 'The Herd', hands: 'The Hands' };
+        if (nDef === 0 && nAtt > 0) endRound(att, P.state === 'planted' ? 'Nobody is left to cork the pumpkin.' : `Every defender got splatted. ${names[att]} take the round.`);
+        else if (P.state !== 'planted') {
+          if (nAtt === 0) endRound(def, `Every attacker got splatted. ${names[def]} take the round.`);
+          else if (game.roundT <= 0) { audio.announce('ann_time'); endRound(def, 'Time is up. The pumpkin never got planted.'); }
+        }
       } else if (game.state === 'roundEnd') {
         game.endT -= dt;
         if (game.endT <= 0) {
@@ -324,16 +563,19 @@ function boot() {
       }
       for (const a of game.actors) a.updateModel(dt, a === game.player && a.alive);
       if (game.player && game.player.alive) vm.update(dt, game.player);
+      audio.ambient(dt);
     }
+    drawPumpkin(dt);
     game.fx.update(dt);
     updateCamera(dt);
-    game.hud.update(dt);
+    hud.update(dt);
   }
 
   function render() {
     renderer.clear();
     renderer.render(scene, camera);
-    if (playing() && game.player && game.player.alive) { renderer.clearDepth(); renderer.render(vm.scene, vm.cam); }
+    const p = game.player;
+    if (playing() && p && p.alive && !p.scoped) { renderer.clearDepth(); renderer.render(vm.scene, vm.cam); }
   }
 
   function resize() {
@@ -346,35 +588,19 @@ function boot() {
   }
 
   // ---------- menu ----------
-  function portrait(kind, look, img, bg) {
-    const s = new T.Scene();
-    s.background = new T.Color(bg);
-    s.add(new T.HemisphereLight(0xffffff, 0xb0d090, 0.95));
-    const d = new T.DirectionalLight(0xffffff, 0.55); d.position.set(-2, 3, -4); s.add(d);
-    const c = buildCharacter(kind, look);
-    c.mount.add(buildGadget(kind === 'farmer' ? 'squirter' : 'tomato'));
-    animateCharacter(c, 0.016, 0, 0.1, false, true);
-    c.root.rotation.y = 0.5;
-    s.add(c.root);
-    const cam = new T.PerspectiveCamera(30, 1, 0.1, 20);
-    cam.position.set(0.15, 1.5, -2.5); cam.lookAt(0.05, 1.3, 0);
-    renderer.setPixelRatio(1); renderer.setSize(192, 192, false);
-    renderer.clear(); renderer.render(s, cam);
-    const out = document.createElement('canvas'); out.width = out.height = 192;
-    out.getContext('2d').drawImage(canvas, 0, 0);
-    try { img.src = out.toDataURL('image/png'); } catch (e) { /* portrait is decoration only */ }
-  }
-  portrait('chicken', 0, $('pic-herd'), 0xffe2b8);
-  portrait('farmer', 0, $('pic-hands'), 0xcfe6fb);
-
-  let pickTeam = 'herd', pickDiff = 'easy';
+  let pickTeam = 'herd', pickDiff = 'easy', welcomed = false;
   const choose = (group, attr, value) => document.querySelectorAll(group).forEach((b) => b.setAttribute('aria-checked', String(b.dataset[attr] === value)));
-  document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', () => { pickTeam = b.dataset.team; choose('.side', 'team', pickTeam); game.audio.init(); game.audio.ui(); }));
-  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('.seg button', 'diff', pickDiff); game.audio.init(); game.audio.ui(); }));
+  document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', () => { pickTeam = b.dataset.team; choose('.side', 'team', pickTeam); audio.ui(); }));
+  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { pickDiff = b.dataset.diff; choose('.seg button', 'diff', pickDiff); audio.ui(); }));
+  // sound can only start after the first click anywhere
+  document.addEventListener('pointerdown', () => {
+    audio.init();
+    if (game.state === 'menu') { audio.music('music_menu', true, 0.8); if (!welcomed) { welcomed = true; audio.announce('ann_welcome'); } }
+  });
   function begin() {
-    game.audio.init();
+    audio.init();
     $('menu').hidden = true; $('end').hidden = true;
-    game.hud.show(true);
+    hud.show(true);
     startMatch(pickTeam, pickDiff);
     lock();
   }
@@ -384,10 +610,13 @@ function boot() {
   $('resume').addEventListener('click', resume);
   $('quit').addEventListener('click', toMenu);
   $('sens').addEventListener('input', (e) => { sens = parseFloat(e.target.value) || 1; try { localStorage.setItem('hs-sens', String(sens)); } catch (err) { /* not saved */ } });
+  $('vol').addEventListener('input', (e) => { const v = parseFloat(e.target.value); audio.setVolume(v); try { localStorage.setItem('hs-vol', String(v)); } catch (err) { /* not saved */ } });
   if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(any-pointer: fine)').matches) $('touch-note').hidden = false;
 
   window.addEventListener('resize', resize);
   resize();
+  audio.boot();
+  audio.setVolume(parseFloat($('vol').value));
 
   let lastT = performance.now();
   function frame(now) {
@@ -403,6 +632,7 @@ function boot() {
   game.simulate = (seconds, step = 1 / 60) => { for (let t = 0; t < seconds; t += step) update(step); };
   game.begin = (team, diff) => { pickTeam = team; pickDiff = diff; begin(); };
   game.input = { keys, look: (dx, dy) => { mdx += dx; mdy += dy; }, fire: (down) => { mouseDown = down; fireEdge = down; }, noLock: () => { noLock = true; } };
+  game.botOf = botOf;
   window.__hs = game;
 }
 
