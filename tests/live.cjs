@@ -1,4 +1,4 @@
-// Opens the real public website (no local stand-ins) and checks the game starts with everything loaded.
+// Opens the real public website (no local stand-ins) and checks the game starts on each map with everything loaded.
 const { chromium } = require('playwright');
 const url = process.argv[2] || 'https://harvest-standoff.vercel.app/';
 (async () => {
@@ -9,14 +9,15 @@ const url = process.argv[2] || 'https://harvest-standoff.vercel.app/';
   page.on('pageerror', (e) => errors.push('PAGEERROR ' + e.message));
   page.on('request', (r) => hosts.add(new URL(r.url()).host));
   await page.goto(url, { waitUntil: 'load', timeout: 60000 });
-  await page.waitForTimeout(5000);
-  await page.screenshot({ path: 'shots/live-menu.png' });
-  const r = await page.evaluate(async () => {
-    const g = window.__hs; if (!g) return { fail: 'game did not start' };
-    g.input.noLock(); g.begin('herd', 'easy'); await new Promise((r) => setTimeout(r, 9000)); g.freezeT = 0; g.shopOpen = false; g.simulate(3);
-    return { state: g.state, soundsLoaded: g.audio.loaded(), modelsLoaded: g.actors.filter((a) => a.char.rig).length, title: document.title, font: document.fonts.check('20px "Lilita One"') };
-  });
-  await page.screenshot({ path: 'shots/live-game.png' });
-  console.log(JSON.stringify(r), '| hosts contacted:', [...hosts].join(', '), '| errors:', errors.slice(0, 5));
+  await page.waitForTimeout(4000);
+  for (const map of ['mill', 'farm']) {
+    const r = await page.evaluate(async (map) => {
+      const g = window.__hs; if (!g) return { fail: 'game did not start' };
+      g.input.noLock(); g.begin('herd', 'easy', map); await new Promise((r) => setTimeout(r, 9000)); g.freezeT = 0; g.shopOpen = false; g.simulate(5);
+      return { map: g.world.name, state: g.state, soundsLoaded: g.audio.loaded(), modelsLoaded: g.actors.filter((a) => a.char.rig).length };
+    }, map);
+    console.log(JSON.stringify(r));
+  }
+  console.log('hosts contacted:', [...hosts].join(', '), '| errors:', errors.slice(0, 5));
   await browser.close();
 })();
