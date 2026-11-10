@@ -9,7 +9,7 @@ export function createHud(game) {
   for (const id of ['hud', 'score-herd', 'score-hands', 'pips-herd', 'pips-hands', 'timer', 'feed', 'hurt', 'hurt-arrow', 'hitmark', 'banner', 'banner-title', 'banner-sub',
     'tip', 'spectate', 'hp-num', 'hp-fill', 'ammo-num', 'ammo-fill', 'gadget-name', 'slots', 'radar', 'cross', 'ch-t', 'ch-b', 'ch-l', 'ch-r',
     'armor-row', 'armor-num', 'armor-fill', 'slot-1', 'slot-1-name', 'slot-2', 'slot-b', 'purse', 'coins', 'shop', 'shop-coins', 'shop-list',
-    'status', 'status-text', 'prompt', 'prompt-text', 'prompt-bar', 'prompt-fill', 'scope']) el[id] = $(id);
+    'status', 'status-text', 'prompt', 'prompt-text', 'prompt-bar', 'prompt-fill', 'scope', 'veil', 'slot-3', 'slot-4', 'slot-5']) el[id] = $(id);
   for (const t of ['herd', 'hands']) { el['pips-' + t].innerHTML = '<i></i><i></i><i></i><i></i><i></i>'; }
   const rctx = el.radar.getContext('2d');
   let bannerT = 0, tipT = 0, hitT = 0, hurtT = 0, shopKey = '';
@@ -48,6 +48,10 @@ export function createHud(game) {
       el['slot-2'].classList.toggle('on', p.gadgetId === 'squirter');
     }
     show('sb', el['slot-b'], game.state === 'freeze');
+    const tk = `${p.throws.flour}${p.throws.rooster}${p.throws.mud}`;
+    if (last.tk !== tk) { last.tk = tk; el['slot-3'].classList.toggle('empty', !p.throws.flour); el['slot-4'].classList.toggle('empty', !p.throws.rooster); el['slot-5'].classList.toggle('empty', !p.throws.mud); }
+    const veil = Math.round((game.veil || 0) * 50) / 50;
+    if (last.veil !== veil) { last.veil = veil; el.veil.style.opacity = veil; }
     if (last.coins !== p.coins) {
       if (last.coins !== undefined) { el.purse.classList.add('flash'); setTimeout(() => el.purse.classList.remove('flash'), 350); }
       last.coins = p.coins; el.coins.textContent = p.coins.toLocaleString('en-US');

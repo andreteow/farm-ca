@@ -1,6 +1,6 @@
 // Bundles everything in src/ into single web pages inside dist/.
 import { build } from 'esbuild';
-import { readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, readdirSync, existsSync } from 'node:fs';
 
 // All sounds are glued into ONE file (faster to load, far fewer files to publish); the game gets a table of
 // where each sound starts and how long it is.
@@ -18,6 +18,7 @@ mkdirSync('dist', { recursive: true });
 rmSync('dist/assets', { recursive: true, force: true });
 cpSync('assets/tex', 'dist/assets/tex', { recursive: true });
 cpSync('assets/ui', 'dist/assets/ui', { recursive: true });
+if (existsSync('assets/chars')) cpSync('assets/chars', 'dist/assets/chars', { recursive: true });
 writeFileSync('dist/assets/audio.mp3', Buffer.concat(chunks));
 // the fragment used for the shareable preview page
 writeFileSync('dist/harvest-standoff.html', page);

@@ -1,6 +1,7 @@
 // Harvest Standoff: ties the farm, the characters, the rules and the screen together.
 import { sphereGeo } from './gfx.js';
-import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, OBJ, ECON, DIFFICULTY, ROSTER, MOVE } from './config.js';
+import { ROUND, TEAM, GADGETS, PRIMARIES, SHOP, THROWS, OBJ, ECON, DIFFICULTY, ROSTER, MOVE } from './config.js';
+import { createThrowables } from './throwables.js';
 import { buildWorld } from './world.js';
 import { buildNav } from './nav.js';
 import { Actor } from './actor.js';
@@ -50,6 +51,7 @@ function boot() {
   game.fx = createFx(scene);
   game.audio = createAudio(game);
   game.combat = createCombat(game);
+  game.throwables = createThrowables(game);
   game.hud = createHud(game);
   const vm = createViewModel();
   const botOf = new Map();
@@ -100,7 +102,7 @@ function boot() {
   game.shopItems = (a) => SHOP.map((it) => {
     const g = GADGETS[it.id];
     let state = 'ok';
-    if (it.kind === 'gadget' ? a.primary === it.id : it.id === 'overalls' ? a.armor >= 100 : a.kit) state = 'own';
+    if (it.kind === 'gadget' ? a.primary === it.id : it.kind === 'throw' ? a.throws[it.id] > 0 : it.id === 'overalls' ? a.armor >= 100 : a.kit) state = 'own';
     else if (it.role && it.role !== roleOf(a.team)) state = 'role';
     else if (a.coins < it.price) state = 'poor';
     return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
@@ -109,7 +111,7 @@ function boot() {
     const it = game.shopItems(a).find((i) => i.id === id);
     if (!it || it.state !== 'ok' || (a.isPlayer && game.state !== 'freeze')) { if (a.isPlayer) audio.deny(); return false; }
     a.coins -= it.price;
-    if (PRIMARIES.includes(id)) a.givePrimary(id); else if (id === 'overalls') a.armor = 100; else a.kit = true;
+    if (PRIMARIES.includes(id)) a.givePrimary(id); else if (THROWS[id]) a.throws[id] = 1; else if (id === 'overalls') a.armor = 100; else a.kit = true;
     if (a.isPlayer) { audio.buy(); hud.refreshShop(); }
     return true;
   };
@@ -122,6 +124,12 @@ function boot() {
     }
     if (a.armor < 60 && a.coins >= 650) game.buy(a, 'overalls');
     if (roleOf(a.team) === 'defend' && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, 'kit');
+    // spare coins go on something to throw
+    if (a.primary || a.coins >= 1500) {
+      if (roleOf(a.team) === 'attack' && a.coins >= 300 && Math.random() < 0.55) game.buy(a, 'flour');
+      if (a.coins >= 200 && Math.random() < 0.45) game.buy(a, 'rooster');
+      if (roleOf(a.team) === 'defend' && a.coins >= 300 && Math.random() < 0.45) game.buy(a, 'mud');
+    }
   }
 
   // ---------- match and round flow ----------
@@ -186,7 +194,7 @@ function boot() {
     }
     game.round++;
     game.state = 'freeze'; game.freezeT = ROUND.freeze; game.roundT = ROUND.length;
-    game.combat.clear();
+    game.combat.clear(); game.throwables.clear();
     game.intel.herd.clear(); game.intel.hands.clear();
     for (const t of ['herd', 'hands']) {
       const slots = shuffle(W.spawns[roleOf(t)].slice());
@@ -239,7 +247,7 @@ function boot() {
     game.state = 'menu'; game.paused = false;
     for (const a of game.actors) scene.remove(a.char.root);
     game.actors = []; game.bots = []; game.player = null; game.viewActor = null;
-    game.combat.clear();
+    game.combat.clear(); game.throwables.clear();
     P.state = 'none'; P.carrier = null; pumpkin.root.visible = false;
     $('end').hidden = true; $('pause').hidden = true; $('menu').hidden = false;
     hud.show(false);
@@ -454,6 +462,8 @@ function boot() {
     let want = null;
     if (digit === 1) want = p.primary; else if (digit === 2) want = 'squirter'; else if (e.code === 'KeyQ') want = p.has(p.lastGadget) ? p.lastGadget : 'squirter';
     if (want && p.setGadget(want)) audio.ui();
+    const lob = { 3: 'flour', 4: 'rooster', 5: 'mud' }[digit];
+    if (lob && !game.throwables.throwItem(p, lob, p.yaw, p.pitch + 0.06) && game.state === 'live' && !p.throws[lob]) audio.deny();
     if (e.code === 'KeyR') p.startReload();
     if (e.code === 'KeyF') fireEdge = true;
     if (e.code === 'KeyZ') toggleZoom();
@@ -546,6 +556,7 @@ function boot() {
       for (const b of game.bots) b.update(dt);
       for (const a of game.actors) a.tick(dt);
       game.combat.update(dt);
+      game.throwables.update(dt);
       if (game.state === 'live') updatePumpkin(dt);
       if (game.state === 'live') {
         const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
@@ -568,6 +579,8 @@ function boot() {
     drawPumpkin(dt);
     game.fx.update(dt);
     updateCamera(dt);
+    const pv = game.player;
+    game.veil = pv && playing() ? Math.max(pv.alive ? Math.min(1, pv.dazeT / 1.1) : 0, game.throwables.fogAt(camera.position.x, camera.position.y, camera.position.z) * 0.93) : 0;
     hud.update(dt);
   }
 

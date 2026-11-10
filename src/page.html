@@ -111,7 +111,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
 #slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
 #slots kbd { margin-right: 4px; }
-#slots div.empty { opacity: 0.45; }
+#slots div { white-space: nowrap; }
+#slots div.empty { opacity: 0.4; }
+#veil { position: absolute; inset: 0; background: #fffdf2; opacity: 0; }
 #purse { position: absolute; right: 14px; bottom: 92px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
 #purse img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
 #purse.flash { background: var(--hay); }
@@ -128,12 +130,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #scope::before, #scope::after { content: ""; position: absolute; background: rgba(20, 30, 12, 0.8); }
 #scope::before { left: 50%; top: calc(50% - 34vh); width: 2px; height: 68vh; margin-left: -1px; }
 #scope::after { top: 50%; left: calc(50% - 34vh); height: 2px; width: 68vh; margin-top: -1px; }
-#shop { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
+#shop { position: absolute; left: 50%; top: 53%; transform: translate(-50%, -50%); width: min(820px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
 #shop h2 { font-size: 30px; display: flex; justify-content: space-between; align-items: baseline; }
 #shop h2 span { font-family: var(--body); font-weight: 800; font-size: 14px; color: var(--ink); }
-#shop-list { display: grid; gap: 7px; }
-.item { display: grid; grid-template-columns: 30px 54px 1fr auto; gap: 10px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
-.item img { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; }
+#shop-list { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; }
+.item { min-width: 0; display: grid; grid-template-columns: 30px 50px minmax(0, 1fr) auto; gap: 9px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
+.item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
 .item .nm { font-family: var(--display); font-size: 19px; line-height: 1.05; }
 .item .bl { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
 .item .pr { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
@@ -162,6 +164,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
   .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
+  #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
 </style>
@@ -182,12 +185,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
     <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
     <div id="status" class="pill" hidden><img src="assets/ui/icon_pumpkin.jpg" alt=""><span id="status-text"></span></div>
+    <div id="veil"></div>
     <div id="scope" hidden></div>
     <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
     <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span>Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-3" class="empty"><kbd>3</kbd>Flour</div><div id="slot-4" class="empty"><kbd>4</kbd>Rooster</div><div id="slot-5" class="empty"><kbd>5</kbd>Mud</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
     <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins"><span id="coins">800</span></div>
     <div id="shop" class="pill" hidden>
       <h2>Farm Shop <span id="shop-coins"></span></h2>
@@ -236,6 +240,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <li><kbd>E</kbd> plant or cork</li>
         <li><kbd>B</kbd> shop</li>
         <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
+        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> throw</li>
         <li><kbd>R</kbd> refill</li>
         <li><kbd>Space</kbd> jump</li>
         <li><kbd>Shift</kbd> tiptoe</li>

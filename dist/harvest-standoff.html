@@ -111,7 +111,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #slots div { background: rgba(255, 246, 223, 0.85); border: 3px solid var(--ink); border-radius: 12px; padding: 4px 10px; opacity: 0.7; }
 #slots div.on { background: var(--hay); opacity: 1; transform: translateY(-4px); }
 #slots kbd { margin-right: 4px; }
-#slots div.empty { opacity: 0.45; }
+#slots div { white-space: nowrap; }
+#slots div.empty { opacity: 0.4; }
+#veil { position: absolute; inset: 0; background: #fffdf2; opacity: 0; }
 #purse { position: absolute; right: 14px; bottom: 92px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
 #purse img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
 #purse.flash { background: var(--hay); }
@@ -128,12 +130,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
 #scope::before, #scope::after { content: ""; position: absolute; background: rgba(20, 30, 12, 0.8); }
 #scope::before { left: 50%; top: calc(50% - 34vh); width: 2px; height: 68vh; margin-left: -1px; }
 #scope::after { top: 50%; left: calc(50% - 34vh); height: 2px; width: 68vh; margin-top: -1px; }
-#shop { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
+#shop { position: absolute; left: 50%; top: 53%; transform: translate(-50%, -50%); width: min(820px, calc(100% - 32px)); padding: 14px 16px 12px; display: grid; gap: 10px; pointer-events: auto; background: var(--cream); border-width: 4px; border-radius: 22px; box-shadow: 0 7px 0 var(--ink); }
 #shop h2 { font-size: 30px; display: flex; justify-content: space-between; align-items: baseline; }
 #shop h2 span { font-family: var(--body); font-weight: 800; font-size: 14px; color: var(--ink); }
-#shop-list { display: grid; gap: 7px; }
-.item { display: grid; grid-template-columns: 30px 54px 1fr auto; gap: 10px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
-.item img { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; }
+#shop-list { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; }
+.item { min-width: 0; display: grid; grid-template-columns: 30px 50px minmax(0, 1fr) auto; gap: 9px; align-items: center; text-align: left; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 5px 12px 5px 8px; width: 100%; }
+.item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
 .item .nm { font-family: var(--display); font-size: 19px; line-height: 1.05; }
 .item .bl { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
 .item .pr { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
@@ -162,6 +164,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   .meter { min-width: 120px; padding: 6px 10px; }
   .team .label, .pips { display: none; }
   .head { grid-template-columns: 1fr; } .head .art { grid-column: 1; grid-row: auto; height: 110px; } .how { grid-template-columns: 1fr; }
+  #shop-list { grid-template-columns: 1fr; } .item .bl { display: none; }
   #purse { bottom: 70px; font-size: 18px; } #status { font-size: 12px; top: 62px; }
 }
 </style>
@@ -182,12 +185,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     <div id="cross"><i id="ch-t"></i><i id="ch-b"></i><i id="ch-l"></i><i id="ch-r"></i><i id="dot"></i><span id="hitmark">×</span></div>
     <div id="banner" class="pill" hidden><div id="banner-title"></div><div id="banner-sub"></div></div>
     <div id="status" class="pill" hidden><img src="assets/ui/icon_pumpkin.jpg" alt=""><span id="status-text"></span></div>
+    <div id="veil"></div>
     <div id="scope" hidden></div>
     <div id="prompt" class="pill" hidden><div id="prompt-text"></div><div class="bar" id="prompt-bar"><i id="prompt-fill"></i></div></div>
     <div id="tip" class="pill" hidden></div>
     <div id="spectate" class="pill" hidden></div>
     <div id="hpbox" class="pill meter"><div id="armor-row"><div class="cap"><span>Overalls</span><span class="num" id="armor-num">0</span></div><div class="bar"><i id="armor-fill"></i></div></div><div class="cap"><span>Clean</span><span class="num" id="hp-num">100</span></div><div class="bar"><i id="hp-fill"></i></div></div>
-    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
+    <div id="slots"><div id="slot-1"><kbd>1</kbd><span id="slot-1-name">Empty</span></div><div id="slot-2"><kbd>2</kbd>Squirter</div><div id="slot-3" class="empty"><kbd>3</kbd>Flour</div><div id="slot-4" class="empty"><kbd>4</kbd>Rooster</div><div id="slot-5" class="empty"><kbd>5</kbd>Mud</div><div id="slot-b"><kbd>B</kbd>Shop</div></div>
     <div id="purse" class="pill"><img src="assets/ui/icon_coin.jpg" alt="Corn coins"><span id="coins">800</span></div>
     <div id="shop" class="pill" hidden>
       <h2>Farm Shop <span id="shop-coins"></span></h2>
@@ -236,6 +240,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         <li><kbd>E</kbd> plant or cork</li>
         <li><kbd>B</kbd> shop</li>
         <li><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd> swap launcher</li>
+        <li><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> throw</li>
         <li><kbd>R</kbd> refill</li>
         <li><kbd>Space</kbd> jump</li>
         <li><kbd>Shift</kbd> tiptoe</li>
@@ -669,8 +674,16 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     { id: "tomato", kind: "gadget", price: 2700, icon: "icon_tomato", blurb: "Strong all-rounder. Stand still to aim." },
     { id: "pea", kind: "gadget", price: 4200, icon: "icon_pea", blurb: "One big long-range shot. Right-click to zoom." },
     { id: "overalls", kind: "gear", name: "Padded Overalls", price: 650, icon: "icon_overalls", blurb: "Soaks up half of every splat until it wears out." },
-    { id: "kit", kind: "gear", name: "Cork Kit", price: 400, icon: "icon_cork_kit", blurb: "Cork the pumpkin twice as fast.", role: "defend" }
+    { id: "kit", kind: "gear", name: "Cork Kit", price: 400, icon: "icon_cork_kit", blurb: "Cork the pumpkin twice as fast.", role: "defend" },
+    { id: "flour", kind: "throw", name: "Flour Bomb", price: 300, icon: "icon_flour", blurb: "A white cloud nobody can see through. Throw with 3." },
+    { id: "rooster", kind: "throw", name: "Rooster Crow", price: 200, icon: "icon_rooster", blurb: "Dazzles opponents looking at it. Throw with 4." },
+    { id: "mud", kind: "throw", name: "Mud Balloon", price: 300, icon: "icon_mud", blurb: "A sticky puddle that slows everyone. Throw with 5." }
   ];
+  var THROWS = {
+    flour: { id: "flour", name: "Flour", key: 3, fuse: 1.5, radius: 4.6, life: 12 },
+    rooster: { id: "rooster", name: "Rooster", key: 4, fuse: 1.5, radius: 16, daze: 3.2 },
+    mud: { id: "mud", name: "Mud", key: 5, radius: 3.6, life: 9, slow: 0.45 }
+  };
   var DIFFICULTY = {
     easy: { label: "Easy", reaction: 0.8, aimErr: 0.085, turn: 3.2, dmgToPlayer: 0.55, fireMoving: true },
     medium: { label: "Medium", reaction: 0.48, aimErr: 0.05, turn: 5, dmgToPlayer: 0.8, fireMoving: false },
@@ -692,849 +705,6 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       { name: "Mabel", kind: "farmer", look: 4 }
     ]
   };
-
-  // src/util.js
-  var clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-  var rand = (a = 1, b) => b === void 0 ? Math.random() * a : a + Math.random() * (b - a);
-  var pick = (arr) => arr[Math.random() * arr.length | 0];
-  var TAU = Math.PI * 2;
-  function angDiff(a, b) {
-    let d = (a - b) % TAU;
-    if (d > Math.PI) d -= TAU;
-    if (d < -Math.PI) d += TAU;
-    return d;
-  }
-  function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.random() * (i + 1) | 0;
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-  var dirX = (yaw, pitch = 0) => -Math.sin(yaw) * Math.cos(pitch);
-  var dirY = (pitch) => Math.sin(pitch);
-  var dirZ = (yaw, pitch = 0) => -Math.cos(yaw) * Math.cos(pitch);
-  var yawTo = (dx, dz) => Math.atan2(-dx, -dz);
-
-  // src/world.js
-  var T2 = window.THREE;
-  var C = {
-    barn: 14239294,
-    trim: 16774368,
-    roof: 7293500,
-    stone: 12433322,
-    stoneCap: 14341576,
-    hedgeA: 5218114,
-    hedgeB: 6731854,
-    wood: 12158034,
-    woodDark: 9396792,
-    hay: 15912028,
-    hayBand: 13210938,
-    crate: 13606751,
-    soil: 8017212,
-    cabbage: 10214258,
-    pumpkin: 15764004,
-    tomato: 15024429,
-    carrot: 16751164,
-    leaf: 5812284,
-    coop: 16181181,
-    coopRoof: 12933699,
-    house: 16773590,
-    houseRoof: 6262468,
-    glass: 13168614,
-    tractor: 14828602,
-    tyre: 3421756,
-    hub: 16765514,
-    trunk: 9067062,
-    treeA: 5220422,
-    treeB: 7127639,
-    water: 6605042,
-    metal: 10134445
-  };
-  function buildWorld(scene) {
-    const boxes = [];
-    const root = group(scene);
-    const bushes = [];
-    const animated = [];
-    const solid = (x1, y1, z1, x2, y2, z2) => {
-      const b = { x1, y1, z1, x2, y2, z2 };
-      boxes.push(b);
-      return b;
-    };
-    const block = (x1, z1, x2, z2, h, color, r = 0.1, y = 0) => {
-      solid(x1, y, z1, x2, y + h, z2);
-      const w = x2 - x1, d = z2 - z1;
-      if (d > w) return add(root, rboxGeo(d, h, w, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2, { r: [0, Math.PI / 2, 0] });
-      return add(root, rboxGeo(w, h, d, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2);
-    };
-    const barnWall = (x1, z1, x2, z2, h, y = 0) => {
-      block(x1, z1, x2, z2, h, texMat("planks"), 0.06, y);
-      const w = x2 - x1, d = z2 - z1, cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
-      if (d > w) add(root, rboxGeo(d, h, 0.08, 0.03), texMat("wood"), cx < -26 ? x2 + 0.02 : x1 - 0.02, y + h / 2, cz, { r: [0, Math.PI / 2, 0], cast: false });
-      else add(root, rboxGeo(w, h, 0.08, 0.03), texMat("wood"), cx, y + h / 2, cz < -13 ? z2 + 0.02 : z1 - 0.02, { cast: false });
-    };
-    const deco = (w, h, d, color, x, y, z, r = 0.06, o) => add(root, rboxGeo(w, h, d, r), color, x, y, z, o);
-    function stone(x1, z1, x2, z2, h = 2.8) {
-      block(x1, z1, x2, z2, h, texMat("stone"), 0.14);
-      deco(x2 - x1 + 0.24, 0.26, z2 - z1 + 0.24, C.stoneCap, (x1 + x2) / 2, h + 0.06, (z1 + z2) / 2, 0.1);
-    }
-    function hedge(x1, z1, x2, z2, h = 3) {
-      solid(x1, 0, z1, x2, h, z2);
-      const alongX = x2 - x1 >= z2 - z1;
-      const len = alongX ? x2 - x1 : z2 - z1, thick = alongX ? z2 - z1 : x2 - x1;
-      const n = Math.max(1, Math.round(len / 1.25));
-      for (let i = 0; i < n; i++) {
-        const t = (i + 0.5) / n;
-        const x = alongX ? x1 + len * t : (x1 + x2) / 2, z = alongX ? (z1 + z2) / 2 : z1 + len * t;
-        const rr = thick * rand(0.72, 0.9);
-        bushes.push({ x: x + rand(-0.1, 0.1), y: h * 0.48, z: z + rand(-0.1, 0.1), sx: alongX ? 0.95 : rr, sy: h * rand(0.5, 0.58), sz: alongX ? rr : 0.95, c: i % 2 ? C.hedgeA : C.hedgeB });
-      }
-    }
-    function fence(x1, z1, x2, z2) {
-      solid(x1, 0, z1, x2, 1.1, z2);
-      const alongX = x2 - x1 >= z2 - z1;
-      const len = alongX ? x2 - x1 : z2 - z1, cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
-      for (const y of [0.45, 0.9]) deco(alongX ? len : 0.1, 0.14, alongX ? 0.1 : len, C.trim, cx, y, cz, 0.04);
-      const n = Math.round(len / 1.75);
-      for (let i = 0; i <= n; i++) {
-        const t = i / n - 0.5;
-        deco(0.2, 1.2, 0.2, C.trim, alongX ? cx + t * len : cx, 0.6, alongX ? cz : cz + t * len, 0.06);
-      }
-    }
-    function hay(x, z, turned = false, levels = 1) {
-      const w = turned ? 1 : 1.6, d = turned ? 1.6 : 1;
-      solid(x - w / 2, 0, z - d / 2, x + w / 2, 0.9 * levels, z + d / 2);
-      for (let i = 0; i < levels; i++) {
-        const y = 0.45 + i * 0.9;
-        deco(w, 0.9, d, texMat("hay"), x, y, z, 0.16);
-        for (const s of [-0.28, 0.28]) deco(turned ? w + 0.03 : 0.08, 0.93, turned ? 0.08 : d + 0.03, C.hayBand, turned ? x : x + s * w, y, turned ? z + s * d : z, 0.03);
-      }
-    }
-    function crate(x, z, size = 1.2, levels = 1) {
-      solid(x - size / 2, 0, z - size / 2, x + size / 2, size * levels, z + size / 2);
-      for (let i = 0; i < levels; i++) {
-        const y = size / 2 + i * size;
-        deco(size, size, size, texMat("crate"), x, y, z, 0.07);
-        deco(size + 0.04, 0.14, size + 0.04, C.woodDark, x, y + size / 2 - 0.1, z, 0.04);
-        deco(size + 0.04, 0.14, size + 0.04, C.woodDark, x, y - size / 2 + 0.1, z, 0.04);
-      }
-    }
-    function tree(x, z, s = 1, collide = true) {
-      if (collide) solid(x - 0.4, 0, z - 0.4, x + 0.4, 5, z + 0.4);
-      add(root, cylGeo(0.26 * s, 0.38 * s, 2.6 * s, 10), C.trunk, x, 1.3 * s, z);
-      add(root, sphereLoGeo(), C.treeA, x, 3.5 * s, z, { s: [2 * s, 1.7 * s, 2 * s] });
-      add(root, sphereLoGeo(), C.treeB, x + 0.9 * s, 4.3 * s, z + 0.3 * s, { s: 1.3 * s });
-      add(root, sphereLoGeo(), C.treeB, x - 0.8 * s, 4.5 * s, z - 0.5 * s, { s: 1.15 * s });
-    }
-    function planter(x1, z1, x2, z2, crop) {
-      block(x1, z1, x2, z2, 0.5, C.wood, 0.08);
-      deco(x2 - x1 - 0.24, 0.1, z2 - z1 - 0.24, C.soil, (x1 + x2) / 2, 0.5, (z1 + z2) / 2, 0.04, { cast: false });
-      const n = Math.floor((x2 - x1) / 0.8);
-      for (let i = 0; i < n; i++) {
-        const x = x1 + 0.5 + i * ((x2 - x1 - 1) / Math.max(1, n - 1)), z = (z1 + z2) / 2 + rand(-0.15, 0.15);
-        if (crop === "cabbage") add(root, sphereLoGeo(), C.cabbage, x, 0.68, z, { s: [0.3, 0.24, 0.3] });
-        else if (crop === "tomato") {
-          add(root, cylGeo(0.03, 0.03, 0.9, 6), C.leaf, x, 0.95, z);
-          add(root, sphereLoGeo(), C.leaf, x, 1.1, z, { s: [0.26, 0.32, 0.26] });
-          add(root, sphereLoGeo(), C.tomato, x + 0.16, 1, z + 0.1, { s: 0.1 });
-          add(root, sphereLoGeo(), C.tomato, x - 0.14, 1.2, z - 0.08, { s: 0.09 });
-        } else add(root, coneGeo(0.16, 0.5, 7), C.leaf, x, 0.8, z);
-      }
-    }
-    function pumpkin(x, z, s = 0.4) {
-      add(root, sphereLoGeo(), C.pumpkin, x, s * 0.72, z, { s: [s, s * 0.74, s] });
-      add(root, cylGeo(0.04, 0.06, 0.16, 6), C.leaf, x, s * 1.45, z);
-    }
-    function tractor(x, z) {
-      solid(x - 1.7, 0, z - 0.95, x + 1.7, 1.75, z + 0.95);
-      solid(x + 0.2, 1.75, z - 0.7, x + 1.5, 2.6, z + 0.7);
-      deco(1.9, 0.85, 1.1, C.tractor, x - 0.7, 1.15, z, 0.2);
-      deco(1.3, 1.5, 1.4, C.tractor, x + 0.85, 1.75, z, 0.2);
-      deco(1.34, 0.6, 1.2, 3095370, x + 0.85, 2, z, 0.1);
-      deco(1.5, 0.12, 1.6, C.hub, x + 0.85, 2.58, z, 0.05);
-      for (const s of [-1, 1]) {
-        add(root, cylGeo(0.85, 0.85, 0.42, 20), C.tyre, x + 0.85, 0.85, z + s * 0.85, { r: [Math.PI / 2, 0, 0] });
-        add(root, cylGeo(0.36, 0.36, 0.46, 14), C.hub, x + 0.85, 0.85, z + s * 0.85, { r: [Math.PI / 2, 0, 0] });
-        add(root, cylGeo(0.46, 0.46, 0.3, 16), C.tyre, x - 1.15, 0.46, z + s * 0.72, { r: [Math.PI / 2, 0, 0] });
-        add(root, cylGeo(0.2, 0.2, 0.34, 12), C.hub, x - 1.15, 0.46, z + s * 0.72, { r: [Math.PI / 2, 0, 0] });
-        add(root, sphereLoGeo(), 16775113, x - 1.66, 1.2, z + s * 0.34, { s: 0.11 });
-      }
-      add(root, cylGeo(0.06, 0.06, 0.9, 8), C.metal, x - 1, 2, z + 0.3);
-    }
-    function well(x, z) {
-      solid(x - 1, 0, z - 1, x + 1, 1.1, z + 1);
-      add(root, cylGeo(1.05, 1.15, 1.1, 20), C.stone, x, 0.55, z);
-      add(root, cylGeo(0.82, 0.82, 0.06, 20), 3833781, x, 1.09, z, { cast: false });
-      for (const s of [-1, 1]) deco(0.16, 1.9, 0.16, C.wood, x + s * 0.92, 1.9, z, 0.05);
-      add(root, coneGeo(1.5, 0.9, 4), C.coopRoof, x, 3.25, z, { r: [0, Math.PI / 4, 0] });
-      add(root, cylGeo(0.05, 0.05, 1.9, 6), C.woodDark, x, 2.7, z, { r: [0, 0, Math.PI / 2] });
-      add(root, cylGeo(0.16, 0.13, 0.26, 10), C.wood, x + 0.2, 1.75, z);
-    }
-    function scarecrow(x, z) {
-      solid(x - 0.25, 0, z - 0.25, x + 0.25, 2.2, z + 0.25);
-      deco(0.12, 2.3, 0.12, C.woodDark, x, 1.15, z, 0.04);
-      deco(1.7, 0.1, 0.1, C.woodDark, x, 1.65, z, 0.04);
-      deco(0.62, 0.7, 0.3, 5208519, x, 1.5, z, 0.12);
-      add(root, sphereLoGeo(), 15323034, x, 2.15, z, { s: 0.27 });
-      add(root, cylGeo(0.5, 0.5, 0.04, 16), C.hay, x, 2.36, z);
-      add(root, coneGeo(0.24, 0.3, 12), C.hay, x, 2.5, z);
-      for (const s of [-1, 1]) add(root, coneGeo(0.1, 0.3, 6), C.hay, x + s * 0.92, 1.65, z, { r: [0, 0, s * Math.PI / 2] });
-    }
-    function gableRoof(x1, x2, z1, z2, yB, yR, color, endColor, inset = 0.7) {
-      const zm = (z1 + z2) / 2;
-      const slopes = new T2.BufferGeometry();
-      slopes.setAttribute("position", new T2.Float32BufferAttribute([
-        x1,
-        yB,
-        z2,
-        x2,
-        yB,
-        z2,
-        x2,
-        yR,
-        zm,
-        x1,
-        yB,
-        z2,
-        x2,
-        yR,
-        zm,
-        x1,
-        yR,
-        zm,
-        x2,
-        yB,
-        z1,
-        x1,
-        yB,
-        z1,
-        x1,
-        yR,
-        zm,
-        x2,
-        yB,
-        z1,
-        x1,
-        yR,
-        zm,
-        x2,
-        yR,
-        zm
-      ], 3));
-      slopes.computeVertexNormals();
-      const run = Math.hypot(zm - z1, yR - yB);
-      slopes.setAttribute("uv", new T2.Float32BufferAttribute([x1, 0, x2, 0, x2, run, x1, 0, x2, run, x1, run, x2, 0, x1, 0, x1, run, x2, 0, x1, run, x2, run], 2));
-      add(root, slopes, color === "shingle" ? texMat("shingle") : mat(color, { side: T2.DoubleSide }));
-      if (endColor !== void 0) {
-        const ends = new T2.BufferGeometry();
-        const i1 = x1 + inset, i2 = x2 - inset;
-        ends.setAttribute("position", new T2.Float32BufferAttribute([
-          i1,
-          yB,
-          z1,
-          i1,
-          yB,
-          z2,
-          i1,
-          yR,
-          zm,
-          i2,
-          yB,
-          z2,
-          i2,
-          yB,
-          z1,
-          i2,
-          yR,
-          zm
-        ], 3));
-        ends.computeVertexNormals();
-        add(root, ends, mat(endColor, { side: T2.DoubleSide }));
-      }
-    }
-    function sign(x, z, letter, color) {
-      deco(0.14, 3.4, 0.14, C.woodDark, x, 1.7, z, 0.05);
-      const tex = canvasTexture(128, 128, (g) => {
-        g.fillStyle = color;
-        g.beginPath();
-        g.arc(64, 64, 62, 0, 7);
-        g.fill();
-        g.lineWidth = 8;
-        g.strokeStyle = "#fff8e6";
-        g.beginPath();
-        g.arc(64, 64, 54, 0, 7);
-        g.stroke();
-        g.fillStyle = "#fff8e6";
-        g.font = "900 84px Arial, sans-serif";
-        g.textAlign = "center";
-        g.textBaseline = "middle";
-        g.fillText(letter, 64, 70);
-      });
-      const m = new T2.MeshBasicMaterial({ map: tex, transparent: true, side: T2.DoubleSide });
-      const disc = new T2.Mesh(new T2.CircleGeometry(0.62, 28), m);
-      disc.position.set(x, 3.3, z);
-      root.add(disc);
-      animated.push((t) => {
-        disc.rotation.y = t * 0.8;
-      });
-    }
-    hedge(-41, -41, 41, -40, 3.4);
-    hedge(-41, 40, 41, 41, 3.4);
-    hedge(-41, -40, -40, 40, 3.4);
-    hedge(40, -40, 41, 40, 3.4);
-    const H = 4.5;
-    barnWall(-34, -6.5, -28, -6, H);
-    barnWall(-24, -6.5, -18, -6, H);
-    barnWall(-28, -6.5, -24, -6, 1.5, 3);
-    barnWall(-34, -20, -24, -19.5, H);
-    barnWall(-21, -20, -18, -19.5, H);
-    barnWall(-24, -20, -21, -19.5, 1.5, 3);
-    barnWall(-34, -19.5, -33.5, -6.5, H);
-    barnWall(-18.5, -19.5, -18, -15, H);
-    barnWall(-18.5, -11, -18, -6.5, H);
-    barnWall(-18.5, -15, -18, -11, 1.5, 3);
-    gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 14462578);
-    gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, "shingle", C.barn);
-    for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
-    for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
-    deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
-    for (const z of [-15.1, -10.9]) deco(0.62, 3, 0.3, C.trim, -18.25, 1.5, z, 0.06);
-    deco(0.62, 0.3, 4.5, C.trim, -18.25, 3.1, -13, 0.06);
-    for (const x of [-24.1, -20.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -19.75, 0.06);
-    deco(3.5, 0.3, 0.62, C.trim, -22.5, 3.1, -19.75, 0.06);
-    hay(-30, -14, false, 2);
-    hay(-22, -12.5, true, 2);
-    crate(-29, -9, 1.2, 1);
-    hay(-26.5, -17.8, false, 1);
-    crate(-20, -17.5, 1.2, 2);
-    sign(-22.4, -4.6, "A", "#e2443a");
-    solid(-39, 0, -18, -35.6, 8, -14.6);
-    add(root, cylGeo(1.7, 1.7, 7.5, 22), 14673130, -37.3, 3.75, -16.3);
-    add(root, sphereLoGeo(), C.barn, -37.3, 7.5, -16.3, { s: [1.72, 1.1, 1.72] });
-    stone(12, -24, 13, -18);
-    stone(12, -15, 13, -9);
-    hedge(13, -24, 20, -23, 2.8);
-    hedge(24, -24, 40, -23, 2.8);
-    planter(16, -9, 22, -7.6, "cabbage");
-    planter(16, -13, 22, -11.6, "tomato");
-    planter(26, -8.6, 32, -7.2, "carrot");
-    planter(26, -12.4, 30, -11, "cabbage");
-    scarecrow(24, -10.2);
-    crate(21, -17, 1.3, 2);
-    crate(22.4, -17, 1.2, 1);
-    solid(29, 0, -21, 36, 3.2, -14);
-    deco(7, 0.9, 7, C.trim, 32.5, 0.45, -17.5, 0.1);
-    add(root, rboxGeo(6.8, 2.2, 6.8, 0.1), mat(C.glass, { transparent: true, opacity: 0.5 }), 32.5, 2, -17.5, { cast: false });
-    for (const [x, z] of [[29.1, -20.9], [35.9, -20.9], [29.1, -14.1], [35.9, -14.1], [32.5, -14.1], [32.5, -20.9]]) deco(0.2, 3.2, 0.2, C.trim, x, 1.6, z, 0.05);
-    deco(7.1, 0.2, 7.1, C.trim, 32.5, 3.15, -17.5, 0.06);
-    for (let i = 0; i < 5; i++) add(root, sphereLoGeo(), i % 2 ? C.leaf : C.cabbage, 30.2 + i * 1.15, 1.35, -17.5 + (i % 2 ? 1.2 : -1.2), { s: [0.5, 0.7, 0.5], cast: false });
-    block(15, -22, 19, -19, 2.7, texMat("wood"), 0.1);
-    deco(4.5, 0.2, 3.6, C.coopRoof, 17, 2.85, -20.5, 0.08, { r: [0.12, 0, 0] });
-    deco(1, 1.9, 0.1, C.woodDark, 17, 0.95, -18.97, 0.04);
-    for (const [x, z, s] of [[33.5, -10, 0.5], [34.6, -8.8, 0.38], [32.8, -5.4, 0.44], [14.6, -5, 0.4], [36.5, -11.6, 0.34]]) pumpkin(x, z, s);
-    sign(22.6, -4.4, "B", "#3f8fd9");
-    block(-9, -40, 9, -35, 5, C.house, 0.12);
-    gableRoof(-9.8, 9.8, -41, -34.2, 4.95, 8.2, C.houseRoof, C.house, 0.8);
-    deco(18.6, 0.18, 2.4, C.houseRoof, 0, 3.1, -33.9, 0.06);
-    for (const x of [-8.8, -3, 3, 8.8]) deco(0.2, 3.1, 0.2, C.trim, x, 1.55, -32.9, 0.06);
-    deco(1.3, 2.3, 0.12, 10181180, 0, 1.15, -34.95, 0.04);
-    for (const x of [-6, -3.2, 3.2, 6]) {
-      deco(1.3, 1.3, 0.1, 10475250, x, 2, -34.96, 0.04);
-      deco(1.5, 0.14, 0.16, C.trim, x, 1.3, -34.94, 0.04);
-    }
-    block(5.6, -38.6, 6.8, -37.4, 9.4, 13201498, 0.1);
-    hedge(-7, -27, 7, -26, 2.7);
-    crate(-11.5, -31.5, 1.2, 1);
-    crate(11.5, -31.5, 1.2, 2);
-    well(0, -15);
-    tractor(-7, -21);
-    hay(6, -10, false, 2);
-    hay(-10, -8.6, true, 2);
-    hay(-8.9, -8.6, true, 1);
-    crate(8, -21, 1.3, 1);
-    hay(3.5, -23, false, 1);
-    stone(-11, -5, -8, -4);
-    stone(-5, -5, 5, -4);
-    stone(8, -5, 11, -4);
-    stone(-12, -5, -11, 17);
-    stone(-12, 20, -11, 26);
-    stone(11, -5, 12, 17);
-    stone(11, 20, 12, 26);
-    fence(-11, 26, -4, 26.4);
-    fence(4, 26, 11, 26.4);
-    hay(0, 18.5, false, 1);
-    hay(-6, 21, true, 1);
-    hay(6.5, 22.5, false, 2);
-    stone(-40, 4, -37, 5);
-    stone(-34, 4, -17, 5);
-    stone(-14, 4, -12, 5);
-    block(-30, 12, -22, 18, 3, C.coop, 0.12);
-    gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, "shingle", C.coop, 0.6);
-    deco(1, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
-    deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
-    for (const x of [-28.4, -23.6]) deco(1, 0.8, 0.1, 10475250, x, 1.9, 18.03, 0.04);
-    hay(-19, 9.5, false, 2);
-    hay(-17.4, 22, true, 1);
-    crate(-33, 10, 1.2, 1);
-    crate(-21.5, 1, 1.2, 2);
-    hay(-30, 0.5, false, 1);
-    hay(-14, -1.5, true, 2);
-    tree(-37.5, 22);
-    tree(-21, 25.5, 0.9);
-    tree(-38, -2.5, 0.9);
-    stone(12, 6, 15, 7);
-    stone(18, 6, 28, 7);
-    stone(37, 6, 40, 7);
-    block(28, 3, 31, 7, 3, C.stone, 0.14);
-    block(34, 3, 37, 7, 3, C.stone, 0.14);
-    block(31, 3, 34, 7, 0.7, C.stone, 0.14, 2.4);
-    deco(9.3, 0.26, 4.3, C.stoneCap, 32.5, 3.1, 5, 0.1);
-    crate(19.5, 11, 1.2, 2);
-    hay(28.5, 15, true, 1);
-    crate(36, 12, 1.2, 1);
-    hay(20, 1, false, 2);
-    crate(27, -0.5, 1.2, 1);
-    hay(15, 21.5, true, 1);
-    for (const [x, z, s] of [[23.5, 13, 0.55], [26.4, 21, 0.7], [22.6, 25, 0.5]]) {
-      solid(x - s, 0, z - s, x + s, s * 1.2, z + s);
-      add(root, sphereLoGeo(), 11118495, x, s * 0.5, z, { s: [s * 1.15, s * 0.85, s * 1.05] });
-    }
-    tree(36.5, 22);
-    tree(14.5, 25, 0.85);
-    tree(38, -1.5, 0.9);
-    hay(-9, 30, false, 1);
-    hay(9, 30, false, 1);
-    hay(-18, 33.5, true, 2);
-    hay(18, 33.5, true, 2);
-    tree(-28, 36.5);
-    tree(28, 36.5);
-    tree(0, 38.2, 0.8);
-    block(-3.2, 36.2, 3.2, 37, 0.6, C.wood, 0.1);
-    deco(6, 0.08, 0.5, C.water, 0, 0.6, 36.6, 0.03, { cast: false });
-    const bushMesh = new T2.InstancedMesh(sphereLoGeo(), new T2.MeshLambertMaterial({ color: 16777215 }), bushes.length);
-    const dummy = new T2.Object3D(), col = new T2.Color();
-    bushes.forEach((b, i) => {
-      dummy.position.set(b.x, b.y, b.z);
-      dummy.scale.set(b.sx, b.sy, b.sz);
-      dummy.updateMatrix();
-      bushMesh.setMatrixAt(i, dummy.matrix);
-      bushMesh.setColorAt(i, col.setHex(b.c));
-    });
-    bushMesh.castShadow = true;
-    bushMesh.receiveShadow = true;
-    root.add(bushMesh);
-    const cornZones = [];
-    const cornTex = canvasTexture(128, 256, (g) => {
-      g.lineCap = "round";
-      g.strokeStyle = "#4c9a36";
-      g.lineWidth = 9;
-      g.beginPath();
-      g.moveTo(64, 256);
-      g.lineTo(64, 22);
-      g.stroke();
-      const leaf = (y, dir, len, colr) => {
-        g.strokeStyle = colr;
-        g.lineWidth = 13;
-        g.beginPath();
-        g.moveTo(64, y);
-        g.quadraticCurveTo(64 + dir * len * 0.7, y - 46, 64 + dir * len, y - 6);
-        g.stroke();
-      };
-      leaf(240, 1, 52, "#5fb43f");
-      leaf(226, -1, 56, "#57a93a");
-      leaf(176, 1, 58, "#69c048");
-      leaf(158, -1, 54, "#5fb43f");
-      leaf(108, 1, 46, "#57a93a");
-      leaf(92, -1, 50, "#69c048");
-      leaf(48, 1, 30, "#69c048");
-      leaf(44, -1, 28, "#5fb43f");
-      g.fillStyle = "#f4cf45";
-      g.beginPath();
-      g.ellipse(80, 128, 11, 26, 0.25, 0, 7);
-      g.fill();
-      g.fillStyle = "#8fd060";
-      g.beginPath();
-      g.ellipse(76, 142, 9, 18, 0.25, 0, 7);
-      g.fill();
-      g.fillStyle = "#e8c56a";
-      g.beginPath();
-      g.ellipse(64, 16, 10, 16, 0, 0, 7);
-      g.fill();
-    });
-    const cornGeo = new T2.BufferGeometry();
-    const hw = 0.62, ch = 2.45;
-    cornGeo.setAttribute("position", new T2.Float32BufferAttribute([-hw, 0, 0, hw, 0, 0, hw, ch, 0, -hw, ch, 0, 0, 0, -hw, 0, 0, hw, 0, ch, hw, 0, ch, -hw], 3));
-    cornGeo.setAttribute("uv", new T2.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1], 2));
-    cornGeo.setAttribute("normal", new T2.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
-    cornGeo.setIndex([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
-    const stalks = [];
-    for (const [x1, x2] of [[-10, -1.4], [1.4, 10]]) for (const [z1, z2] of [[-1, 6], [8.6, 15]]) {
-      cornZones.push({ x1, y1: 0, z1, x2, y2: 2.3, z2 });
-      for (let x = x1 + 0.35; x < x2 - 0.2; x += 0.72) for (let z = z1 + 0.35; z < z2 - 0.2; z += 0.72) stalks.push([x + rand(-0.22, 0.22), z + rand(-0.22, 0.22)]);
-    }
-    const corn = new T2.InstancedMesh(cornGeo, new T2.MeshLambertMaterial({ map: cornTex, alphaTest: 0.45, side: T2.DoubleSide }), stalks.length);
-    stalks.forEach(([x, z], i) => {
-      dummy.position.set(x, 0, z);
-      dummy.rotation.set(0, rand(Math.PI), 0);
-      dummy.scale.setScalar(rand(0.86, 1.14));
-      dummy.updateMatrix();
-      corn.setMatrixAt(i, dummy.matrix);
-    });
-    dummy.rotation.set(0, 0, 0);
-    corn.receiveShadow = true;
-    root.add(corn);
-    const P1 = (v, S) => (v + 48) * (S / 96);
-    const lanes = [
-      [[-36, 31], [36, 31]],
-      [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
-      [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
-      [[0, 31], [0, -2]],
-      [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
-      [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
-      [[-10, 7.3], [10, 7.3]],
-      [[16.5, 31], [16.5, -1], [24, -10]],
-      [[32.5, 31], [32.5, -1], [24, -10]],
-      [[0, -31], [-10, -29], [-22.5, -23]],
-      [[0, -31], [10, -29], [22, -25], [24, -12]],
-      [[0, -18], [-15, -13], [-26, -13]],
-      [[0, -18], [10, -7], [14, -7]],
-      [[12, -16.5], [22, -14]],
-      [[-9, -29], [-9, -24], [0, -18]],
-      [[9, -29], [9, -24], [0, -18]],
-      [[-11.5, 18.5], [-15.5, 18.5]],
-      [[11.5, 18.5], [16.5, 18.5]]
-    ];
-    const maskTex = canvasTexture(1024, 1024, (g, S) => {
-      const P = (v) => P1(v, S), m2p = S / 96;
-      g.fillStyle = "#000";
-      g.fillRect(0, 0, S, S);
-      g.globalCompositeOperation = "lighter";
-      g.lineCap = "round";
-      g.lineJoin = "round";
-      const stroke = (pts, w, colr) => {
-        g.strokeStyle = colr;
-        g.lineWidth = w * m2p;
-        g.beginPath();
-        pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
-        g.stroke();
-      };
-      try {
-        g.filter = "blur(5px)";
-      } catch (e) {
-      }
-      lanes.forEach((l) => stroke(l, 2.9, "#ff0000"));
-      g.fillStyle = "#00ff00";
-      roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 30);
-      g.fill();
-      for (const z of cornZones) {
-        roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 8);
-        g.fill();
-      }
-      g.filter = "none";
-      g.globalCompositeOperation = "source-over";
-    });
-    maskTex.encoding = T2.LinearEncoding;
-    const detailTex = canvasTexture(2048, 2048, (g, S) => {
-      const P = (v) => P1(v, S), m2p = S / 96;
-      g.clearRect(0, 0, S, S);
-      g.lineCap = "round";
-      g.lineJoin = "round";
-      const stroke = (pts, w, colr) => {
-        g.strokeStyle = colr;
-        g.lineWidth = w * m2p;
-        g.beginPath();
-        pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
-        g.stroke();
-      };
-      const creek = [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]];
-      try {
-        g.filter = "blur(4px)";
-      } catch (e) {
-      }
-      stroke(creek, 3.4, "#9be2fb");
-      g.filter = "none";
-      stroke(creek, 2.3, "#5fc4ef");
-      g.strokeStyle = "rgba(255,255,255,0.55)";
-      g.lineWidth = 3;
-      for (let i = 0; i < 26; i++) {
-        const z = 9 + i * 1.15, x = 24.6 + Math.sin(i * 1.7) * 0.7;
-        g.beginPath();
-        g.moveTo(P(x - 0.3), P(z));
-        g.lineTo(P(x + 0.3), P(z + 0.1));
-        g.stroke();
-      }
-      g.fillStyle = "#d4a96f";
-      g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
-      g.strokeStyle = "rgba(120,80,40,0.4)";
-      g.lineWidth = 2.5;
-      for (let z = -19; z < -6.5; z += 0.9) {
-        g.beginPath();
-        g.moveTo(P(-33.6), P(z));
-        g.lineTo(P(-18.4), P(z));
-        g.stroke();
-      }
-      const ring = (x, z) => {
-        g.strokeStyle = "rgba(255,248,230,0.95)";
-        g.lineWidth = 0.28 * m2p;
-        g.setLineDash([24, 16]);
-        g.beginPath();
-        g.arc(P(x), P(z), 3.4 * m2p, 0, 7);
-        g.stroke();
-        g.setLineDash([]);
-      };
-      ring(-26, -13);
-      ring(24, -10.2);
-      for (let i = 0; i < 1100; i++) {
-        g.fillStyle = ["#ffffff", "#ffe36e", "#ff9ec4", "#fff3b0"][i % 4];
-        g.beginPath();
-        g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7);
-        g.fill();
-      }
-    });
-    const flat2 = (colr) => canvasTexture(4, 4, (g) => {
-      g.fillStyle = colr;
-      g.fillRect(0, 0, 4, 4);
-    });
-    const uni = { dirtMap: { value: flat2("#dcb98a") }, soilMap: { value: flat2("#9b6b46") }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
-    const groundMat = new T2.MeshLambertMaterial({ map: flat2("#86cf58") });
-    groundMat.onBeforeCompile = (sh) => {
-      Object.assign(sh.uniforms, uni);
-      sh.fragmentShader = sh.fragmentShader.replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D maskMap; uniform sampler2D detailMap;").replace("#include <map_fragment>", `
-        vec2 tuv = vUv * 30.0;
-        vec4 mk = texture2D( maskMap, vUv );
-        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 );
-        vec3 col = mix( gcol, texture2D( dirtMap, tuv * 0.8 ).rgb, smoothstep( 0.15, 0.75, mk.r ) );
-        col = mix( col, texture2D( soilMap, tuv * 0.8 ).rgb, smoothstep( 0.2, 0.8, mk.g ) );
-        vec4 det = texture2D( detailMap, vUv );
-        col = mix( col, det.rgb, det.a );
-        diffuseColor.rgb *= col;`);
-    };
-    loadTexture("grass", (t) => {
-      groundMat.map = t;
-      groundMat.needsUpdate = true;
-    });
-    loadTexture("dirt", (t) => {
-      uni.dirtMap.value = t;
-    });
-    loadTexture("soil", (t) => {
-      uni.soilMap.value = t;
-    });
-    const ground = new T2.Mesh(new T2.PlaneGeometry(96, 96), groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    ground.userData.keep = true;
-    root.add(ground);
-    const outer = new T2.Mesh(new T2.CircleGeometry(420, 40), mat(8176722));
-    outer.rotation.x = -Math.PI / 2;
-    outer.position.y = -0.06;
-    root.add(outer);
-    for (let i = 0; i < 16; i++) {
-      const a = i / 16 * Math.PI * 2 + rand(0.2), d = rand(120, 230), s = rand(40, 85);
-      add(root, sphereLoGeo(), i % 2 ? 7651154 : 9097572, Math.cos(a) * d, -s * 0.18, Math.sin(a) * d, { s: [s, s * rand(0.3, 0.5), s], cast: false, receive: false });
-    }
-    for (let i = 0; i < 26; i++) {
-      const a = rand(Math.PI * 2), d = rand(47, 80);
-      tree(Math.cos(a) * d * 1.05, Math.sin(a) * d * 1.05, rand(1, 1.7), false);
-    }
-    const mill = group(root, -58, 0, -52);
-    add(mill, cylGeo(1.6, 2.8, 12, 12), 16773590, 0, 6, 0);
-    add(mill, coneGeo(2.2, 2.4, 12), C.coopRoof, 0, 13.2, 0);
-    const blades = group(mill, 2, 11, 1.2);
-    blades.rotation.y = 0.9;
-    for (let i = 0; i < 4; i++) {
-      const b = add(blades, rboxGeo(0.8, 7, 0.1, 0.04), C.trim, 0, 0, 0.3);
-      b.geometry = b.geometry.clone().translate(0, 3.8, 0);
-      b.rotation.z = i * Math.PI / 2;
-      b.userData.keep = true;
-    }
-    animated.push((t) => {
-      blades.children.forEach((b, i) => {
-        b.rotation.z = t * 0.5 + i * Math.PI / 2;
-      });
-    });
-    const clouds = group(root);
-    for (let i = 0; i < 12; i++) {
-      const c = group(clouds, rand(-220, 220), rand(55, 85), rand(-220, 220));
-      const cm = new T2.MeshBasicMaterial({ color: 16777215, fog: false });
-      for (let k = 0; k < 4; k++) {
-        const p = new T2.Mesh(sphereLoGeo(), cm);
-        p.position.set(k * 5 - 7 + rand(-1, 1), rand(-1, 1), rand(-2, 2));
-        p.scale.set(rand(5, 8), rand(3, 4.5), rand(4, 6));
-        c.add(p);
-      }
-    }
-    animated.push((t, dt) => {
-      clouds.children.forEach((c) => {
-        c.position.x += dt * 1.2;
-        if (c.position.x > 240) c.position.x = -240;
-      });
-    });
-    const skyTex = canvasTexture(16, 256, (g) => {
-      const gr = g.createLinearGradient(0, 0, 0, 256);
-      gr.addColorStop(0, "#3fa4ee");
-      gr.addColorStop(0.45, "#8fd0fb");
-      gr.addColorStop(0.62, "#e4f6ff");
-      gr.addColorStop(1, "#e4f6ff");
-      g.fillStyle = gr;
-      g.fillRect(0, 0, 16, 256);
-    });
-    const sky = new T2.Mesh(new T2.SphereGeometry(400, 20, 14), new T2.MeshBasicMaterial({ map: skyTex, side: T2.BackSide, fog: false }));
-    root.add(sky);
-    bakeTree(root);
-    scene.fog = new T2.Fog(14676991, 130, 520);
-    scene.add(new T2.HemisphereLight(15004415, 14932144, 0.82));
-    const sun = new T2.DirectionalLight(16773328, 0.74);
-    sun.position.set(34, 58, 30);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
-    Object.assign(sun.shadow.camera, { left: -58, right: 58, top: 58, bottom: -58, near: 1, far: 160 });
-    sun.shadow.bias = -5e-4;
-    sun.shadow.normalBias = 0.04;
-    scene.add(sun);
-    const pt = (x, z) => ({ x, z });
-    const points = {
-      A: pt(-26, -13),
-      B: pt(24, -12.6),
-      MID: pt(0, 7.3),
-      YARD: pt(3, -17),
-      HERD: pt(0, 32),
-      HANDS: pt(0, -31),
-      A_S: pt(-26, -3),
-      A_E: pt(-15, -13),
-      W_GATE: pt(-15.5, 8),
-      W_ALLEY: pt(-35.5, 8),
-      A_BACK: pt(-36, -2),
-      E_GATE: pt(16.5, 10),
-      E_TUNNEL: pt(32.5, 10),
-      B_S: pt(32.5, -2),
-      MID_L: pt(-6.5, -7),
-      MID_R: pt(6.5, -7),
-      B_W: pt(10, -7)
-    };
-    const routes = {
-      A: [["W_GATE", "A_S", "A"], ["W_ALLEY", "A_BACK", "A_S", "A"], ["MID", "MID_L", "A_E", "A"]],
-      B: [["E_GATE", "B"], ["E_TUNNEL", "B_S", "B"], ["MID", "MID_R", "B_W", "B"]]
-    };
-    const holds = {
-      A: [{ x: -32, z: -18, lx: -26, lz: -6 }, { x: -21.5, z: -8.5, lx: -18, lz: -13 }, { x: -19.5, z: -15.6, lx: -26, lz: -7 }, { x: -15, z: -9.5, lx: -15.5, lz: 4 }, { x: -25.5, z: -16.6, lx: -26, lz: -6 }],
-      B: [{ x: 33.5, z: -11.5, lx: 16.5, lz: 5 }, { x: 18, z: -16.5, lx: 32.5, lz: 2 }, { x: 26.5, z: -19, lx: 22, lz: 2 }, { x: 23, z: -17.2, lx: 16.5, lz: 6 }, { x: 14.5, z: -10.5, lx: 32, lz: 2 }],
-      MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }]
-    };
-    const spawns = {
-      attack: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
-      defend: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI }))
-    };
-    const sites = { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } };
-    return { boxes, cornZones, points, routes, holds, spawns, sites, animated, half: 40 };
-  }
-  function roundRect(g, x, y, w, h, r) {
-    g.beginPath();
-    g.moveTo(x + r, y);
-    g.lineTo(x + w - r, y);
-    g.quadraticCurveTo(x + w, y, x + w, y + r);
-    g.lineTo(x + w, y + h - r);
-    g.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    g.lineTo(x + r, y + h);
-    g.quadraticCurveTo(x, y + h, x, y + h - r);
-    g.lineTo(x, y + r);
-    g.quadraticCurveTo(x, y, x + r, y);
-    g.closePath();
-  }
-
-  // src/nav.js
-  var R = 0.45;
-  function buildNav(world) {
-    const half = world.half, N = half * 2;
-    const blocked = new Uint8Array(N * N);
-    const obstacles = world.boxes.filter((b) => b.y1 < 1.6 && b.y2 > 0.3);
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-      const x = -half + i + 0.5, z = -half + j + 0.5;
-      for (const b of obstacles) {
-        if (x > b.x1 - R && x < b.x2 + R && z > b.z1 - R && z < b.z2 + R) {
-          blocked[j * N + i] = 1;
-          break;
-        }
-      }
-    }
-    const ci = (x) => Math.max(0, Math.min(N - 1, Math.floor(x + half)));
-    const isBlocked = (x, z) => x <= -half || x >= half || z <= -half || z >= half || blocked[ci(z) * N + ci(x)] === 1;
-    function nearestFree(x, z) {
-      if (!isBlocked(x, z)) return { x, z };
-      for (let r = 1; r < 8; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
-        if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
-        const i = ci(x) + di, j = ci(z) + dj;
-        if (i < 0 || j < 0 || i >= N || j >= N || blocked[j * N + i]) continue;
-        return { x: -half + i + 0.5, z: -half + j + 0.5 };
-      }
-      return { x, z };
-    }
-    function segmentClear(ax, az, bx, bz) {
-      const d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / 0.3);
-      for (let k = 0; k <= n; k++) {
-        const t = n ? k / n : 0, x = ax + (bx - ax) * t, z = az + (bz - az) * t;
-        if (isBlocked(x, z) || isBlocked(x + 0.3, z) || isBlocked(x - 0.3, z) || isBlocked(x, z + 0.3) || isBlocked(x, z - 0.3)) return false;
-      }
-      return true;
-    }
-    const g = new Float32Array(N * N), f = new Float32Array(N * N), came = new Int32Array(N * N), state = new Uint8Array(N * N);
-    const DIRS = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.414], [1, -1, 1.414], [-1, 1, 1.414], [-1, -1, 1.414]];
-    function findPath(sx, sz, tx, tz, wobble = 0) {
-      const s = nearestFree(sx, sz), t = nearestFree(tx, tz);
-      const si = ci(s.x), sj = ci(s.z), ti = ci(t.x), tj = ci(t.z);
-      const start = sj * N + si, goal = tj * N + ti;
-      state.fill(0);
-      const heap = [start];
-      g[start] = 0;
-      f[start] = 0;
-      came[start] = -1;
-      state[start] = 1;
-      let found = false;
-      while (heap.length) {
-        let bi = 0;
-        for (let k = 1; k < heap.length; k++) if (f[heap[k]] < f[heap[bi]]) bi = k;
-        const cur = heap[bi];
-        heap[bi] = heap[heap.length - 1];
-        heap.pop();
-        if (cur === goal) {
-          found = true;
-          break;
-        }
-        state[cur] = 2;
-        const cx = cur % N, cz = cur / N | 0;
-        for (const [dx, dz, cost] of DIRS) {
-          const nx = cx + dx, nz = cz + dz;
-          if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
-          const ni = nz * N + nx;
-          if (blocked[ni] || state[ni] === 2) continue;
-          if (dx && dz && (blocked[cz * N + nx] || blocked[nz * N + cx])) continue;
-          const ng = g[cur] + cost * (1 + (wobble ? Math.random() * wobble : 0));
-          if (state[ni] === 1 && ng >= g[ni]) continue;
-          g[ni] = ng;
-          came[ni] = cur;
-          const hx = Math.abs(nx - ti), hz = Math.abs(nz - tj);
-          f[ni] = ng + Math.max(hx, hz) + 0.414 * Math.min(hx, hz);
-          if (state[ni] !== 1) {
-            state[ni] = 1;
-            heap.push(ni);
-          }
-        }
-      }
-      if (!found) return null;
-      const cells = [];
-      for (let c = goal; c !== -1; c = came[c]) cells.push({ x: -half + c % N + 0.5, z: -half + (c / N | 0) + 0.5 });
-      cells.reverse();
-      const out = [cells[0]];
-      let a = 0;
-      while (a < cells.length - 1) {
-        let b = Math.min(cells.length - 1, a + 14);
-        while (b > a + 1 && !segmentClear(cells[a].x, cells[a].z, cells[b].x, cells[b].z)) b--;
-        out.push(cells[b]);
-        a = b;
-      }
-      return out;
-    }
-    return { findPath, isBlocked, nearestFree, segmentClear, blocked, N, half };
-  }
 
   // src/collide.js
   var EPS = 1e-3;
@@ -1729,8 +899,1076 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     return t < 0 ? 0 : t;
   }
 
-  // src/characters.js
+  // src/util.js
+  var clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  var rand = (a = 1, b) => b === void 0 ? Math.random() * a : a + Math.random() * (b - a);
+  var pick = (arr) => arr[Math.random() * arr.length | 0];
+  var TAU = Math.PI * 2;
+  function angDiff(a, b) {
+    let d = (a - b) % TAU;
+    if (d > Math.PI) d -= TAU;
+    if (d < -Math.PI) d += TAU;
+    return d;
+  }
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.random() * (i + 1) | 0;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  var dirX = (yaw, pitch = 0) => -Math.sin(yaw) * Math.cos(pitch);
+  var dirY = (pitch) => Math.sin(pitch);
+  var dirZ = (yaw, pitch = 0) => -Math.cos(yaw) * Math.cos(pitch);
+  var yawTo = (dx, dz) => Math.atan2(-dx, -dz);
+
+  // src/throwables.js
+  var T2 = window.THREE;
+  var GRAV = 18;
+  var THROW_SPEED = 15;
+  function buildItem(id) {
+    const g = new T2.Group();
+    if (id === "flour") {
+      add(g, sphereLoGeo(), 16182482, 0, 0, 0, { s: [0.15, 0.14, 0.15] });
+      add(g, coneGeo(0.07, 0.1, 8), 16182482, 0, 0.15, 0, { r: [Math.PI, 0, 0] });
+      add(g, cylGeo(0.05, 0.05, 0.03, 8), 12158034, 0, 0.11, 0);
+    } else if (id === "rooster") {
+      add(g, sphereLoGeo(), 16775920, 0, 0, 0, { s: [0.12, 0.13, 0.15] });
+      add(g, sphereLoGeo(), 16775920, 0, 0.15, -0.08, { s: 0.08 });
+      add(g, sphereLoGeo(), 15024429, 0, 0.24, -0.08, { s: [0.03, 0.05, 0.07] });
+      add(g, coneGeo(0.03, 0.08, 6), 16756782, 0, 0.14, -0.18, { r: [-Math.PI / 2, 0, 0] });
+      add(g, sphereLoGeo(), 15024429, 0, 0.04, 0.16, { s: [0.04, 0.12, 0.08] });
+      add(g, cylGeo(0.02, 0.02, 0.1, 6), 10134445, 0, 0.16, 0.06);
+    } else {
+      add(g, sphereLoGeo(), 8016432, 0, 0, 0, { s: [0.15, 0.17, 0.15] });
+      add(g, coneGeo(0.04, 0.07, 8), 8016432, 0, 0.19, 0);
+    }
+    return g;
+  }
+  function createThrowables(game) {
+    const flying = [], clouds = [], puddles = [], flashes = [];
+    const scene = game.scene;
+    function throwItem(a, id, yaw, pitch) {
+      if (!a.alive || a.busy || a.throwT > 0 || !a.throws[id] || game.state !== "live") return false;
+      a.throws[id]--;
+      a.throwT = 0.8;
+      a.cooldown = Math.max(a.cooldown, 0.45);
+      a.scoped = false;
+      const dx = dirX(yaw, pitch), dy = dirY(pitch), dz = dirZ(yaw, pitch);
+      const mesh = buildItem(id);
+      scene.add(mesh);
+      flying.push({
+        id,
+        team: a.team,
+        owner: a,
+        t: 0,
+        mesh,
+        rest: false,
+        x: a.pos.x + dx * 0.5 + Math.cos(yaw) * 0.18,
+        y: a.pos.y + a.eyeY() - 0.1,
+        z: a.pos.z + dz * 0.5 - Math.sin(yaw) * 0.18,
+        vx: dx * THROW_SPEED + a.vel.x * 0.5,
+        vy: dy * THROW_SPEED + 2.6,
+        vz: dz * THROW_SPEED + a.vel.z * 0.5
+      });
+      game.audio.toss(a);
+      game.audio.radio(a.team, id);
+      return true;
+    }
+    function trigger(it) {
+      const def = THROWS[it.id];
+      if (it.id === "flour") {
+        const c = { x: it.x, y: Math.max(1, it.y + 0.7), z: it.z, r: 0.4, full: def.radius, life: def.life, puffs: group(scene, it.x, 0, it.z) };
+        for (let i = 0; i < 16; i++) {
+          const a = i / 16 * 6.28 + Math.random(), d = i < 5 ? Math.random() * 0.25 : 0.45 + Math.random() * 0.4;
+          const p = add(c.puffs, sphereLoGeo(), 16776694, Math.cos(a) * d, 0.35 + Math.random() * 0.55, Math.sin(a) * d, { s: 0.42 + Math.random() * 0.2, cast: false, receive: false });
+          p.userData.base = p.position.clone();
+        }
+        clouds.push(c);
+        game.audio.poof(it.x, it.z);
+        game.fx.burst(it.x, it.y + 0.3, it.z, 16777215, 14);
+      } else if (it.id === "rooster") {
+        game.audio.crow(it.x, it.z);
+        game.fx.burst(it.x, it.y + 0.3, it.z, 16774857, 18);
+        const f = add(scene, sphereLoGeo(), new T2.MeshBasicMaterial({ color: 16775106, transparent: true, opacity: 0.7, depthWrite: false }), it.x, it.y + 0.3, it.z, { s: 0.3, cast: false, receive: false });
+        flashes.push({ m: f, life: 0 });
+        for (const v of game.actors) {
+          if (!v.alive || v.team === it.team) continue;
+          const dx = it.x - v.pos.x, dz = it.z - v.pos.z, d = Math.hypot(dx, dz);
+          if (d > def.radius) continue;
+          const ey = v.pos.y + v.eyeY();
+          if (!losClear(v.pos.x, ey, v.pos.z, it.x, it.y + 0.35, it.z, game.world.boxes) || sightBlocked(v.pos.x, ey, v.pos.z, it.x, it.y + 0.35, it.z)) continue;
+          const off = Math.abs(angDiff(yawTo(dx, dz), v.yaw));
+          const facing = off < 1.2 ? 1 : off < 2.1 ? 0.5 : 0.15;
+          v.dazeT = Math.max(v.dazeT, def.daze * (1 - d / def.radius * 0.6) * facing);
+        }
+      } else {
+        const m = new T2.Mesh(new T2.CircleGeometry(1, 22), new T2.MeshLambertMaterial({ color: 7293484, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+        const p = m.geometry.attributes.position;
+        for (let i = 1; i < p.count - 1; i++) {
+          const k = 0.8 + Math.random() * 0.3;
+          p.setXY(i, p.getX(i) * k, p.getY(i) * k);
+        }
+        p.setXY(p.count - 1, p.getX(1), p.getY(1));
+        m.rotation.x = -Math.PI / 2;
+        m.position.set(it.x, 0.035, it.z);
+        m.scale.setScalar(0.3);
+        m.receiveShadow = true;
+        scene.add(m);
+        puddles.push({ x: it.x, z: it.z, r: def.radius, life: def.life, m, grow: 0 });
+        game.audio.mud(it.x, it.z);
+        game.fx.burst(it.x, 0.3, it.z, 7293484, 22);
+      }
+      scene.remove(it.mesh);
+    }
+    function update(dt) {
+      const boxes = game.world.boxes;
+      for (let i = flying.length - 1; i >= 0; i--) {
+        const it = flying[i], def = THROWS[it.id];
+        it.t += dt;
+        if (!it.rest) {
+          it.vy -= GRAV * dt;
+          const sp = Math.hypot(it.vx, it.vy, it.vz), step = sp * dt;
+          const dx = it.vx / sp, dy = it.vy / sp, dz = it.vz / sp;
+          const hit = sp > 0.01 ? raycast(it.x, it.y, it.z, dx, dy, dz, step + 0.12, boxes) : null;
+          if (hit) {
+            it.x += dx * Math.max(0, hit.t - 0.12);
+            it.y += dy * Math.max(0, hit.t - 0.12);
+            it.z += dz * Math.max(0, hit.t - 0.12);
+            if (it.id === "mud") {
+              trigger(it);
+              flying.splice(i, 1);
+              continue;
+            }
+            const dot = it.vx * hit.nx + it.vy * hit.ny + it.vz * hit.nz;
+            it.vx = (it.vx - 2 * dot * hit.nx) * 0.42;
+            it.vy = (it.vy - 2 * dot * hit.ny) * 0.42;
+            it.vz = (it.vz - 2 * dot * hit.nz) * 0.42;
+            if (hit.ny > 0.5 && Math.hypot(it.vx, it.vy, it.vz) < 1.6) {
+              it.rest = true;
+              it.vx = it.vy = it.vz = 0;
+            }
+            if (Math.abs(dot) > 2) game.audio.thud(it.x, it.z);
+          } else {
+            it.x += it.vx * dt;
+            it.y += it.vy * dt;
+            it.z += it.vz * dt;
+          }
+          if (it.y < 0.12) {
+            it.y = 0.12;
+            if (it.id === "mud") {
+              trigger(it);
+              flying.splice(i, 1);
+              continue;
+            }
+          }
+          it.mesh.rotation.x += dt * 9;
+          it.mesh.rotation.z += dt * 5;
+        } else {
+          it.mesh.rotation.set(0, it.mesh.rotation.y, 0);
+        }
+        it.mesh.position.set(it.x, it.y, it.z);
+        if (it.id !== "mud" && it.t >= def.fuse) {
+          trigger(it);
+          flying.splice(i, 1);
+        } else if (it.t > 6) {
+          scene.remove(it.mesh);
+          flying.splice(i, 1);
+        }
+      }
+      for (let i = clouds.length - 1; i >= 0; i--) {
+        const c = clouds[i];
+        c.life -= dt;
+        c.r += (c.full - c.r) * Math.min(1, dt * 3.5);
+        const fade = clamp(c.life / 1.5, 0, 1), k = c.r / 0.85 * (0.25 + 0.75 * fade);
+        for (const p of c.puffs.children) {
+          p.position.copy(p.userData.base).multiplyScalar(k);
+          p.position.y = Math.max(0.5, p.userData.base.y * k * 0.62 + 0.3);
+          p.scale.setScalar(k * 0.52);
+        }
+        if (c.life <= 0) {
+          scene.remove(c.puffs);
+          clouds.splice(i, 1);
+        }
+      }
+      for (let i = puddles.length - 1; i >= 0; i--) {
+        const p = puddles[i];
+        p.life -= dt;
+        p.grow = Math.min(1, p.grow + dt * 5);
+        p.m.scale.setScalar(p.r * p.grow * clamp(p.life / 0.8, 0, 1));
+        if (p.life <= 0) {
+          scene.remove(p.m);
+          puddles.splice(i, 1);
+        }
+      }
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const f = flashes[i];
+        f.life += dt;
+        f.m.scale.setScalar(0.3 + f.life * 14);
+        f.m.material.opacity = 0.7 * (1 - f.life / 0.4);
+        if (f.life >= 0.4) {
+          scene.remove(f.m);
+          flashes.splice(i, 1);
+        }
+      }
+    }
+    function sightBlocked(ax, ay, az, bx, by, bz) {
+      for (const c of clouds) {
+        if (c.life < 0.8) continue;
+        const dx = bx - ax, dy = by - ay, dz = bz - az, l2 = dx * dx + dy * dy + dz * dz;
+        const t = l2 ? clamp(((c.x - ax) * dx + (c.y - ay) * dy + (c.z - az) * dz) / l2, 0, 1) : 0;
+        const r = c.r * 0.92;
+        if ((ax + dx * t - c.x) ** 2 + (ay + dy * t - c.y) ** 2 + (az + dz * t - c.z) ** 2 < r * r) return true;
+      }
+      return false;
+    }
+    function fogAt(x, y, z) {
+      let f = 0;
+      for (const c of clouds) {
+        const d = Math.hypot(x - c.x, y - c.y, z - c.z);
+        f = Math.max(f, clamp((c.r - d) / 1.2, 0, 1) * clamp(c.life / 1.2, 0, 1));
+      }
+      return f;
+    }
+    function slowAt(x, z) {
+      for (const p of puddles) if (Math.hypot(x - p.x, z - p.z) < p.r * p.grow) return THROWS.mud.slow;
+      return 1;
+    }
+    function clear() {
+      for (const it of flying) scene.remove(it.mesh);
+      for (const c of clouds) scene.remove(c.puffs);
+      for (const p of puddles) scene.remove(p.m);
+      for (const f of flashes) scene.remove(f.m);
+      flying.length = clouds.length = puddles.length = flashes.length = 0;
+    }
+    return { throwItem, update, sightBlocked, fogAt, slowAt, clear, clouds, puddles, flying };
+  }
+  function lobPitch(range) {
+    return 0.5 * Math.asin(clamp(range * GRAV / (THROW_SPEED * THROW_SPEED * 1.25), 0, 1));
+  }
+
+  // src/world.js
   var T3 = window.THREE;
+  var C = {
+    barn: 14239294,
+    trim: 16774368,
+    roof: 7293500,
+    stone: 12433322,
+    stoneCap: 14341576,
+    hedgeA: 5218114,
+    hedgeB: 6731854,
+    wood: 12158034,
+    woodDark: 9396792,
+    hay: 15912028,
+    hayBand: 13210938,
+    crate: 13606751,
+    soil: 8017212,
+    cabbage: 10214258,
+    pumpkin: 15764004,
+    tomato: 15024429,
+    carrot: 16751164,
+    leaf: 5812284,
+    coop: 16181181,
+    coopRoof: 12933699,
+    house: 16773590,
+    houseRoof: 6262468,
+    glass: 13168614,
+    tractor: 14828602,
+    tyre: 3421756,
+    hub: 16765514,
+    trunk: 9067062,
+    treeA: 5220422,
+    treeB: 7127639,
+    water: 6605042,
+    metal: 10134445
+  };
+  function buildWorld(scene) {
+    const boxes = [];
+    const root = group(scene);
+    const bushes = [];
+    const animated = [];
+    const solid = (x1, y1, z1, x2, y2, z2) => {
+      const b = { x1, y1, z1, x2, y2, z2 };
+      boxes.push(b);
+      return b;
+    };
+    const block = (x1, z1, x2, z2, h, color, r = 0.1, y = 0) => {
+      solid(x1, y, z1, x2, y + h, z2);
+      const w = x2 - x1, d = z2 - z1;
+      if (d > w) return add(root, rboxGeo(d, h, w, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2, { r: [0, Math.PI / 2, 0] });
+      return add(root, rboxGeo(w, h, d, r), color, (x1 + x2) / 2, y + h / 2, (z1 + z2) / 2);
+    };
+    const barnWall = (x1, z1, x2, z2, h, y = 0) => {
+      block(x1, z1, x2, z2, h, texMat("planks"), 0.06, y);
+      const w = x2 - x1, d = z2 - z1, cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
+      if (d > w) add(root, rboxGeo(d, h, 0.08, 0.03), texMat("wood"), cx < -26 ? x2 + 0.02 : x1 - 0.02, y + h / 2, cz, { r: [0, Math.PI / 2, 0], cast: false });
+      else add(root, rboxGeo(w, h, 0.08, 0.03), texMat("wood"), cx, y + h / 2, cz < -13 ? z2 + 0.02 : z1 - 0.02, { cast: false });
+    };
+    const deco = (w, h, d, color, x, y, z, r = 0.06, o) => add(root, rboxGeo(w, h, d, r), color, x, y, z, o);
+    function stone(x1, z1, x2, z2, h = 2.8) {
+      block(x1, z1, x2, z2, h, texMat("stone"), 0.14);
+      deco(x2 - x1 + 0.24, 0.26, z2 - z1 + 0.24, C.stoneCap, (x1 + x2) / 2, h + 0.06, (z1 + z2) / 2, 0.1);
+    }
+    function hedge(x1, z1, x2, z2, h = 3) {
+      solid(x1, 0, z1, x2, h, z2);
+      const alongX = x2 - x1 >= z2 - z1;
+      const len = alongX ? x2 - x1 : z2 - z1, thick = alongX ? z2 - z1 : x2 - x1;
+      const n = Math.max(1, Math.round(len / 1.25));
+      for (let i = 0; i < n; i++) {
+        const t = (i + 0.5) / n;
+        const x = alongX ? x1 + len * t : (x1 + x2) / 2, z = alongX ? (z1 + z2) / 2 : z1 + len * t;
+        const rr = thick * rand(0.72, 0.9);
+        bushes.push({ x: x + rand(-0.1, 0.1), y: h * 0.48, z: z + rand(-0.1, 0.1), sx: alongX ? 0.95 : rr, sy: h * rand(0.5, 0.58), sz: alongX ? rr : 0.95, c: i % 2 ? C.hedgeA : C.hedgeB });
+      }
+    }
+    function fence(x1, z1, x2, z2) {
+      solid(x1, 0, z1, x2, 1.1, z2);
+      const alongX = x2 - x1 >= z2 - z1;
+      const len = alongX ? x2 - x1 : z2 - z1, cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
+      for (const y of [0.45, 0.9]) deco(alongX ? len : 0.1, 0.14, alongX ? 0.1 : len, C.trim, cx, y, cz, 0.04);
+      const n = Math.round(len / 1.75);
+      for (let i = 0; i <= n; i++) {
+        const t = i / n - 0.5;
+        deco(0.2, 1.2, 0.2, C.trim, alongX ? cx + t * len : cx, 0.6, alongX ? cz : cz + t * len, 0.06);
+      }
+    }
+    function hay(x, z, turned = false, levels = 1) {
+      const w = turned ? 1 : 1.6, d = turned ? 1.6 : 1;
+      solid(x - w / 2, 0, z - d / 2, x + w / 2, 0.9 * levels, z + d / 2);
+      for (let i = 0; i < levels; i++) {
+        const y = 0.45 + i * 0.9;
+        deco(w, 0.9, d, texMat("hay"), x, y, z, 0.16);
+        for (const s of [-0.28, 0.28]) deco(turned ? w + 0.03 : 0.08, 0.93, turned ? 0.08 : d + 0.03, C.hayBand, turned ? x : x + s * w, y, turned ? z + s * d : z, 0.03);
+      }
+    }
+    function crate(x, z, size = 1.2, levels = 1) {
+      solid(x - size / 2, 0, z - size / 2, x + size / 2, size * levels, z + size / 2);
+      for (let i = 0; i < levels; i++) {
+        const y = size / 2 + i * size;
+        deco(size, size, size, texMat("crate"), x, y, z, 0.07);
+        deco(size + 0.04, 0.14, size + 0.04, C.woodDark, x, y + size / 2 - 0.1, z, 0.04);
+        deco(size + 0.04, 0.14, size + 0.04, C.woodDark, x, y - size / 2 + 0.1, z, 0.04);
+      }
+    }
+    function tree(x, z, s = 1, collide = true) {
+      if (collide) solid(x - 0.4, 0, z - 0.4, x + 0.4, 5, z + 0.4);
+      add(root, cylGeo(0.26 * s, 0.38 * s, 2.6 * s, 10), C.trunk, x, 1.3 * s, z);
+      add(root, sphereLoGeo(), C.treeA, x, 3.5 * s, z, { s: [2 * s, 1.7 * s, 2 * s] });
+      add(root, sphereLoGeo(), C.treeB, x + 0.9 * s, 4.3 * s, z + 0.3 * s, { s: 1.3 * s });
+      add(root, sphereLoGeo(), C.treeB, x - 0.8 * s, 4.5 * s, z - 0.5 * s, { s: 1.15 * s });
+    }
+    function planter(x1, z1, x2, z2, crop) {
+      block(x1, z1, x2, z2, 0.5, C.wood, 0.08);
+      deco(x2 - x1 - 0.24, 0.1, z2 - z1 - 0.24, C.soil, (x1 + x2) / 2, 0.5, (z1 + z2) / 2, 0.04, { cast: false });
+      const n = Math.floor((x2 - x1) / 0.8);
+      for (let i = 0; i < n; i++) {
+        const x = x1 + 0.5 + i * ((x2 - x1 - 1) / Math.max(1, n - 1)), z = (z1 + z2) / 2 + rand(-0.15, 0.15);
+        if (crop === "cabbage") add(root, sphereLoGeo(), C.cabbage, x, 0.68, z, { s: [0.3, 0.24, 0.3] });
+        else if (crop === "tomato") {
+          add(root, cylGeo(0.03, 0.03, 0.9, 6), C.leaf, x, 0.95, z);
+          add(root, sphereLoGeo(), C.leaf, x, 1.1, z, { s: [0.26, 0.32, 0.26] });
+          add(root, sphereLoGeo(), C.tomato, x + 0.16, 1, z + 0.1, { s: 0.1 });
+          add(root, sphereLoGeo(), C.tomato, x - 0.14, 1.2, z - 0.08, { s: 0.09 });
+        } else add(root, coneGeo(0.16, 0.5, 7), C.leaf, x, 0.8, z);
+      }
+    }
+    function pumpkin(x, z, s = 0.4) {
+      add(root, sphereLoGeo(), C.pumpkin, x, s * 0.72, z, { s: [s, s * 0.74, s] });
+      add(root, cylGeo(0.04, 0.06, 0.16, 6), C.leaf, x, s * 1.45, z);
+    }
+    function tractor(x, z) {
+      solid(x - 1.7, 0, z - 0.95, x + 1.7, 1.75, z + 0.95);
+      solid(x + 0.2, 1.75, z - 0.7, x + 1.5, 2.6, z + 0.7);
+      deco(1.9, 0.85, 1.1, C.tractor, x - 0.7, 1.15, z, 0.2);
+      deco(1.3, 1.5, 1.4, C.tractor, x + 0.85, 1.75, z, 0.2);
+      deco(1.34, 0.6, 1.2, 3095370, x + 0.85, 2, z, 0.1);
+      deco(1.5, 0.12, 1.6, C.hub, x + 0.85, 2.58, z, 0.05);
+      for (const s of [-1, 1]) {
+        add(root, cylGeo(0.85, 0.85, 0.42, 20), C.tyre, x + 0.85, 0.85, z + s * 0.85, { r: [Math.PI / 2, 0, 0] });
+        add(root, cylGeo(0.36, 0.36, 0.46, 14), C.hub, x + 0.85, 0.85, z + s * 0.85, { r: [Math.PI / 2, 0, 0] });
+        add(root, cylGeo(0.46, 0.46, 0.3, 16), C.tyre, x - 1.15, 0.46, z + s * 0.72, { r: [Math.PI / 2, 0, 0] });
+        add(root, cylGeo(0.2, 0.2, 0.34, 12), C.hub, x - 1.15, 0.46, z + s * 0.72, { r: [Math.PI / 2, 0, 0] });
+        add(root, sphereLoGeo(), 16775113, x - 1.66, 1.2, z + s * 0.34, { s: 0.11 });
+      }
+      add(root, cylGeo(0.06, 0.06, 0.9, 8), C.metal, x - 1, 2, z + 0.3);
+    }
+    function well(x, z) {
+      solid(x - 1, 0, z - 1, x + 1, 1.1, z + 1);
+      add(root, cylGeo(1.05, 1.15, 1.1, 20), C.stone, x, 0.55, z);
+      add(root, cylGeo(0.82, 0.82, 0.06, 20), 3833781, x, 1.09, z, { cast: false });
+      for (const s of [-1, 1]) deco(0.16, 1.9, 0.16, C.wood, x + s * 0.92, 1.9, z, 0.05);
+      add(root, coneGeo(1.5, 0.9, 4), C.coopRoof, x, 3.25, z, { r: [0, Math.PI / 4, 0] });
+      add(root, cylGeo(0.05, 0.05, 1.9, 6), C.woodDark, x, 2.7, z, { r: [0, 0, Math.PI / 2] });
+      add(root, cylGeo(0.16, 0.13, 0.26, 10), C.wood, x + 0.2, 1.75, z);
+    }
+    function scarecrow(x, z) {
+      solid(x - 0.25, 0, z - 0.25, x + 0.25, 2.2, z + 0.25);
+      deco(0.12, 2.3, 0.12, C.woodDark, x, 1.15, z, 0.04);
+      deco(1.7, 0.1, 0.1, C.woodDark, x, 1.65, z, 0.04);
+      deco(0.62, 0.7, 0.3, 5208519, x, 1.5, z, 0.12);
+      add(root, sphereLoGeo(), 15323034, x, 2.15, z, { s: 0.27 });
+      add(root, cylGeo(0.5, 0.5, 0.04, 16), C.hay, x, 2.36, z);
+      add(root, coneGeo(0.24, 0.3, 12), C.hay, x, 2.5, z);
+      for (const s of [-1, 1]) add(root, coneGeo(0.1, 0.3, 6), C.hay, x + s * 0.92, 1.65, z, { r: [0, 0, s * Math.PI / 2] });
+    }
+    function gableRoof(x1, x2, z1, z2, yB, yR, color, endColor, inset = 0.7) {
+      const zm = (z1 + z2) / 2;
+      const slopes = new T3.BufferGeometry();
+      slopes.setAttribute("position", new T3.Float32BufferAttribute([
+        x1,
+        yB,
+        z2,
+        x2,
+        yB,
+        z2,
+        x2,
+        yR,
+        zm,
+        x1,
+        yB,
+        z2,
+        x2,
+        yR,
+        zm,
+        x1,
+        yR,
+        zm,
+        x2,
+        yB,
+        z1,
+        x1,
+        yB,
+        z1,
+        x1,
+        yR,
+        zm,
+        x2,
+        yB,
+        z1,
+        x1,
+        yR,
+        zm,
+        x2,
+        yR,
+        zm
+      ], 3));
+      slopes.computeVertexNormals();
+      const run = Math.hypot(zm - z1, yR - yB);
+      slopes.setAttribute("uv", new T3.Float32BufferAttribute([x1, 0, x2, 0, x2, run, x1, 0, x2, run, x1, run, x2, 0, x1, 0, x1, run, x2, 0, x1, run, x2, run], 2));
+      add(root, slopes, color === "shingle" ? texMat("shingle") : mat(color, { side: T3.DoubleSide }));
+      if (endColor !== void 0) {
+        const ends = new T3.BufferGeometry();
+        const i1 = x1 + inset, i2 = x2 - inset;
+        ends.setAttribute("position", new T3.Float32BufferAttribute([
+          i1,
+          yB,
+          z1,
+          i1,
+          yB,
+          z2,
+          i1,
+          yR,
+          zm,
+          i2,
+          yB,
+          z2,
+          i2,
+          yB,
+          z1,
+          i2,
+          yR,
+          zm
+        ], 3));
+        ends.computeVertexNormals();
+        add(root, ends, mat(endColor, { side: T3.DoubleSide }));
+      }
+    }
+    function sign(x, z, letter, color) {
+      deco(0.14, 3.4, 0.14, C.woodDark, x, 1.7, z, 0.05);
+      const tex = canvasTexture(128, 128, (g) => {
+        g.fillStyle = color;
+        g.beginPath();
+        g.arc(64, 64, 62, 0, 7);
+        g.fill();
+        g.lineWidth = 8;
+        g.strokeStyle = "#fff8e6";
+        g.beginPath();
+        g.arc(64, 64, 54, 0, 7);
+        g.stroke();
+        g.fillStyle = "#fff8e6";
+        g.font = "900 84px Arial, sans-serif";
+        g.textAlign = "center";
+        g.textBaseline = "middle";
+        g.fillText(letter, 64, 70);
+      });
+      const m = new T3.MeshBasicMaterial({ map: tex, transparent: true, side: T3.DoubleSide });
+      const disc = new T3.Mesh(new T3.CircleGeometry(0.62, 28), m);
+      disc.position.set(x, 3.3, z);
+      root.add(disc);
+      animated.push((t) => {
+        disc.rotation.y = t * 0.8;
+      });
+    }
+    hedge(-41, -41, 41, -40, 3.4);
+    hedge(-41, 40, 41, 41, 3.4);
+    hedge(-41, -40, -40, 40, 3.4);
+    hedge(40, -40, 41, 40, 3.4);
+    const H = 4.5;
+    barnWall(-34, -6.5, -28, -6, H);
+    barnWall(-24, -6.5, -18, -6, H);
+    barnWall(-28, -6.5, -24, -6, 1.5, 3);
+    barnWall(-34, -20, -24, -19.5, H);
+    barnWall(-21, -20, -18, -19.5, H);
+    barnWall(-24, -20, -21, -19.5, 1.5, 3);
+    barnWall(-34, -19.5, -33.5, -6.5, H);
+    barnWall(-18.5, -19.5, -18, -15, H);
+    barnWall(-18.5, -11, -18, -6.5, H);
+    barnWall(-18.5, -15, -18, -11, 1.5, 3);
+    gableRoof(-34.5, -17.5, -20.5, -5.5, H - 0.2, 8.2, 14462578);
+    gableRoof(-34.7, -17.3, -20.7, -5.3, H - 0.05, 8.4, "shingle", C.barn);
+    for (const [x, z] of [[-34, -6.25], [-18, -6.25], [-34, -19.75], [-18, -19.75]]) deco(0.62, H + 0.1, 0.62, C.trim, x, H / 2, z, 0.08);
+    for (const x of [-28.1, -23.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -6.25, 0.06);
+    deco(4.5, 0.3, 0.62, C.trim, -26, 3.1, -6.25, 0.06);
+    for (const z of [-15.1, -10.9]) deco(0.62, 3, 0.3, C.trim, -18.25, 1.5, z, 0.06);
+    deco(0.62, 0.3, 4.5, C.trim, -18.25, 3.1, -13, 0.06);
+    for (const x of [-24.1, -20.9]) deco(0.3, 3, 0.62, C.trim, x, 1.5, -19.75, 0.06);
+    deco(3.5, 0.3, 0.62, C.trim, -22.5, 3.1, -19.75, 0.06);
+    hay(-30, -14, false, 2);
+    hay(-22, -12.5, true, 2);
+    crate(-29, -9, 1.2, 1);
+    hay(-26.5, -17.8, false, 1);
+    crate(-20, -17.5, 1.2, 2);
+    sign(-22.4, -4.6, "A", "#e2443a");
+    solid(-39, 0, -18, -35.6, 8, -14.6);
+    add(root, cylGeo(1.7, 1.7, 7.5, 22), 14673130, -37.3, 3.75, -16.3);
+    add(root, sphereLoGeo(), C.barn, -37.3, 7.5, -16.3, { s: [1.72, 1.1, 1.72] });
+    stone(12, -24, 13, -18);
+    stone(12, -15, 13, -9);
+    hedge(13, -24, 20, -23, 2.8);
+    hedge(24, -24, 40, -23, 2.8);
+    planter(16, -9, 22, -7.6, "cabbage");
+    planter(16, -13, 22, -11.6, "tomato");
+    planter(26, -8.6, 32, -7.2, "carrot");
+    planter(26, -12.4, 30, -11, "cabbage");
+    scarecrow(24, -10.2);
+    crate(21, -17, 1.3, 2);
+    crate(22.4, -17, 1.2, 1);
+    solid(29, 0, -21, 36, 3.2, -14);
+    deco(7, 0.9, 7, C.trim, 32.5, 0.45, -17.5, 0.1);
+    add(root, rboxGeo(6.8, 2.2, 6.8, 0.1), mat(C.glass, { transparent: true, opacity: 0.5 }), 32.5, 2, -17.5, { cast: false });
+    for (const [x, z] of [[29.1, -20.9], [35.9, -20.9], [29.1, -14.1], [35.9, -14.1], [32.5, -14.1], [32.5, -20.9]]) deco(0.2, 3.2, 0.2, C.trim, x, 1.6, z, 0.05);
+    deco(7.1, 0.2, 7.1, C.trim, 32.5, 3.15, -17.5, 0.06);
+    for (let i = 0; i < 5; i++) add(root, sphereLoGeo(), i % 2 ? C.leaf : C.cabbage, 30.2 + i * 1.15, 1.35, -17.5 + (i % 2 ? 1.2 : -1.2), { s: [0.5, 0.7, 0.5], cast: false });
+    block(15, -22, 19, -19, 2.7, texMat("wood"), 0.1);
+    deco(4.5, 0.2, 3.6, C.coopRoof, 17, 2.85, -20.5, 0.08, { r: [0.12, 0, 0] });
+    deco(1, 1.9, 0.1, C.woodDark, 17, 0.95, -18.97, 0.04);
+    for (const [x, z, s] of [[33.5, -10, 0.5], [34.6, -8.8, 0.38], [32.8, -5.4, 0.44], [14.6, -5, 0.4], [36.5, -11.6, 0.34]]) pumpkin(x, z, s);
+    sign(22.6, -4.4, "B", "#3f8fd9");
+    block(-9, -40, 9, -35, 5, C.house, 0.12);
+    gableRoof(-9.8, 9.8, -41, -34.2, 4.95, 8.2, C.houseRoof, C.house, 0.8);
+    deco(18.6, 0.18, 2.4, C.houseRoof, 0, 3.1, -33.9, 0.06);
+    for (const x of [-8.8, -3, 3, 8.8]) deco(0.2, 3.1, 0.2, C.trim, x, 1.55, -32.9, 0.06);
+    deco(1.3, 2.3, 0.12, 10181180, 0, 1.15, -34.95, 0.04);
+    for (const x of [-6, -3.2, 3.2, 6]) {
+      deco(1.3, 1.3, 0.1, 10475250, x, 2, -34.96, 0.04);
+      deco(1.5, 0.14, 0.16, C.trim, x, 1.3, -34.94, 0.04);
+    }
+    block(5.6, -38.6, 6.8, -37.4, 9.4, 13201498, 0.1);
+    hedge(-7, -27, 7, -26, 2.7);
+    crate(-11.5, -31.5, 1.2, 1);
+    crate(11.5, -31.5, 1.2, 2);
+    well(0, -15);
+    tractor(-7, -21);
+    hay(6, -10, false, 2);
+    hay(-10, -8.6, true, 2);
+    hay(-8.9, -8.6, true, 1);
+    crate(8, -21, 1.3, 1);
+    hay(3.5, -23, false, 1);
+    stone(-11, -5, -8, -4);
+    stone(-5, -5, 5, -4);
+    stone(8, -5, 11, -4);
+    stone(-12, -5, -11, 17);
+    stone(-12, 20, -11, 26);
+    stone(11, -5, 12, 17);
+    stone(11, 20, 12, 26);
+    fence(-11, 26, -4, 26.4);
+    fence(4, 26, 11, 26.4);
+    hay(0, 18.5, false, 1);
+    hay(-6, 21, true, 1);
+    hay(6.5, 22.5, false, 2);
+    stone(-40, 4, -37, 5);
+    stone(-34, 4, -17, 5);
+    stone(-14, 4, -12, 5);
+    block(-30, 12, -22, 18, 3, C.coop, 0.12);
+    gableRoof(-30.6, -21.4, 11.4, 18.6, 2.95, 5, "shingle", C.coop, 0.6);
+    deco(1, 1.2, 0.12, C.woodDark, -26, 0.6, 18.02, 0.04);
+    deco(0.9, 0.08, 1.8, C.wood, -26, 0.25, 18.8, 0.03, { r: [0.28, 0, 0] });
+    for (const x of [-28.4, -23.6]) deco(1, 0.8, 0.1, 10475250, x, 1.9, 18.03, 0.04);
+    hay(-19, 9.5, false, 2);
+    hay(-17.4, 22, true, 1);
+    crate(-33, 10, 1.2, 1);
+    crate(-21.5, 1, 1.2, 2);
+    hay(-30, 0.5, false, 1);
+    hay(-14, -1.5, true, 2);
+    tree(-37.5, 22);
+    tree(-21, 25.5, 0.9);
+    tree(-38, -2.5, 0.9);
+    stone(12, 6, 15, 7);
+    stone(18, 6, 28, 7);
+    stone(37, 6, 40, 7);
+    block(28, 3, 31, 7, 3, C.stone, 0.14);
+    block(34, 3, 37, 7, 3, C.stone, 0.14);
+    block(31, 3, 34, 7, 0.7, C.stone, 0.14, 2.4);
+    deco(9.3, 0.26, 4.3, C.stoneCap, 32.5, 3.1, 5, 0.1);
+    crate(19.5, 11, 1.2, 2);
+    hay(28.5, 15, true, 1);
+    crate(36, 12, 1.2, 1);
+    hay(20, 1, false, 2);
+    crate(27, -0.5, 1.2, 1);
+    hay(15, 21.5, true, 1);
+    for (const [x, z, s] of [[23.5, 13, 0.55], [26.4, 21, 0.7], [22.6, 25, 0.5]]) {
+      solid(x - s, 0, z - s, x + s, s * 1.2, z + s);
+      add(root, sphereLoGeo(), 11118495, x, s * 0.5, z, { s: [s * 1.15, s * 0.85, s * 1.05] });
+    }
+    tree(36.5, 22);
+    tree(14.5, 25, 0.85);
+    tree(38, -1.5, 0.9);
+    hay(-9, 30, false, 1);
+    hay(9, 30, false, 1);
+    hay(-18, 33.5, true, 2);
+    hay(18, 33.5, true, 2);
+    tree(-28, 36.5);
+    tree(28, 36.5);
+    tree(0, 38.2, 0.8);
+    block(-3.2, 36.2, 3.2, 37, 0.6, C.wood, 0.1);
+    deco(6, 0.08, 0.5, C.water, 0, 0.6, 36.6, 0.03, { cast: false });
+    const bushMesh = new T3.InstancedMesh(sphereLoGeo(), new T3.MeshLambertMaterial({ color: 16777215 }), bushes.length);
+    const dummy = new T3.Object3D(), col = new T3.Color();
+    bushes.forEach((b, i) => {
+      dummy.position.set(b.x, b.y, b.z);
+      dummy.scale.set(b.sx, b.sy, b.sz);
+      dummy.updateMatrix();
+      bushMesh.setMatrixAt(i, dummy.matrix);
+      bushMesh.setColorAt(i, col.setHex(b.c));
+    });
+    bushMesh.castShadow = true;
+    bushMesh.receiveShadow = true;
+    root.add(bushMesh);
+    const cornZones = [];
+    const cornTex = canvasTexture(128, 256, (g) => {
+      g.lineCap = "round";
+      g.strokeStyle = "#4c9a36";
+      g.lineWidth = 9;
+      g.beginPath();
+      g.moveTo(64, 256);
+      g.lineTo(64, 22);
+      g.stroke();
+      const leaf = (y, dir, len, colr) => {
+        g.strokeStyle = colr;
+        g.lineWidth = 13;
+        g.beginPath();
+        g.moveTo(64, y);
+        g.quadraticCurveTo(64 + dir * len * 0.7, y - 46, 64 + dir * len, y - 6);
+        g.stroke();
+      };
+      leaf(240, 1, 52, "#5fb43f");
+      leaf(226, -1, 56, "#57a93a");
+      leaf(176, 1, 58, "#69c048");
+      leaf(158, -1, 54, "#5fb43f");
+      leaf(108, 1, 46, "#57a93a");
+      leaf(92, -1, 50, "#69c048");
+      leaf(48, 1, 30, "#69c048");
+      leaf(44, -1, 28, "#5fb43f");
+      g.fillStyle = "#f4cf45";
+      g.beginPath();
+      g.ellipse(80, 128, 11, 26, 0.25, 0, 7);
+      g.fill();
+      g.fillStyle = "#8fd060";
+      g.beginPath();
+      g.ellipse(76, 142, 9, 18, 0.25, 0, 7);
+      g.fill();
+      g.fillStyle = "#e8c56a";
+      g.beginPath();
+      g.ellipse(64, 16, 10, 16, 0, 0, 7);
+      g.fill();
+    });
+    const cornGeo = new T3.BufferGeometry();
+    const hw = 0.62, ch = 2.45;
+    cornGeo.setAttribute("position", new T3.Float32BufferAttribute([-hw, 0, 0, hw, 0, 0, hw, ch, 0, -hw, ch, 0, 0, 0, -hw, 0, 0, hw, 0, ch, hw, 0, ch, -hw], 3));
+    cornGeo.setAttribute("uv", new T3.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1], 2));
+    cornGeo.setAttribute("normal", new T3.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
+    cornGeo.setIndex([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
+    const stalks = [];
+    for (const [x1, x2] of [[-10, -1.4], [1.4, 10]]) for (const [z1, z2] of [[-1, 6], [8.6, 15]]) {
+      cornZones.push({ x1, y1: 0, z1, x2, y2: 2.3, z2 });
+      for (let x = x1 + 0.35; x < x2 - 0.2; x += 0.72) for (let z = z1 + 0.35; z < z2 - 0.2; z += 0.72) stalks.push([x + rand(-0.22, 0.22), z + rand(-0.22, 0.22)]);
+    }
+    const corn = new T3.InstancedMesh(cornGeo, new T3.MeshLambertMaterial({ map: cornTex, alphaTest: 0.45, side: T3.DoubleSide }), stalks.length);
+    stalks.forEach(([x, z], i) => {
+      dummy.position.set(x, 0, z);
+      dummy.rotation.set(0, rand(Math.PI), 0);
+      dummy.scale.setScalar(rand(0.86, 1.14));
+      dummy.updateMatrix();
+      corn.setMatrixAt(i, dummy.matrix);
+    });
+    dummy.rotation.set(0, 0, 0);
+    corn.receiveShadow = true;
+    root.add(corn);
+    const P1 = (v, S) => (v + 48) * (S / 96);
+    const lanes = [
+      [[-36, 31], [36, 31]],
+      [[-15.5, 31], [-15.5, -1], [-26, -3.5], [-26, -13]],
+      [[-35.5, 31], [-35.5, -22.5], [-22.5, -22.5], [-22.5, -19]],
+      [[0, 31], [0, -2]],
+      [[0, -2], [-6.5, -4.5], [-6.5, -10], [0, -18]],
+      [[0, -2], [6.5, -4.5], [6.5, -10], [0, -18]],
+      [[-10, 7.3], [10, 7.3]],
+      [[16.5, 31], [16.5, -1], [24, -10]],
+      [[32.5, 31], [32.5, -1], [24, -10]],
+      [[0, -31], [-10, -29], [-22.5, -23]],
+      [[0, -31], [10, -29], [22, -25], [24, -12]],
+      [[0, -18], [-15, -13], [-26, -13]],
+      [[0, -18], [10, -7], [14, -7]],
+      [[12, -16.5], [22, -14]],
+      [[-9, -29], [-9, -24], [0, -18]],
+      [[9, -29], [9, -24], [0, -18]],
+      [[-11.5, 18.5], [-15.5, 18.5]],
+      [[11.5, 18.5], [16.5, 18.5]]
+    ];
+    const maskTex = canvasTexture(1024, 1024, (g, S) => {
+      const P = (v) => P1(v, S), m2p = S / 96;
+      g.fillStyle = "#000";
+      g.fillRect(0, 0, S, S);
+      g.globalCompositeOperation = "lighter";
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      const stroke = (pts, w, colr) => {
+        g.strokeStyle = colr;
+        g.lineWidth = w * m2p;
+        g.beginPath();
+        pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
+        g.stroke();
+      };
+      try {
+        g.filter = "blur(5px)";
+      } catch (e) {
+      }
+      lanes.forEach((l) => stroke(l, 2.9, "#ff0000"));
+      g.fillStyle = "#00ff00";
+      roundRect(g, P(14), P(-22), 22.5 * m2p, 18 * m2p, 30);
+      g.fill();
+      for (const z of cornZones) {
+        roundRect(g, P(z.x1 - 0.3), P(z.z1 - 0.3), (z.x2 - z.x1 + 0.6) * m2p, (z.z2 - z.z1 + 0.6) * m2p, 8);
+        g.fill();
+      }
+      g.filter = "none";
+      g.globalCompositeOperation = "source-over";
+    });
+    maskTex.encoding = T3.LinearEncoding;
+    const detailTex = canvasTexture(2048, 2048, (g, S) => {
+      const P = (v) => P1(v, S), m2p = S / 96;
+      g.clearRect(0, 0, S, S);
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      const stroke = (pts, w, colr) => {
+        g.strokeStyle = colr;
+        g.lineWidth = w * m2p;
+        g.beginPath();
+        pts.forEach(([x, z], i) => i ? g.lineTo(P(x), P(z)) : g.moveTo(P(x), P(z)));
+        g.stroke();
+      };
+      const creek = [[24.5, 7.4], [24, 14], [25.6, 22], [24.4, 30], [25, 40]];
+      try {
+        g.filter = "blur(4px)";
+      } catch (e) {
+      }
+      stroke(creek, 3.4, "#9be2fb");
+      g.filter = "none";
+      stroke(creek, 2.3, "#5fc4ef");
+      g.strokeStyle = "rgba(255,255,255,0.55)";
+      g.lineWidth = 3;
+      for (let i = 0; i < 26; i++) {
+        const z = 9 + i * 1.15, x = 24.6 + Math.sin(i * 1.7) * 0.7;
+        g.beginPath();
+        g.moveTo(P(x - 0.3), P(z));
+        g.lineTo(P(x + 0.3), P(z + 0.1));
+        g.stroke();
+      }
+      g.fillStyle = "#d4a96f";
+      g.fillRect(P(-33.6), P(-19.6), 15.2 * m2p, 13.2 * m2p);
+      g.strokeStyle = "rgba(120,80,40,0.4)";
+      g.lineWidth = 2.5;
+      for (let z = -19; z < -6.5; z += 0.9) {
+        g.beginPath();
+        g.moveTo(P(-33.6), P(z));
+        g.lineTo(P(-18.4), P(z));
+        g.stroke();
+      }
+      const ring = (x, z) => {
+        g.strokeStyle = "rgba(255,248,230,0.95)";
+        g.lineWidth = 0.28 * m2p;
+        g.setLineDash([24, 16]);
+        g.beginPath();
+        g.arc(P(x), P(z), 3.4 * m2p, 0, 7);
+        g.stroke();
+        g.setLineDash([]);
+      };
+      ring(-26, -13);
+      ring(24, -10.2);
+      for (let i = 0; i < 1100; i++) {
+        g.fillStyle = ["#ffffff", "#ffe36e", "#ff9ec4", "#fff3b0"][i % 4];
+        g.beginPath();
+        g.arc(rand(S), rand(S), rand(1.5, 3.2), 0, 7);
+        g.fill();
+      }
+    });
+    const flat2 = (colr) => canvasTexture(4, 4, (g) => {
+      g.fillStyle = colr;
+      g.fillRect(0, 0, 4, 4);
+    });
+    const uni = { dirtMap: { value: flat2("#dcb98a") }, soilMap: { value: flat2("#9b6b46") }, maskMap: { value: maskTex }, detailMap: { value: detailTex } };
+    const groundMat = new T3.MeshLambertMaterial({ map: flat2("#86cf58") });
+    groundMat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, uni);
+      sh.fragmentShader = sh.fragmentShader.replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D dirtMap; uniform sampler2D soilMap; uniform sampler2D maskMap; uniform sampler2D detailMap;").replace("#include <map_fragment>", `
+        vec2 tuv = vUv * 30.0;
+        vec4 mk = texture2D( maskMap, vUv );
+        vec3 gcol = mix( texture2D( map, tuv ).rgb, texture2D( map, tuv * 0.31 + 0.37 ).rgb, 0.4 );
+        vec3 col = mix( gcol, texture2D( dirtMap, tuv * 0.8 ).rgb, smoothstep( 0.15, 0.75, mk.r ) );
+        col = mix( col, texture2D( soilMap, tuv * 0.8 ).rgb, smoothstep( 0.2, 0.8, mk.g ) );
+        vec4 det = texture2D( detailMap, vUv );
+        col = mix( col, det.rgb, det.a );
+        diffuseColor.rgb *= col;`);
+    };
+    loadTexture("grass", (t) => {
+      groundMat.map = t;
+      groundMat.needsUpdate = true;
+    });
+    loadTexture("dirt", (t) => {
+      uni.dirtMap.value = t;
+    });
+    loadTexture("soil", (t) => {
+      uni.soilMap.value = t;
+    });
+    const ground = new T3.Mesh(new T3.PlaneGeometry(96, 96), groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    ground.userData.keep = true;
+    root.add(ground);
+    const outer = new T3.Mesh(new T3.CircleGeometry(420, 40), mat(8176722));
+    outer.rotation.x = -Math.PI / 2;
+    outer.position.y = -0.06;
+    root.add(outer);
+    for (let i = 0; i < 16; i++) {
+      const a = i / 16 * Math.PI * 2 + rand(0.2), d = rand(120, 230), s = rand(40, 85);
+      add(root, sphereLoGeo(), i % 2 ? 7651154 : 9097572, Math.cos(a) * d, -s * 0.18, Math.sin(a) * d, { s: [s, s * rand(0.3, 0.5), s], cast: false, receive: false });
+    }
+    for (let i = 0; i < 26; i++) {
+      const a = rand(Math.PI * 2), d = rand(47, 80);
+      tree(Math.cos(a) * d * 1.05, Math.sin(a) * d * 1.05, rand(1, 1.7), false);
+    }
+    const mill = group(root, -58, 0, -52);
+    add(mill, cylGeo(1.6, 2.8, 12, 12), 16773590, 0, 6, 0);
+    add(mill, coneGeo(2.2, 2.4, 12), C.coopRoof, 0, 13.2, 0);
+    const blades = group(mill, 2, 11, 1.2);
+    blades.rotation.y = 0.9;
+    for (let i = 0; i < 4; i++) {
+      const b = add(blades, rboxGeo(0.8, 7, 0.1, 0.04), C.trim, 0, 0, 0.3);
+      b.geometry = b.geometry.clone().translate(0, 3.8, 0);
+      b.rotation.z = i * Math.PI / 2;
+      b.userData.keep = true;
+    }
+    animated.push((t) => {
+      blades.children.forEach((b, i) => {
+        b.rotation.z = t * 0.5 + i * Math.PI / 2;
+      });
+    });
+    const clouds = group(root);
+    for (let i = 0; i < 12; i++) {
+      const c = group(clouds, rand(-220, 220), rand(55, 85), rand(-220, 220));
+      const cm = new T3.MeshBasicMaterial({ color: 16777215, fog: false });
+      for (let k = 0; k < 4; k++) {
+        const p = new T3.Mesh(sphereLoGeo(), cm);
+        p.position.set(k * 5 - 7 + rand(-1, 1), rand(-1, 1), rand(-2, 2));
+        p.scale.set(rand(5, 8), rand(3, 4.5), rand(4, 6));
+        c.add(p);
+      }
+    }
+    animated.push((t, dt) => {
+      clouds.children.forEach((c) => {
+        c.position.x += dt * 1.2;
+        if (c.position.x > 240) c.position.x = -240;
+      });
+    });
+    const skyTex = canvasTexture(16, 256, (g) => {
+      const gr = g.createLinearGradient(0, 0, 0, 256);
+      gr.addColorStop(0, "#3fa4ee");
+      gr.addColorStop(0.45, "#8fd0fb");
+      gr.addColorStop(0.62, "#e4f6ff");
+      gr.addColorStop(1, "#e4f6ff");
+      g.fillStyle = gr;
+      g.fillRect(0, 0, 16, 256);
+    });
+    const sky = new T3.Mesh(new T3.SphereGeometry(400, 20, 14), new T3.MeshBasicMaterial({ map: skyTex, side: T3.BackSide, fog: false }));
+    root.add(sky);
+    bakeTree(root);
+    scene.fog = new T3.Fog(14676991, 130, 520);
+    scene.add(new T3.HemisphereLight(15004415, 14932144, 0.82));
+    const sun = new T3.DirectionalLight(16773328, 0.74);
+    sun.position.set(34, 58, 30);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -58, right: 58, top: 58, bottom: -58, near: 1, far: 160 });
+    sun.shadow.bias = -5e-4;
+    sun.shadow.normalBias = 0.04;
+    scene.add(sun);
+    const pt = (x, z) => ({ x, z });
+    const points = {
+      A: pt(-26, -13),
+      B: pt(24, -12.6),
+      MID: pt(0, 7.3),
+      YARD: pt(3, -17),
+      HERD: pt(0, 32),
+      HANDS: pt(0, -31),
+      A_S: pt(-26, -3),
+      A_E: pt(-15, -13),
+      W_GATE: pt(-15.5, 8),
+      W_ALLEY: pt(-35.5, 8),
+      A_BACK: pt(-36, -2),
+      E_GATE: pt(16.5, 10),
+      E_TUNNEL: pt(32.5, 10),
+      B_S: pt(32.5, -2),
+      MID_L: pt(-6.5, -7),
+      MID_R: pt(6.5, -7),
+      B_W: pt(10, -7)
+    };
+    const routes = {
+      A: [["W_GATE", "A_S", "A"], ["W_ALLEY", "A_BACK", "A_S", "A"], ["MID", "MID_L", "A_E", "A"]],
+      B: [["E_GATE", "B"], ["E_TUNNEL", "B_S", "B"], ["MID", "MID_R", "B_W", "B"]]
+    };
+    const holds = {
+      A: [{ x: -32, z: -18, lx: -26, lz: -6 }, { x: -21.5, z: -8.5, lx: -18, lz: -13 }, { x: -19.5, z: -15.6, lx: -26, lz: -7 }, { x: -15, z: -9.5, lx: -15.5, lz: 4 }, { x: -25.5, z: -16.6, lx: -26, lz: -6 }],
+      B: [{ x: 33.5, z: -11.5, lx: 16.5, lz: 5 }, { x: 18, z: -16.5, lx: 32.5, lz: 2 }, { x: 26.5, z: -19, lx: 22, lz: 2 }, { x: 23, z: -17.2, lx: 16.5, lz: 6 }, { x: 14.5, z: -10.5, lx: 32, lz: 2 }],
+      MID: [{ x: -2.5, z: -13.5, lx: -6.5, lz: -4 }, { x: 4, z: -24.2, lx: 6.5, lz: -4 }, { x: 7, z: -8.2, lx: 6.5, lz: 0 }]
+    };
+    const spawns = {
+      attack: [[0, 33], [-3, 33.6], [3, 33.6], [-6, 34.4], [6, 34.4]].map(([x, z]) => ({ x, z, yaw: 0 })),
+      defend: [[0, -31], [-3, -31.5], [3, -31.5], [-6, -32], [6, -32]].map(([x, z]) => ({ x, z, yaw: Math.PI }))
+    };
+    const sites = { A: { x: -26, z: -13, r: 3.4 }, B: { x: 24, z: -10.2, r: 3.4 } };
+    return { boxes, cornZones, points, routes, holds, spawns, sites, animated, half: 40 };
+  }
+  function roundRect(g, x, y, w, h, r) {
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.lineTo(x + w - r, y);
+    g.quadraticCurveTo(x + w, y, x + w, y + r);
+    g.lineTo(x + w, y + h - r);
+    g.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    g.lineTo(x + r, y + h);
+    g.quadraticCurveTo(x, y + h, x, y + h - r);
+    g.lineTo(x, y + r);
+    g.quadraticCurveTo(x, y, x + r, y);
+    g.closePath();
+  }
+
+  // src/nav.js
+  var R = 0.45;
+  function buildNav(world) {
+    const half = world.half, N = half * 2;
+    const blocked = new Uint8Array(N * N);
+    const obstacles = world.boxes.filter((b) => b.y1 < 1.6 && b.y2 > 0.3);
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const x = -half + i + 0.5, z = -half + j + 0.5;
+      for (const b of obstacles) {
+        if (x > b.x1 - R && x < b.x2 + R && z > b.z1 - R && z < b.z2 + R) {
+          blocked[j * N + i] = 1;
+          break;
+        }
+      }
+    }
+    const ci = (x) => Math.max(0, Math.min(N - 1, Math.floor(x + half)));
+    const isBlocked = (x, z) => x <= -half || x >= half || z <= -half || z >= half || blocked[ci(z) * N + ci(x)] === 1;
+    function nearestFree(x, z) {
+      if (!isBlocked(x, z)) return { x, z };
+      for (let r = 1; r < 8; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
+        if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue;
+        const i = ci(x) + di, j = ci(z) + dj;
+        if (i < 0 || j < 0 || i >= N || j >= N || blocked[j * N + i]) continue;
+        return { x: -half + i + 0.5, z: -half + j + 0.5 };
+      }
+      return { x, z };
+    }
+    function segmentClear(ax, az, bx, bz) {
+      const d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / 0.3);
+      for (let k = 0; k <= n; k++) {
+        const t = n ? k / n : 0, x = ax + (bx - ax) * t, z = az + (bz - az) * t;
+        if (isBlocked(x, z) || isBlocked(x + 0.3, z) || isBlocked(x - 0.3, z) || isBlocked(x, z + 0.3) || isBlocked(x, z - 0.3)) return false;
+      }
+      return true;
+    }
+    const g = new Float32Array(N * N), f = new Float32Array(N * N), came = new Int32Array(N * N), state = new Uint8Array(N * N);
+    const DIRS = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.414], [1, -1, 1.414], [-1, 1, 1.414], [-1, -1, 1.414]];
+    function findPath(sx, sz, tx, tz, wobble = 0) {
+      const s = nearestFree(sx, sz), t = nearestFree(tx, tz);
+      const si = ci(s.x), sj = ci(s.z), ti = ci(t.x), tj = ci(t.z);
+      const start = sj * N + si, goal = tj * N + ti;
+      state.fill(0);
+      const heap = [start];
+      g[start] = 0;
+      f[start] = 0;
+      came[start] = -1;
+      state[start] = 1;
+      let found = false;
+      while (heap.length) {
+        let bi = 0;
+        for (let k = 1; k < heap.length; k++) if (f[heap[k]] < f[heap[bi]]) bi = k;
+        const cur = heap[bi];
+        heap[bi] = heap[heap.length - 1];
+        heap.pop();
+        if (cur === goal) {
+          found = true;
+          break;
+        }
+        state[cur] = 2;
+        const cx = cur % N, cz = cur / N | 0;
+        for (const [dx, dz, cost] of DIRS) {
+          const nx = cx + dx, nz = cz + dz;
+          if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
+          const ni = nz * N + nx;
+          if (blocked[ni] || state[ni] === 2) continue;
+          if (dx && dz && (blocked[cz * N + nx] || blocked[nz * N + cx])) continue;
+          const ng = g[cur] + cost * (1 + (wobble ? Math.random() * wobble : 0));
+          if (state[ni] === 1 && ng >= g[ni]) continue;
+          g[ni] = ng;
+          came[ni] = cur;
+          const hx = Math.abs(nx - ti), hz = Math.abs(nz - tj);
+          f[ni] = ng + Math.max(hx, hz) + 0.414 * Math.min(hx, hz);
+          if (state[ni] !== 1) {
+            state[ni] = 1;
+            heap.push(ni);
+          }
+        }
+      }
+      if (!found) return null;
+      const cells = [];
+      for (let c = goal; c !== -1; c = came[c]) cells.push({ x: -half + c % N + 0.5, z: -half + (c / N | 0) + 0.5 });
+      cells.reverse();
+      const out = [cells[0]];
+      let a = 0;
+      while (a < cells.length - 1) {
+        let b = Math.min(cells.length - 1, a + 14);
+        while (b > a + 1 && !segmentClear(cells[a].x, cells[a].z, cells[b].x, cells[b].z)) b--;
+        out.push(cells[b]);
+        a = b;
+      }
+      return out;
+    }
+    return { findPath, isBlocked, nearestFree, segmentClear, blocked, N, half };
+  }
+
+  // src/characters.js
+  var T4 = window.THREE;
   var HALF = Math.PI / 2;
   function eyes(head, y, z, spread, size = 0.07) {
     for (const s of [-1, 1]) {
@@ -1740,7 +1978,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
   }
   function skeleton(o) {
-    const root = new T3.Group();
+    const root = new T4.Group();
     const pose = group(root);
     const upper = group(pose);
     const legs = [], arms = [];
@@ -1764,7 +2002,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
     const mount = group(arms[1], 0, -0.4, 0);
     mount.rotation.x = -HALF;
-    const marker = add(root, coneGeo(0.13, 0.26, 10), new T3.MeshBasicMaterial({ color: 7208826 }), 0, 2.3, 0, { r: [Math.PI, 0, 0], cast: false });
+    const marker = add(root, coneGeo(0.13, 0.26, 10), new T4.MeshBasicMaterial({ color: 7208826 }), 0, 2.3, 0, { r: [Math.PI, 0, 0], cast: false });
     marker.visible = false;
     return { root, pose, upper, legs, arms, torso, head, mount, marker, splats: [], phase: Math.random() * 6, flop: 0 };
   }
@@ -1855,6 +2093,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   };
   function buildCharacter(kind, look) {
     const c = BUILD[kind](look);
+    const model = MODELS[kind === "farmer" ? `farmer${look || 0}` : kind];
+    if (model && modelOptions.enabled) attachModel(c, model);
     for (const part of [c.torso, c.head, ...c.legs, ...c.arms]) {
       for (const m of part.children) if (m.isMesh) m.castShadow = true;
       bakeChildren(part);
@@ -1865,6 +2105,24 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     c.phase += dt * (4 + speed * 1.7);
     const k = Math.min(1, speed / 5);
     const sw = Math.sin(c.phase) * 0.85 * k;
+    if (c.rig) {
+      const r = c.rig, ease = Math.min(1, dt * 14);
+      r.legL.rotation.x = sw * 0.8;
+      r.legR.rotation.x = -sw * 0.8;
+      r.drop += ((crouched ? 0.3 : 0) - r.drop) * ease;
+      r.pelvis.position.y = r.pelvisY - r.drop + Math.abs(Math.sin(c.phase)) * 0.04 * k;
+      r.pelvis.rotation.z = Math.sin(c.phase) * 0.05 * k;
+      const squash = Math.max(0.35, (r.legLen - r.drop) / r.legLen);
+      r.legL.scale.y = squash;
+      r.legR.scale.y = squash;
+      r.armR.rotation.set(pitch, HALF + 0.14, 0);
+      r.armL.rotation.set(pitch, -HALF - 0.42, 0);
+      r.head.rotation.x = pitch * 0.45;
+      c.flop += ((alive ? 0 : 1) - c.flop) * Math.min(1, dt * 9);
+      c.pose.rotation.x = c.flop * HALF * 0.98;
+      c.pose.position.y = c.flop * 0.22;
+      return;
+    }
     c.legs[0].rotation.x = sw;
     c.legs[1].rotation.x = -sw;
     const drop = crouched ? 0.32 : 0;
@@ -1890,7 +2148,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     blob.position.x = p.x * Math.min(1.4, Math.max(reach, 0.9));
     blob.position.z = p.z * Math.min(1.4, Math.max(reach, 0.9));
     blob.scale.set(0.14 + Math.random() * 0.06, 0.12 + Math.random() * 0.06, 0.1);
-    blob.lookAt(c.pose.localToWorld(new T3.Vector3(0, blob.position.y, 0)));
+    blob.lookAt(c.pose.localToWorld(new T4.Vector3(0, blob.position.y, 0)));
     c.splats.push(blob);
     if (c.splats.length > 9) c.pose.remove(c.splats.shift());
   }
@@ -1902,7 +2160,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     c.pose.position.y = 0;
   }
   function buildGadget(id) {
-    const g = new T3.Group();
+    const g = new T4.Group();
     let muzzle = { y: 0.07, z: -0.3 };
     if (id === "squirter") {
       add(g, rboxGeo(0.085, 0.105, 0.27, 0.04), 3120106, 0, 0.06, -0.08);
@@ -1943,7 +2201,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     return g;
   }
   function buildPumpkin() {
-    const g = new T3.Group();
+    const g = new T4.Group();
     const body2 = group(g, 0, 0.3, 0);
     for (let i = 0; i < 6; i++) {
       const a = i / 6 * Math.PI;
@@ -1955,13 +2213,84 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     add(body2, cylGeo(0.1, 0.1, 0.05, 14), 14828602, 0.3, 0, 0, { r: [0, 0, HALF] });
     add(body2, cylGeo(0.085, 0.085, 0.055, 14), 16774879, 0.31, 0, 0, { r: [0, 0, HALF], cast: false });
     bakeChildren(body2);
-    const glow = add(g, sphereGeo(), new T3.MeshBasicMaterial({ color: 12055098, transparent: true, opacity: 0.25, depthWrite: false }), 0, 0.3, 0, { s: 0.6, cast: false, receive: false });
+    const glow = add(g, sphereGeo(), new T4.MeshBasicMaterial({ color: 12055098, transparent: true, opacity: 0.25, depthWrite: false }), 0, 0.3, 0, { s: 0.6, cast: false, receive: false });
     glow.visible = false;
     return { root: g, body: body2, glow };
   }
+  var MODELS = {};
+  var modelOptions = { enabled: true };
+  var modelCache = /* @__PURE__ */ new Map();
+  function unpack(text, Type) {
+    const bin = atob(text), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Type(bytes.buffer);
+  }
+  function loadModel(name) {
+    if (!modelCache.has(name)) {
+      modelCache.set(name, fetch(`assets/chars/${name}.json`).then((r) => r.ok ? r.json() : Promise.reject()).then((d) => {
+        const g = new T4.BufferGeometry(), n = d.verts;
+        const p16 = unpack(d.pos, Int16Array), pos = new Float32Array(n * 3);
+        for (let i = 0; i < n * 3; i++) pos[i] = p16[i] / 32767 * 2;
+        g.setAttribute("position", new T4.BufferAttribute(pos, 3));
+        g.setAttribute("normal", new T4.BufferAttribute(unpack(d.nrm, Int8Array), 3, true));
+        g.setAttribute("uv", new T4.BufferAttribute(unpack(d.uv, Uint16Array), 2, true));
+        g.setIndex(new T4.BufferAttribute(unpack(d.idx, d.idxBytes === 2 ? Uint16Array : Uint32Array), 1));
+        const bi = unpack(d.bi, Uint8Array), bw = unpack(d.bw, Uint8Array), si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
+        for (let i = 0; i < n; i++) {
+          si[i * 4] = bi[i * 2];
+          si[i * 4 + 1] = bi[i * 2 + 1];
+          sw[i * 4] = bw[i * 2] / 255;
+          sw[i * 4 + 1] = bw[i * 2 + 1] / 255;
+        }
+        g.setAttribute("skinIndex", new T4.BufferAttribute(si, 4));
+        g.setAttribute("skinWeight", new T4.BufferAttribute(sw, 4));
+        g.computeBoundingSphere();
+        g.boundingSphere.radius = 2.2;
+        const tex = new T4.TextureLoader().load(`assets/chars/${name}.jpg`);
+        tex.encoding = T4.sRGBEncoding;
+        tex.flipY = false;
+        tex.anisotropy = 4;
+        return { geometry: g, material: new T4.MeshLambertMaterial({ map: tex }), rig: d.rig };
+      }));
+    }
+    return modelCache.get(name);
+  }
+  function attachModel(c, name) {
+    loadModel(name).then((m) => {
+      const R2 = m.rig, py = R2.crotchY + 0.06;
+      const bone = (x, y, z, parent) => {
+        const b = new T4.Bone();
+        b.position.set(x, y, z);
+        if (parent) parent.add(b);
+        return b;
+      };
+      const pelvis = bone(0, py, 0);
+      const legL = bone(-R2.hipX, -0.02, 0, pelvis), legR = bone(R2.hipX, -0.02, 0, pelvis);
+      const armL = bone(-R2.shoulderX, R2.shoulderY - py, R2.handZ, pelvis), armR = bone(R2.shoulderX, R2.shoulderY - py, R2.handZ, pelvis);
+      const head = bone(0, R2.neckY - py, 0, pelvis);
+      const mesh = new T4.SkinnedMesh(m.geometry, m.material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.frustumCulled = false;
+      mesh.add(pelvis);
+      mesh.updateMatrixWorld(true);
+      mesh.bind(new T4.Skeleton([pelvis, legL, legR, armL, armR, head]));
+      const hand = new T4.Group();
+      hand.position.set(R2.handX - R2.shoulderX, -0.02, 0);
+      armR.add(hand);
+      c.mount.position.set(0, 0, 0);
+      c.mount.rotation.set(0, -HALF, 0);
+      hand.add(c.mount);
+      c.upper.visible = false;
+      for (const l of c.legs) l.visible = false;
+      c.pose.add(mesh);
+      c.rig = { pelvis, legL, legR, armL, armR, head, mesh, pelvisY: py, legLen: py, drop: 0 };
+    }).catch(() => {
+    });
+  }
 
   // src/actor.js
-  var T4 = window.THREE;
+  var T5 = window.THREE;
   var Actor = class {
     constructor(game, team, info, isPlayer) {
       this.game = game;
@@ -1969,8 +2298,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       this.name = info.name;
       this.kind = info.kind;
       this.isPlayer = isPlayer;
-      this.pos = new T4.Vector3();
-      this.vel = new T4.Vector3();
+      this.pos = new T5.Vector3();
+      this.vel = new T5.Vector3();
       this.yaw = 0;
       this.pitch = 0;
       this.recoil = 0;
@@ -1989,6 +2318,9 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       this.kit = false;
       this.coins = ECON.start;
       this.scoped = false;
+      this.throws = { flour: 0, rooster: 0, mud: 0 };
+      this.throwT = 0;
+      this.dazeT = 0;
       this.stepDist = 0;
       this.outT = 0;
       this.busy = false;
@@ -2049,7 +2381,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         this.primary = null;
         this.armor = 0;
         this.kit = false;
+        this.throws = { flour: 0, rooster: 0, mud: 0 };
       }
+      this.throwT = 0;
+      this.dazeT = 0;
       this.hp = 100;
       this.alive = true;
       this.crouched = false;
@@ -2084,6 +2419,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       let top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
       const g = GADGETS[this.gadgetId];
       if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
+      top *= this.game.throwables.slowAt(this.pos.x, this.pos.z);
       const tx = wx * top, tz = wz * top;
       const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
       const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);
@@ -2146,6 +2482,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     tick(dt) {
       if (this.cooldown > 0) this.cooldown -= dt;
       if (this.sayT > 0) this.sayT -= dt;
+      if (this.throwT > 0) this.throwT -= dt;
+      if (this.dazeT > 0) this.dazeT -= dt;
       if (this.reloadT > 0) {
         this.reloadT -= dt;
         if (this.reloadT <= 0) {
@@ -2214,6 +2552,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       this.guarding = false;
       this.corkDuty = false;
       this.fetching = false;
+      this.toss = null;
+      this.usedFlour = false;
+      this.usedMud = false;
+      this.usedRooster = false;
       if (this.a) this.a.wantUse = false;
     }
     // ---------- orders from the match ----------
@@ -2244,10 +2586,15 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       const hy = e.pos.y + (e.crouched ? 1.1 : 1.44), cy = e.pos.y + (e.crouched ? 0.55 : 0.85);
       if (!losClear(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, boxes) && !losClear(a.pos.x, ey, a.pos.z, e.pos.x, cy, e.pos.z, boxes)) return false;
       if (lengthInside(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, this.g.world.cornZones) > 3.5) return false;
+      if (this.g.throwables.sightBlocked(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z)) return false;
       return true;
     }
     perceive() {
       const a = this.a;
+      if (a.dazeT > 0.3) {
+        this.target = null;
+        return;
+      }
       let best = null, bestD = 1e9;
       for (const e of this.g.actors) {
         if (!e.alive || e.team === a.team) continue;
@@ -2263,6 +2610,10 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
           this.seenT = 0;
           this.errT = 0;
           this.g.onSpot(a, best);
+          if (a.throws.mud && !this.usedMud && this.plan.role === "defend" && bestD > 8 && bestD < 19) {
+            this.usedMud = true;
+            this.toss = { id: "mud", x: best.pos.x + best.vel.x * 0.8, z: best.pos.z + best.vel.z * 0.8 };
+          }
         }
         this.lastSeen = { x: best.pos.x, z: best.pos.z };
         this.g.report(a.team, best);
@@ -2306,6 +2657,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         } else {
           this.state = "hunt";
           this.huntUntil = now + rand(2.5, 4.5);
+          const d = Math.hypot(this.lastSeen.x - a.pos.x, this.lastSeen.z - a.pos.z);
+          if (a.throws.rooster && !this.usedRooster && d > 5 && d < 17 && Math.random() < 0.7) {
+            this.usedRooster = true;
+            this.toss = { id: "rooster", x: this.lastSeen.x, z: this.lastSeen.z };
+          }
         }
         return;
       }
@@ -2401,10 +2757,22 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       if (this.alertT > 0) this.alertT -= dt;
       a.wantUse = this.wantsUse();
+      if (!this.usedFlour && a.throws.flour && this.plan.role === "attack" && this.state === "travel" && this.hold && !this.target) {
+        const d = Math.hypot(this.hold.x - a.pos.x, this.hold.z - a.pos.z);
+        if (d > 9 && d < 17) {
+          this.usedFlour = true;
+          this.toss = { id: "flour", x: a.pos.x + (this.hold.x - a.pos.x) * 0.62, z: a.pos.z + (this.hold.z - a.pos.z) * 0.62 };
+        }
+      }
+      if (this.toss && a.throwT <= 0 && !a.busy && a.dazeT <= 0) {
+        const dx = this.toss.x - a.pos.x, dz = this.toss.z - a.pos.z;
+        g.throwables.throwItem(a, this.toss.id, yawTo(dx, dz), lobPitch(Math.hypot(dx, dz)));
+        this.toss = null;
+      }
       let wx = 0, wz = 0, wantYaw = a.yaw, wantPitch = 0, crouch = false;
       const t = this.target;
       const gd = GADGETS[a.gadgetId];
-      if (t && t.alive && !a.busy) {
+      if (t && t.alive && !a.busy && a.dazeT <= 0.3) {
         this.seenT += dt;
         this.errT -= dt;
         if (this.errT <= 0) {
@@ -2507,8 +2875,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   };
 
   // src/combat.js
-  var T5 = window.THREE;
-  var tmp = new T5.Vector3();
+  var T6 = window.THREE;
+  var tmp = new T6.Vector3();
   var body = { x1: 0, y1: 0, z1: 0, x2: 0, y2: 0, z2: 0 };
   function createCombat(game) {
     const shots = [];
@@ -2643,13 +3011,13 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   }
 
   // src/fx.js
-  var T6 = window.THREE;
+  var T7 = window.THREE;
   function createFx(scene) {
     const freeShots = [];
     function shotMesh(color) {
       let m = freeShots.pop();
       if (!m) {
-        m = new T6.Mesh(sphereGeo(), new T6.MeshBasicMaterial({ color }));
+        m = new T7.Mesh(sphereGeo(), new T7.MeshBasicMaterial({ color }));
         m.scale.set(0.055, 0.055, 0.42);
         scene.add(m);
       }
@@ -2663,7 +3031,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
     const blobGeos = [];
     for (let v = 0; v < 4; v++) {
-      const g = new T6.CircleGeometry(1, 14);
+      const g = new T7.CircleGeometry(1, 14);
       const p = g.attributes.position;
       for (let i = 1; i < p.count; i++) {
         const k = 0.7 + Math.random() * 0.5;
@@ -2678,7 +3046,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     function splat(x, y, z, nx, ny, nz, color, size) {
       let d = decals[decalNext];
       if (!d) {
-        d = new T6.Mesh(blobGeos[decalNext % 4], new T6.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+        d = new T7.Mesh(blobGeos[decalNext % 4], new T7.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
         d.receiveShadow = true;
         scene.add(d);
         decals[decalNext] = d;
@@ -2699,7 +3067,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       for (let i = 0; i < n; i++) {
         let d = drops[dropNext];
         if (!d) {
-          d = { m: new T6.Mesh(sphereGeo(), new T6.MeshBasicMaterial({ color })), vx: 0, vy: 0, vz: 0, life: 0 };
+          d = { m: new T7.Mesh(sphereGeo(), new T7.MeshBasicMaterial({ color })), vx: 0, vy: 0, vz: 0, life: 0 };
           scene.add(d.m);
           drops[dropNext] = d;
         }
@@ -2735,7 +3103,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   }
 
   // src/audio-pack.js
-  var AUDIO_PACK = { "ann_corked": [0, 17598], "ann_defeat": [17598, 17389], "ann_go": [34987, 13209], "ann_half": [48196, 21986], "ann_hands_win": [70182, 20941], "ann_herd_win": [91123, 15508], "ann_match_point": [106631, 10701], "ann_planted": [117332, 25748], "ann_stink": [143080, 23031], "ann_ten": [166111, 11537], "ann_time": [177648, 7985], "ann_victory": [185633, 25957], "ann_welcome": [211590, 24703], "hands_corking": [236293, 16762], "hands_dropped": [253055, 9239], "hands_go_1": [262294, 13418], "hands_go_2": [275712, 10701], "hands_got_it": [286413, 9657], "hands_guard": [296070, 13836], "hands_hurt_1": [309906, 16762], "hands_hurt_2": [326668, 11955], "hands_nice": [338623, 9448], "hands_out_1": [348071, 23031], "hands_out_2": [371102, 18852], "hands_planted_a": [389954, 15090], "hands_planted_b": [405044, 14254], "hands_planting": [419298, 13836], "hands_refill": [433134, 10701], "hands_spot_1": [443835, 7985], "hands_spot_2": [451820, 11746], "hands_to_a": [463566, 8612], "hands_to_b": [472178, 9657], "herd_corking": [481835, 16762], "herd_dropped": [498597, 10701], "herd_go_1": [509298, 18225], "herd_go_2": [527523, 17180], "herd_got_it": [544703, 13209], "herd_guard": [557912, 13418], "herd_hurt_1": [571330, 14254], "herd_hurt_2": [585584, 16344], "herd_nice": [601928, 8821], "herd_out_1": [610749, 25121], "herd_out_2": [635870, 17598], "herd_planting": [653468, 15508], "herd_refill": [668976, 6731], "herd_spot_1": [675707, 9657], "herd_spot_2": [685364, 12582], "herd_to_a": [697946, 8821], "herd_to_b": [706767, 10701], "music_defeat": [717468, 420981], "music_fuse": [1138449, 420981], "music_lose": [1559430, 84890], "music_menu": [1644320, 858741], "music_victory": [2503061, 414764], "music_win": [2917825, 91838], "noise_chicken": [3009663, 9657], "noise_cow": [3019320, 13418], "noise_goat": [3032738, 16971], "noise_pig": [3049709, 18225], "noise_sheep": [3067934, 23031], "sfx_bell": [3090965, 21987], "sfx_click": [3112952, 7254], "sfx_cluck": [3120206, 39228], "sfx_cork_pop": [3159434, 6e3], "sfx_egg": [3165434, 4120], "sfx_flop": [3169554, 10703], "sfx_pea": [3180257, 6941], "sfx_refill": [3187198, 15091], "sfx_rooster": [3202289, 15718], "sfx_splat": [3218007, 9135], "sfx_squeak": [3227142, 12270], "sfx_squirt": [3239412, 6314], "sfx_step1": [3245726, 4120], "sfx_step2": [3249846, 4120], "sfx_step3": [3253966, 4120], "sfx_step4": [3258086, 4433], "sfx_thud": [3262519, 6e3], "sfx_thwap": [3268519, 6941], "sfx_tick": [3275460, 2239], "sfx_tock": [3277699, 2239], "sfx_tomato": [3279938, 5687] };
+  var AUDIO_PACK = { "ann_corked": [0, 17598], "ann_defeat": [17598, 17389], "ann_go": [34987, 13209], "ann_half": [48196, 21986], "ann_hands_win": [70182, 20941], "ann_herd_win": [91123, 15508], "ann_match_point": [106631, 10701], "ann_planted": [117332, 25748], "ann_stink": [143080, 23031], "ann_ten": [166111, 11537], "ann_time": [177648, 7985], "ann_victory": [185633, 25957], "ann_welcome": [211590, 24703], "hands_corking": [236293, 16762], "hands_dropped": [253055, 9239], "hands_flour": [262294, 9239], "hands_go_1": [271533, 13418], "hands_go_2": [284951, 10701], "hands_got_it": [295652, 9657], "hands_guard": [305309, 13836], "hands_hurt_1": [319145, 16762], "hands_hurt_2": [335907, 11955], "hands_mud": [347862, 7358], "hands_nice": [355220, 9448], "hands_out_1": [364668, 23031], "hands_out_2": [387699, 18852], "hands_planted_a": [406551, 15090], "hands_planted_b": [421641, 14254], "hands_planting": [435895, 13836], "hands_refill": [449731, 10701], "hands_rooster": [460432, 13836], "hands_spot_1": [474268, 7985], "hands_spot_2": [482253, 11746], "hands_to_a": [493999, 8612], "hands_to_b": [502611, 9657], "herd_corking": [512268, 16762], "herd_dropped": [529030, 10701], "herd_flour": [539731, 10910], "herd_go_1": [550641, 18225], "herd_go_2": [568866, 17180], "herd_got_it": [586046, 13209], "herd_guard": [599255, 13418], "herd_hurt_1": [612673, 14254], "herd_hurt_2": [626927, 16344], "herd_mud": [643271, 8403], "herd_nice": [651674, 8821], "herd_out_1": [660495, 25121], "herd_out_2": [685616, 17598], "herd_planting": [703214, 15508], "herd_refill": [718722, 6731], "herd_rooster": [725453, 14881], "herd_spot_1": [740334, 9657], "herd_spot_2": [749991, 12582], "herd_to_a": [762573, 8821], "herd_to_b": [771394, 10701], "music_defeat": [782095, 420981], "music_fuse": [1203076, 420981], "music_lose": [1624057, 84890], "music_menu": [1708947, 858741], "music_victory": [2567688, 414764], "music_win": [2982452, 91838], "noise_chicken": [3074290, 9657], "noise_cow": [3083947, 13418], "noise_goat": [3097365, 16971], "noise_pig": [3114336, 18225], "noise_sheep": [3132561, 23031], "sfx_bell": [3155592, 21987], "sfx_click": [3177579, 7254], "sfx_cluck": [3184833, 39228], "sfx_cork_pop": [3224061, 6e3], "sfx_egg": [3230061, 4120], "sfx_flop": [3234181, 10703], "sfx_pea": [3244884, 6941], "sfx_refill": [3251825, 15091], "sfx_rooster": [3266916, 15718], "sfx_splat": [3282634, 9135], "sfx_squeak": [3291769, 12270], "sfx_squirt": [3304039, 6314], "sfx_step1": [3310353, 4120], "sfx_step2": [3314473, 4120], "sfx_step3": [3318593, 4120], "sfx_step4": [3322713, 4433], "sfx_thud": [3327146, 6e3], "sfx_thwap": [3333146, 6941], "sfx_tick": [3340087, 2239], "sfx_tock": [3342326, 2239], "sfx_tomato": [3344565, 5687] };
 
   // src/audio.js
   var VOICE = [
@@ -2758,7 +3126,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     "noise_sheep",
     "noise_goat"
   ];
-  for (const t of ["herd", "hands"]) for (const k of ["go_1", "go_2", "spot_1", "spot_2", "planting", "guard", "dropped", "got_it", "hurt_1", "hurt_2", "out_1", "out_2", "nice", "refill", "to_a", "to_b", "corking"]) VOICE.push(`${t}_${k}`);
+  for (const t of ["herd", "hands"]) for (const k of ["go_1", "go_2", "spot_1", "spot_2", "planting", "guard", "dropped", "got_it", "hurt_1", "hurt_2", "out_1", "out_2", "nice", "refill", "to_a", "to_b", "corking", "flour", "rooster", "mud"]) VOICE.push(`${t}_${k}`);
   VOICE.push("hands_planted_a", "hands_planted_b");
   var SFX = [
     "sfx_squirt",
@@ -3059,6 +3427,26 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         noise(1.6, 900, 200, v * 0.4, p.pan, "lowpass");
         noise(2.2, 5e3, 1800, v * 0.12, p.pan, "highpass");
       },
+      toss(a) {
+        const p = a.isPlayer ? { vol: 0.7, pan: 0 } : place(a.pos.x, a.pos.z);
+        noise(0.2, 500, 1900, p.vol * 0.22, p.pan, "bandpass", 0.8);
+      },
+      poof(x, z) {
+        const p = place(x, z), v = Math.max(0.2, p.vol);
+        noise(0.55, 1400, 180, v * 0.45, p.pan, "lowpass");
+        noise(0.9, 4e3, 2e3, v * 0.08, p.pan, "highpass");
+      },
+      crow(x, z) {
+        const p = place(x, z);
+        if (!sample("sfx_rooster", Math.max(0.35, p.vol) * 1.1, p.pan, 1.08)) {
+          tone("sawtooth", 500, 900, 0.25, 0.25, p.pan);
+          tone("sawtooth", 900, 600, 0.4, 0.25, p.pan, 0.25);
+        }
+      },
+      mud(x, z) {
+        const p = place(x, z);
+        if (!sample("sfx_splat", Math.max(0.2, p.vol) * 0.9, p.pan, 0.62)) noise(0.25, 700, 120, p.vol * 0.5, p.pan, "lowpass");
+      },
       buy() {
         sample("sfx_click", 0.6);
         tone("sine", 1320, 1320, 0.09, 0.14);
@@ -3144,7 +3532,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       "prompt-text",
       "prompt-bar",
       "prompt-fill",
-      "scope"
+      "scope",
+      "veil",
+      "slot-3",
+      "slot-4",
+      "slot-5"
     ]) el[id] = $(id);
     for (const t of ["herd", "hands"]) {
       el["pips-" + t].innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
@@ -3209,6 +3601,18 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         el["slot-2"].classList.toggle("on", p.gadgetId === "squirter");
       }
       show("sb", el["slot-b"], game.state === "freeze");
+      const tk = `${p.throws.flour}${p.throws.rooster}${p.throws.mud}`;
+      if (last.tk !== tk) {
+        last.tk = tk;
+        el["slot-3"].classList.toggle("empty", !p.throws.flour);
+        el["slot-4"].classList.toggle("empty", !p.throws.rooster);
+        el["slot-5"].classList.toggle("empty", !p.throws.mud);
+      }
+      const veil = Math.round((game.veil || 0) * 50) / 50;
+      if (last.veil !== veil) {
+        last.veil = veil;
+        el.veil.style.opacity = veil;
+      }
       if (last.coins !== p.coins) {
         if (last.coins !== void 0) {
           el.purse.classList.add("flash");
@@ -3431,12 +3835,12 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   }
 
   // src/viewmodel.js
-  var T7 = window.THREE;
+  var T8 = window.THREE;
   function createViewModel() {
-    const scene = new T7.Scene();
-    const cam = new T7.PerspectiveCamera(50, 1, 0.01, 10);
-    scene.add(new T7.HemisphereLight(16777215, 11587728, 0.85));
-    const sun = new T7.DirectionalLight(16773846, 0.6);
+    const scene = new T8.Scene();
+    const cam = new T8.PerspectiveCamera(50, 1, 0.01, 10);
+    scene.add(new T8.HemisphereLight(16777215, 11587728, 0.85));
+    const sun = new T8.DirectionalLight(16773846, 0.6);
     sun.position.set(-1, 2, 1.5);
     scene.add(sun);
     const holder = group(scene, 0, 0, 0);
@@ -3455,8 +3859,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     }
     const hand = add(holder, sphereGeo(), 16777215, 0, -0.07, 0.05, { s: [0.07, 0.075, 0.075], cast: false, receive: false });
     const arm = add(holder, capsuleGeo(0.055, 0.4), 16777215, 0.06, -0.2, 0.27, { r: [1, 0, -0.2], cast: false, receive: false });
-    hand.material = new T7.MeshLambertMaterial({ color: 16777215 });
-    arm.material = new T7.MeshLambertMaterial({ color: 16777215 });
+    hand.material = new T8.MeshLambertMaterial({ color: 16777215 });
+    arm.material = new T8.MeshLambertMaterial({ color: 16777215 });
     let current = null, kick = 0, raise = 1, bobT = 0;
     return {
       scene,
@@ -3496,26 +3900,26 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
   }
 
   // src/main.js
-  var T8 = window.THREE;
+  var T9 = window.THREE;
   var $2 = (id) => document.getElementById(id);
   var other = (team) => team === "herd" ? "hands" : "herd";
   function boot() {
     const canvas = $2("view"), rootEl = $2("game");
     let renderer;
     try {
-      renderer = new T8.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+      renderer = new T9.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
     } catch (e) {
       $2("touch-note").hidden = false;
       $2("touch-note").textContent = "This browser could not start 3D graphics. Try a recent version of Chrome, Edge, Firefox or Safari on a computer.";
       $2("play").disabled = true;
       return;
     }
-    renderer.outputEncoding = T8.sRGBEncoding;
+    renderer.outputEncoding = T9.sRGBEncoding;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T8.PCFSoftShadowMap;
+    renderer.shadowMap.type = T9.PCFSoftShadowMap;
     renderer.autoClear = false;
-    const scene = new T8.Scene();
-    const camera = new T8.PerspectiveCamera(72, 1, 0.08, 700);
+    const scene = new T9.Scene();
+    const camera = new T9.PerspectiveCamera(72, 1, 0.08, 700);
     camera.rotation.order = "YXZ";
     const game = {
       scene,
@@ -3549,6 +3953,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.fx = createFx(scene);
     game.audio = createAudio(game);
     game.combat = createCombat(game);
+    game.throwables = createThrowables(game);
     game.hud = createHud(game);
     const vm = createViewModel();
     const botOf = /* @__PURE__ */ new Map();
@@ -3570,7 +3975,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     const puffs = [];
     function stinkCloud(x, z) {
       for (let i = 0; i < 16; i++) {
-        const m = new T8.Mesh(sphereGeo(), new T8.MeshBasicMaterial({ color: i % 2 ? 12055098 : 9427274, transparent: true, opacity: 0.6, depthWrite: false }));
+        const m = new T9.Mesh(sphereGeo(), new T9.MeshBasicMaterial({ color: i % 2 ? 12055098 : 9427274, transparent: true, opacity: 0.6, depthWrite: false }));
         m.position.set(x + rand(-1, 1), 0.6 + rand(0, 1.2), z + rand(-1, 1));
         scene.add(m);
         puffs.push({ m, life: 0, max: rand(2.2, 3.6), vx: rand(-2.6, 2.6), vy: rand(0.4, 1.6), vz: rand(-2.6, 2.6), size: rand(1.2, 2.6) });
@@ -3613,7 +4018,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
     game.shopItems = (a) => SHOP.map((it) => {
       const g = GADGETS[it.id];
       let state = "ok";
-      if (it.kind === "gadget" ? a.primary === it.id : it.id === "overalls" ? a.armor >= 100 : a.kit) state = "own";
+      if (it.kind === "gadget" ? a.primary === it.id : it.kind === "throw" ? a.throws[it.id] > 0 : it.id === "overalls" ? a.armor >= 100 : a.kit) state = "own";
       else if (it.role && it.role !== roleOf(a.team)) state = "role";
       else if (a.coins < it.price) state = "poor";
       return { id: it.id, name: g ? g.name : it.name, icon: it.icon, price: it.price, blurb: it.blurb, state };
@@ -3626,6 +4031,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       a.coins -= it.price;
       if (PRIMARIES.includes(id)) a.givePrimary(id);
+      else if (THROWS[id]) a.throws[id] = 1;
       else if (id === "overalls") a.armor = 100;
       else a.kit = true;
       if (a.isPlayer) {
@@ -3643,6 +4049,11 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       }
       if (a.armor < 60 && a.coins >= 650) game.buy(a, "overalls");
       if (roleOf(a.team) === "defend" && !a.kit && a.coins >= 400 && Math.random() < 0.7) game.buy(a, "kit");
+      if (a.primary || a.coins >= 1500) {
+        if (roleOf(a.team) === "attack" && a.coins >= 300 && Math.random() < 0.55) game.buy(a, "flour");
+        if (a.coins >= 200 && Math.random() < 0.45) game.buy(a, "rooster");
+        if (roleOf(a.team) === "defend" && a.coins >= 300 && Math.random() < 0.45) game.buy(a, "mud");
+      }
     }
     function startMatch(team, diffKey) {
       for (const a of game.actors) scene.remove(a.char.root);
@@ -3727,6 +4138,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.freezeT = ROUND.freeze;
       game.roundT = ROUND.length;
       game.combat.clear();
+      game.throwables.clear();
       game.intel.herd.clear();
       game.intel.hands.clear();
       for (const t of ["herd", "hands"]) {
@@ -3798,6 +4210,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       game.player = null;
       game.viewActor = null;
       game.combat.clear();
+      game.throwables.clear();
       P.state = "none";
       P.carrier = null;
       pumpkin.root.visible = false;
@@ -4124,6 +4537,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       else if (digit === 2) want = "squirter";
       else if (e.code === "KeyQ") want = p.has(p.lastGadget) ? p.lastGadget : "squirter";
       if (want && p.setGadget(want)) audio.ui();
+      const lob = { 3: "flour", 4: "rooster", 5: "mud" }[digit];
+      if (lob && !game.throwables.throwItem(p, lob, p.yaw, p.pitch + 0.06) && game.state === "live" && !p.throws[lob]) audio.deny();
       if (e.code === "KeyR") p.startReload();
       if (e.code === "KeyF") fireEdge = true;
       if (e.code === "KeyZ") toggleZoom();
@@ -4234,6 +4649,7 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
         for (const b of game.bots) b.update(dt);
         for (const a of game.actors) a.tick(dt);
         game.combat.update(dt);
+        game.throwables.update(dt);
         if (game.state === "live") updatePumpkin(dt);
         if (game.state === "live") {
           const att = game.attackers, def = other(att), nAtt = alive(att).length, nDef = alive(def).length;
@@ -4260,6 +4676,8 @@ kbd { font-family: var(--body); font-weight: 800; font-size: 12px; background: #
       drawPumpkin(dt);
       game.fx.update(dt);
       updateCamera(dt);
+      const pv = game.player;
+      game.veil = pv && playing() ? Math.max(pv.alive ? Math.min(1, pv.dazeT / 1.1) : 0, game.throwables.fogAt(camera.position.x, camera.position.y, camera.position.z) * 0.93) : 0;
       hud.update(dt);
     }
     function render() {

@@ -5,7 +5,7 @@ import { AUDIO_PACK } from './audio-pack.js';
 
 const VOICE = ['ann_welcome', 'ann_go', 'ann_planted', 'ann_corked', 'ann_stink', 'ann_herd_win', 'ann_hands_win', 'ann_time', 'ann_half', 'ann_match_point', 'ann_ten', 'ann_victory', 'ann_defeat',
   'noise_chicken', 'noise_pig', 'noise_cow', 'noise_sheep', 'noise_goat'];
-for (const t of ['herd', 'hands']) for (const k of ['go_1', 'go_2', 'spot_1', 'spot_2', 'planting', 'guard', 'dropped', 'got_it', 'hurt_1', 'hurt_2', 'out_1', 'out_2', 'nice', 'refill', 'to_a', 'to_b', 'corking']) VOICE.push(`${t}_${k}`);
+for (const t of ['herd', 'hands']) for (const k of ['go_1', 'go_2', 'spot_1', 'spot_2', 'planting', 'guard', 'dropped', 'got_it', 'hurt_1', 'hurt_2', 'out_1', 'out_2', 'nice', 'refill', 'to_a', 'to_b', 'corking', 'flour', 'rooster', 'mud']) VOICE.push(`${t}_${k}`);
 VOICE.push('hands_planted_a', 'hands_planted_b');
 const SFX = ['sfx_squirt', 'sfx_egg', 'sfx_pea', 'sfx_tomato', 'sfx_splat', 'sfx_thwap', 'sfx_step1', 'sfx_step2', 'sfx_step3', 'sfx_step4', 'sfx_refill', 'sfx_bell', 'sfx_rooster', 'sfx_tick', 'sfx_tock',
   'sfx_cork_pop', 'sfx_squeak', 'sfx_thud', 'sfx_click', 'sfx_flop', 'sfx_cluck'];
@@ -185,6 +185,10 @@ export function createAudio(game) {
       for (let i = 0; i < 7; i++) tone('sawtooth', 95 - i * 6, 60, 0.11, v * 0.3, p.pan, i * 0.09);
       noise(1.6, 900, 200, v * 0.4, p.pan, 'lowpass'); noise(2.2, 5000, 1800, v * 0.12, p.pan, 'highpass');
     },
+    toss(a) { const p = a.isPlayer ? { vol: 0.7, pan: 0 } : place(a.pos.x, a.pos.z); noise(0.2, 500, 1900, p.vol * 0.22, p.pan, 'bandpass', 0.8); },
+    poof(x, z) { const p = place(x, z), v = Math.max(0.2, p.vol); noise(0.55, 1400, 180, v * 0.45, p.pan, 'lowpass'); noise(0.9, 4000, 2000, v * 0.08, p.pan, 'highpass'); },
+    crow(x, z) { const p = place(x, z); if (!sample('sfx_rooster', Math.max(0.35, p.vol) * 1.1, p.pan, 1.08)) { tone('sawtooth', 500, 900, 0.25, 0.25, p.pan); tone('sawtooth', 900, 600, 0.4, 0.25, p.pan, 0.25); } },
+    mud(x, z) { const p = place(x, z); if (!sample('sfx_splat', Math.max(0.2, p.vol) * 0.9, p.pan, 0.62)) noise(0.25, 700, 120, p.vol * 0.5, p.pan, 'lowpass'); },
     buy() { sample('sfx_click', 0.6); tone('sine', 1320, 1320, 0.09, 0.14); tone('sine', 1760, 1760, 0.16, 0.14, 0, 0.08); },
     deny() { tone('square', 170, 150, 0.14, 0.09); },
     win() { if (!sample('music_win', 0.7, 0, 1, musicBus)) [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f, f, 0.22, 0.2, 0, i * 0.12)); },

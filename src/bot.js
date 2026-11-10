@@ -2,6 +2,7 @@
 import { GADGETS, MOVE, OBJ } from './config.js';
 import { losClear, lengthInside } from './collide.js';
 import { angDiff, clamp, rand, pick, yawTo } from './util.js';
+import { lobPitch } from './throwables.js';
 
 export class Bot {
   constructor(game, actor) {
@@ -26,6 +27,7 @@ export class Bot {
     this.goal = null; this.repath = false; this.huntUntil = 0;
     this.guarding = false; // staying put on purpose (pumpkin planted, or on cork duty)
     this.corkDuty = false; this.fetching = false;
+    this.toss = null; this.usedFlour = false; this.usedMud = false; this.usedRooster = false;
     if (this.a) this.a.wantUse = false;
   }
 
@@ -51,11 +53,13 @@ export class Bot {
     const hy = e.pos.y + (e.crouched ? 1.1 : 1.44), cy = e.pos.y + (e.crouched ? 0.55 : 0.85);
     if (!losClear(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, boxes) && !losClear(a.pos.x, ey, a.pos.z, e.pos.x, cy, e.pos.z, boxes)) return false;
     if (lengthInside(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z, this.g.world.cornZones) > 3.5) return false;
+    if (this.g.throwables.sightBlocked(a.pos.x, ey, a.pos.z, e.pos.x, hy, e.pos.z)) return false; // flour cloud in the way
     return true;
   }
 
   perceive() {
     const a = this.a;
+    if (a.dazeT > 0.3) { this.target = null; return; } // dazzled by a rooster: sees nothing for a moment
     let best = null, bestD = 1e9;
     for (const e of this.g.actors) {
       if (!e.alive || e.team === a.team) continue;
@@ -63,7 +67,11 @@ export class Bot {
       if (d < bestD && this.canSee(e)) { best = e; bestD = d; }
     }
     if (best) {
-      if (this.target !== best) { this.target = best; this.seenT = 0; this.errT = 0; this.g.onSpot(a, best); }
+      if (this.target !== best) {
+        this.target = best; this.seenT = 0; this.errT = 0; this.g.onSpot(a, best);
+        // a defender who sees someone coming may lob a mud balloon in their way
+        if (a.throws.mud && !this.usedMud && this.plan.role === 'defend' && bestD > 8 && bestD < 19) { this.usedMud = true; this.toss = { id: 'mud', x: best.pos.x + best.vel.x * 0.8, z: best.pos.z + best.vel.z * 0.8 }; }
+      }
       this.lastSeen = { x: best.pos.x, z: best.pos.z };
       this.g.report(a.team, best);
     } else this.target = null;
@@ -94,7 +102,12 @@ export class Bot {
       // lost sight: go and look where they were (unless there is a job to get back to)
       const urgent = this.corkDuty || this.fetching || this.g.pumpkin.carrier === a;
       if (urgent || !this.lastSeen || !this.goTo(this.lastSeen.x, this.lastSeen.z)) { this.state = afterFight(); this.path = null; }
-      else { this.state = 'hunt'; this.huntUntil = now + rand(2.5, 4.5); }
+      else {
+        this.state = 'hunt'; this.huntUntil = now + rand(2.5, 4.5);
+        // lost them round a corner: send in a rooster first
+        const d = Math.hypot(this.lastSeen.x - a.pos.x, this.lastSeen.z - a.pos.z);
+        if (a.throws.rooster && !this.usedRooster && d > 5 && d < 17 && Math.random() < 0.7) { this.usedRooster = true; this.toss = { id: 'rooster', x: this.lastSeen.x, z: this.lastSeen.z }; }
+      }
       return;
     }
     if (this.state === 'hunt') {
@@ -158,12 +171,22 @@ export class Bot {
     if (this.thinkT <= 0) { this.thinkT = 0.11 + Math.random() * 0.07; this.perceive(); this.decide(); }
     if (this.alertT > 0) this.alertT -= dt;
     a.wantUse = this.wantsUse();
+    // throwing: attackers flour their way in; planned throws (mud, rooster) come from the thinking above
+    if (!this.usedFlour && a.throws.flour && this.plan.role === 'attack' && this.state === 'travel' && this.hold && !this.target) {
+      const d = Math.hypot(this.hold.x - a.pos.x, this.hold.z - a.pos.z);
+      if (d > 9 && d < 17) { this.usedFlour = true; this.toss = { id: 'flour', x: a.pos.x + (this.hold.x - a.pos.x) * 0.62, z: a.pos.z + (this.hold.z - a.pos.z) * 0.62 }; }
+    }
+    if (this.toss && a.throwT <= 0 && !a.busy && a.dazeT <= 0) {
+      const dx = this.toss.x - a.pos.x, dz = this.toss.z - a.pos.z;
+      g.throwables.throwItem(a, this.toss.id, yawTo(dx, dz), lobPitch(Math.hypot(dx, dz)));
+      this.toss = null;
+    }
 
     let wx = 0, wz = 0, wantYaw = a.yaw, wantPitch = 0, crouch = false;
     const t = this.target;
     const gd = GADGETS[a.gadgetId];
 
-    if (t && t.alive && !a.busy) {
+    if (t && t.alive && !a.busy && a.dazeT <= 0.3) {
       this.seenT += dt;
       // aim, with a wobble that settles the longer the target stays in view
       this.errT -= dt;

@@ -39,7 +39,13 @@ node tests/objective.cjs
 
 ## Status
 
-Milestone 2: shop and corn-coin economy, four launchers, overalls and cork kit, the Stink-Pumpkin plant-and-cork objective,
-half-time job swap, generated textures and menu art, recorded voice lines, music and sound effects.
+Milestone 3: three throwables (Flour Bomb, Rooster Crow, Mud Balloon) on top of milestone 2 (shop and corn-coin economy,
+four launchers, overalls and cork kit, the Stink-Pumpkin objective, half-time job swap, generated textures and menu art,
+recorded voice lines, music and sound effects).
 
-Not built yet: throwables (flour bomb and friends), the over-the-shoulder view, the other three modes, more maps, online play.
+Generated 3D character models are prepared but not in use: `tools/chars/bake.mjs` turns a T-pose `.glb` into a small
+game-ready character, and `src/characters.js` loads and animates anything listed in `MODELS`. The picture-to-3D service
+was failing when this was written, so the characters are still the hand-built ones. `art/characters/` holds the first
+reference picture.
+
+Not built yet: the over-the-shoulder view, the other three modes, more maps, online play.

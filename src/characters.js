@@ -131,6 +131,8 @@ const BUILD = {
 
 export function buildCharacter(kind, look) {
   const c = BUILD[kind](look);
+  const model = MODELS[kind === 'farmer' ? `farmer${look || 0}` : kind];
+  if (model && modelOptions.enabled) attachModel(c, model);
   // each stiff body part becomes a single shape, so a whole character costs only a few draw steps
   for (const part of [c.torso, c.head, ...c.legs, ...c.arms]) {
     for (const m of part.children) if (m.isMesh) m.castShadow = true;
@@ -144,6 +146,23 @@ export function animateCharacter(c, dt, speed, pitch, crouched, alive) {
   c.phase += dt * (4 + speed * 1.7);
   const k = Math.min(1, speed / 5);
   const sw = Math.sin(c.phase) * 0.85 * k;
+  if (c.rig) {
+    // a generated model: move its six bones instead of the hand-built parts
+    const r = c.rig, ease = Math.min(1, dt * 14);
+    r.legL.rotation.x = sw * 0.8; r.legR.rotation.x = -sw * 0.8;
+    r.drop += ((crouched ? 0.3 : 0) - r.drop) * ease;
+    r.pelvis.position.y = r.pelvisY - r.drop + Math.abs(Math.sin(c.phase)) * 0.04 * k;
+    r.pelvis.rotation.z = Math.sin(c.phase) * 0.05 * k;
+    const squash = Math.max(0.35, (r.legLen - r.drop) / r.legLen);
+    r.legL.scale.y = squash; r.legR.scale.y = squash;
+    r.armR.rotation.set(pitch, HALF + 0.14, 0);
+    r.armL.rotation.set(pitch, -HALF - 0.42, 0);
+    r.head.rotation.x = pitch * 0.45;
+    c.flop += ((alive ? 0 : 1) - c.flop) * Math.min(1, dt * 9);
+    c.pose.rotation.x = c.flop * HALF * 0.98;
+    c.pose.position.y = c.flop * 0.22;
+    return;
+  }
   c.legs[0].rotation.x = sw; c.legs[1].rotation.x = -sw;
   const drop = crouched ? 0.32 : 0;
   c.upper.position.y += (-drop + Math.abs(Math.sin(c.phase)) * 0.045 * k - c.upper.position.y) * Math.min(1, dt * 14);
@@ -235,4 +254,61 @@ export function buildPumpkin() {
   const glow = add(g, sphereGeo(), new T.MeshBasicMaterial({ color: 0xb7f23a, transparent: true, opacity: 0.25, depthWrite: false }), 0, 0.3, 0, { s: 0.6, cast: false, receive: false });
   glow.visible = false;
   return { root: g, body, glow };
+}
+
+// ---------- generated 3D models (made by tools/chars/bake.mjs) ----------
+// Which characters have one. Anyone not listed keeps the hand-built body.
+export const MODELS = {};
+export const modelOptions = { enabled: true };
+const modelCache = new Map();
+function unpack(text, Type) {
+  const bin = atob(text), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Type(bytes.buffer);
+}
+function loadModel(name) {
+  if (!modelCache.has(name)) {
+    modelCache.set(name, fetch(`assets/chars/${name}.json`).then((r) => (r.ok ? r.json() : Promise.reject())).then((d) => {
+      const g = new T.BufferGeometry(), n = d.verts;
+      const p16 = unpack(d.pos, Int16Array), pos = new Float32Array(n * 3);
+      for (let i = 0; i < n * 3; i++) pos[i] = (p16[i] / 32767) * 2;
+      g.setAttribute('position', new T.BufferAttribute(pos, 3));
+      g.setAttribute('normal', new T.BufferAttribute(unpack(d.nrm, Int8Array), 3, true));
+      g.setAttribute('uv', new T.BufferAttribute(unpack(d.uv, Uint16Array), 2, true));
+      g.setIndex(new T.BufferAttribute(unpack(d.idx, d.idxBytes === 2 ? Uint16Array : Uint32Array), 1));
+      const bi = unpack(d.bi, Uint8Array), bw = unpack(d.bw, Uint8Array), si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
+      for (let i = 0; i < n; i++) { si[i * 4] = bi[i * 2]; si[i * 4 + 1] = bi[i * 2 + 1]; sw[i * 4] = bw[i * 2] / 255; sw[i * 4 + 1] = bw[i * 2 + 1] / 255; }
+      g.setAttribute('skinIndex', new T.BufferAttribute(si, 4));
+      g.setAttribute('skinWeight', new T.BufferAttribute(sw, 4));
+      g.computeBoundingSphere(); g.boundingSphere.radius = 2.2;
+      const tex = new T.TextureLoader().load(`assets/chars/${name}.jpg`);
+      tex.encoding = T.sRGBEncoding; tex.flipY = false; tex.anisotropy = 4;
+      return { geometry: g, material: new T.MeshLambertMaterial({ map: tex }), rig: d.rig };
+    }));
+  }
+  return modelCache.get(name);
+}
+function attachModel(c, name) {
+  loadModel(name).then((m) => {
+    const R = m.rig, py = R.crotchY + 0.06;
+    const bone = (x, y, z, parent) => { const b = new T.Bone(); b.position.set(x, y, z); if (parent) parent.add(b); return b; };
+    const pelvis = bone(0, py, 0);
+    const legL = bone(-R.hipX, -0.02, 0, pelvis), legR = bone(R.hipX, -0.02, 0, pelvis);
+    const armL = bone(-R.shoulderX, R.shoulderY - py, R.handZ, pelvis), armR = bone(R.shoulderX, R.shoulderY - py, R.handZ, pelvis);
+    const head = bone(0, R.neckY - py, 0, pelvis);
+    const mesh = new T.SkinnedMesh(m.geometry, m.material);
+    mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+    mesh.add(pelvis);
+    mesh.updateMatrixWorld(true);
+    mesh.bind(new T.Skeleton([pelvis, legL, legR, armL, armR, head]));
+    // the launcher moves from the hand-built hand to the model's right hand
+    const hand = new T.Group();
+    hand.position.set(R.handX - R.shoulderX, -0.02, 0);
+    armR.add(hand);
+    c.mount.position.set(0, 0, 0); c.mount.rotation.set(0, -HALF, 0);
+    hand.add(c.mount);
+    c.upper.visible = false; for (const l of c.legs) l.visible = false;
+    c.pose.add(mesh);
+    c.rig = { pelvis, legL, legR, armL, armR, head, mesh, pelvisY: py, legLen: py, drop: 0 };
+  }).catch(() => { /* keep the hand-built body */ });
 }

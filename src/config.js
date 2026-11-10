@@ -84,7 +84,17 @@ export const SHOP = [
   { id: 'pea', kind: 'gadget', price: 4200, icon: 'icon_pea', blurb: 'One big long-range shot. Right-click to zoom.' },
   { id: 'overalls', kind: 'gear', name: 'Padded Overalls', price: 650, icon: 'icon_overalls', blurb: 'Soaks up half of every splat until it wears out.' },
   { id: 'kit', kind: 'gear', name: 'Cork Kit', price: 400, icon: 'icon_cork_kit', blurb: 'Cork the pumpkin twice as fast.', role: 'defend' },
+  { id: 'flour', kind: 'throw', name: 'Flour Bomb', price: 300, icon: 'icon_flour', blurb: 'A white cloud nobody can see through. Throw with 3.' },
+  { id: 'rooster', kind: 'throw', name: 'Rooster Crow', price: 200, icon: 'icon_rooster', blurb: 'Dazzles opponents looking at it. Throw with 4.' },
+  { id: 'mud', kind: 'throw', name: 'Mud Balloon', price: 300, icon: 'icon_mud', blurb: 'A sticky puddle that slows everyone. Throw with 5.' },
 ];
+
+// things you throw (you can carry one of each)
+export const THROWS = {
+  flour: { id: 'flour', name: 'Flour', key: 3, fuse: 1.5, radius: 4.6, life: 12 },
+  rooster: { id: 'rooster', name: 'Rooster', key: 4, fuse: 1.5, radius: 16, daze: 3.2 },
+  mud: { id: 'mud', name: 'Mud', key: 5, radius: 3.6, life: 9, slow: 0.45 },
+};
 
 export const DIFFICULTY = {
   easy: { label: 'Easy', reaction: 0.8, aimErr: 0.085, turn: 3.2, dmgToPlayer: 0.55, fireMoving: true },

@@ -13,6 +13,7 @@ export class Actor {
     this.crouched = false; this.onGround = true; this.alive = true; this.hp = 100;
     this.gadgetId = null; this.lastGadget = 'squirter'; this.tanks = {}; this.cooldown = 0; this.reloadT = 0; this.bloom = 0;
     this.primary = null; this.armor = 0; this.kit = false; this.coins = ECON.start; this.scoped = false;
+    this.throws = { flour: 0, rooster: 0, mud: 0 }; this.throwT = 0; this.dazeT = 0;
     this.stepDist = 0; this.outT = 0; this.busy = false; this.sayT = 0; this.splats = 0;
     for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
     this.char = buildCharacter(info.kind, info.look);
@@ -46,7 +47,8 @@ export class Actor {
   reset(spawn, keep) {
     this.pos.set(spawn.x, 0, spawn.z); this.vel.set(0, 0, 0);
     this.yaw = spawn.yaw; this.pitch = 0; this.recoil = 0;
-    if (!keep) { this.primary = null; this.armor = 0; this.kit = false; }
+    if (!keep) { this.primary = null; this.armor = 0; this.kit = false; this.throws = { flour: 0, rooster: 0, mud: 0 }; }
+    this.throwT = 0; this.dazeT = 0;
     this.hp = 100; this.alive = true; this.crouched = false; this.outT = 0; this.busy = false; this.scoped = false;
     for (const id in GADGETS) this.tanks[id] = GADGETS[id].tank;
     this.reloadT = 0; this.cooldown = 0; this.bloom = 0;
@@ -65,6 +67,7 @@ export class Actor {
     let top = crouching ? MOVE.crouch : walking ? MOVE.walk : MOVE.run;
     const g = GADGETS[this.gadgetId];
     if (g.slow) top *= this.scoped ? g.slow * 0.6 : g.slow;
+    top *= this.game.throwables.slowAt(this.pos.x, this.pos.z); // sticky mud
     const tx = wx * top, tz = wz * top;
     const rate = MOVE.accel * (this.onGround ? 1 : MOVE.airControl) * dt;
     const dx = tx - this.vel.x, dz = tz - this.vel.z, d = Math.hypot(dx, dz);
@@ -113,6 +116,8 @@ export class Actor {
   tick(dt) {
     if (this.cooldown > 0) this.cooldown -= dt;
     if (this.sayT > 0) this.sayT -= dt;
+    if (this.throwT > 0) this.throwT -= dt;
+    if (this.dazeT > 0) this.dazeT -= dt;
     if (this.reloadT > 0) { this.reloadT -= dt; if (this.reloadT <= 0) { this.ammo = GADGETS[this.gadgetId].tank; this.reloadT = 0; } }
     const g = GADGETS[this.gadgetId];
     this.bloom = Math.max(0, this.bloom - g.bloomMax * 2.2 * dt);
